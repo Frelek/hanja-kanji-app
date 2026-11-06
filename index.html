@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>한자 &amp; 漢字 学習 (Hanja &amp; Kanji Learner)</title>
+  
+  <!-- Apple WebKit PWA Meta Tags for iOS Safari Home Screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="한자・漢字">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512.png">
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#f7f4ed">
+  <meta name="description" content="한자와 일본어 상용한자(Kanji) 500자+ 패밀리 트리 학습 및 Anki SM-2 간격 반복 복습 어플리케이션">
+
+  <!-- Asian Typography Fonts (Noto Serif KR & JP for authentic Hanja & Kanji) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Noto+Serif+KR:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- HanziWriter for animated stroke order and quiz practice (Local for 100% offline support) -->
+  <script src="./js/hanzi-writer.min.js"></script>
+
+  <!-- Stylesheet (Warm Bright Beige Theme) -->
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <!-- Top Header with Language Switcher in Upper Right -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">漢</div>
+      <div>
+        <div class="brand-title">한자 학습 <span class="brand-badge">280+</span></div>
+      </div>
+    </div>
+
+    <!-- Upper Right Language Switcher Toggle -->
+    <div class="header-right-actions">
+      <div class="lang-switcher">
+        <button id="btn-mode-hanja" class="lang-btn active" data-lang="hanja">🇰🇷 한자</button>
+        <button id="btn-mode-kanji" class="lang-btn" data-lang="kanji">🇯🇵 漢字</button>
+      </div>
+      <div class="header-stats">
+        <div class="stat-item" title="학습 완료">
+          <span>📖</span>
+          <strong id="stat-learned-count">0字</strong>
+        </div>
+        <div class="stat-item" title="연속 학습일">
+          <span>🔥</span>
+          <strong id="stat-streak-count">0日</strong>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Router -->
+  <main class="main-content">
+    
+    <!-- 1. Tree View (Hero Learning Screen) -->
+    <section id="tree-view" class="view-section active">
+      <!-- Dynamically filled by js/tree-view.js -->
+    </section>
+
+    <!-- 2. Test View (Anki Spaced Repetition Mode) -->
+    <section id="test-view" class="view-section">
+      <!-- Dynamically filled by js/test-mode.js -->
+    </section>
+
+    <!-- 3. Settings View -->
+    <section id="settings-view" class="view-section">
+      <div class="settings-container">
+        <div class="settings-card">
+          <h3 class="settings-card-title">📊 학습 현황 (Overview)</h3>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">학습 완료 한자 / 漢字</span>
+              <span class="setting-desc">Learned characters count</span>
+            </div>
+            <strong id="setting-total-learned">0 / 287</strong>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">총 복습 횟수 (Reviews)</span>
+              <span class="setting-desc">Total card reviews</span>
+            </div>
+            <strong id="setting-total-reviews">0회</strong>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">연속 학습 일수 (Streak)</span>
+              <span class="setting-desc">Current day streak</span>
+            </div>
+            <strong id="setting-current-streak">0일 연속</strong>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-card-title">📚 데이터베이스 총계 (550+ Chars)</h3>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 8px;">
+            • <strong>🇰🇷 한국어 한자 (Hanja)</strong>: 15개 테마 브랜치, 287자 수록<br>
+            • <strong>🇯🇵 일본어 한자 (Kanji)</strong>: 14개 테마 브랜치, 264자 수록<br>
+            • <strong>총 수록 어휘</strong>: 551개 (획순 애니메이션 및 예문 완비)
+          </p>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-card-title">📱 홈 화면 추가 안내 (Install Guide)</h3>
+          <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 12px;">
+            아이폰 사파리(Safari)에서 하단 <strong>공유 버튼 [↑]</strong>을 누른 뒤, <strong>'홈 화면에 추가'</strong>를 선택하시면 독립 실행형 앱으로 언제든 편리하게 학습할 수 있습니다.
+          </p>
+          <div class="install-tip-box">
+            💡 In Safari on iPhone: Tap <strong>Share</strong> &gt; <strong>Add to Home Screen</strong> to run full-screen without browser bars.
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="settings-card-title">⚠️ 데이터 관리 (Data)</h3>
+          <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">
+            학습 진행도와 Anki 복습 스케줄은 브라우저 로컬 저장소(localStorage)에 언어별로 각각 안전하게 보관됩니다.
+          </p>
+          <button id="btn-reset-data" class="btn-danger">
+            현재 언어 데이터 초기화 (Reset Progress)
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Character Detail Modal Bottom Sheet -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-backdrop"></div>
+    <div class="modal-sheet">
+      <button class="modal-close" aria-label="닫기">✕</button>
+      <div class="modal-content">
+        <!-- Dynamically populated by js/detail-modal.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Fixed Bottom Navigation (iOS Tabbar Style) -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" data-view="tree">
+      <span class="tab-icon">🌳</span>
+      <span>트리 (Tree)</span>
+    </button>
+    <button class="nav-tab" data-view="test">
+      <span class="tab-icon">📝</span>
+      <span>복습 (Test)</span>
+    </button>
+    <button class="nav-tab" data-view="settings">
+      <span class="tab-icon">⚙️</span>
+      <span>설정 (Settings)</span>
+    </button>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="./js/storage.js"></script>
+  <script src="./js/detail-modal.js"></script>
+  <script src="./js/tree-view.js"></script>
+  <script src="./js/test-mode.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
