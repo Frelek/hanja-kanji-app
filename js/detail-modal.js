@@ -1,7 +1,7 @@
 /* ============================================================
    js/detail-modal.js — Character Detail Modal
    Supports both Hanja (Korean) & Kanji (Japanese)
-   Features Animated Stroke Order with HanziWriter
+   Animated Stroke Order (HanziWriter) without inline quiz
    ============================================================ */
 
 /** Emoji fallback map for image keywords */
@@ -131,11 +131,29 @@ const DetailModal = {
       meaningVal = `${char.meaning_kr} <span class="detail-en">(${char.meaning_en})</span>`;
     }
 
-    // Example word & sentence
-    const wordTitle = isKanji ? (char.example_word_reading || char.example_word) : char.example_word;
-    const wordSub = isKanji ? char.example_word_meaning_ja : char.example_word_reading;
-    const wordEn = char.example_word_meaning_en;
+    // Example word:
+    // In Japanese: Show Kanji word, and right below it write the pure kana (without kanji), then meaning!
+    let exampleWordHTML = '';
+    if (isKanji) {
+      exampleWordHTML = `
+        <div class="detail-value detail-example-word">
+          <strong class="example-kanji-title">${char.example_word}</strong>
+          <div class="example-kana-sub">かな: <span class="kana-pure">${char.example_word_kana || char.example_word_reading.split('(')[0].trim()}</span></div>
+          <div class="detail-reading">${char.example_word_meaning_ja}</div>
+          <div class="detail-en">${char.example_word_meaning_en}</div>
+        </div>
+      `;
+    } else {
+      exampleWordHTML = `
+        <div class="detail-value detail-example-word">
+          <strong class="example-kanji-title">${char.example_word}</strong>
+          <span class="detail-reading">${char.example_word_reading}</span>
+          <span class="detail-en">${char.example_word_meaning_en}</span>
+        </div>
+      `;
+    }
 
+    // Sentence example
     const sentencePrimary = isKanji ? char.example_sentence_ja : char.example_sentence_kr;
     const sentenceReading = isKanji ? `<div class="detail-sentence-furigana">${char.example_sentence_reading || ''}</div>` : '';
     const sentenceEn = char.example_sentence_en;
@@ -147,7 +165,7 @@ const DetailModal = {
         <div class="hero-keyword">${char.image_keyword}</div>
       </div>
 
-      <!-- Character & Animated Stroke Order Box -->
+      <!-- Character & Animated Stroke Order Box (Quiz removed from here, only at category top) -->
       <div class="detail-char-container">
         <div class="stroke-display-box">
           <div id="character-writer-target" class="writer-target"></div>
@@ -156,10 +174,7 @@ const DetailModal = {
           <div class="stroke-info-pill">
             <span>✏️ 획수 / 画数:</span> <strong>${char.strokes}획</strong>
           </div>
-          <div class="stroke-btn-row">
-            <button id="btn-animate-stroke" class="btn-stroke-act">▶️ 획순 애니메이션 (Animate)</button>
-            <button id="btn-quiz-stroke" class="btn-stroke-act secondary">✍️ 직접 쓰기 (Quiz)</button>
-          </div>
+          <button id="btn-animate-stroke" class="btn-stroke-act">▶️ 획순 애니메이션 (Animate)</button>
         </div>
       </div>
 
@@ -177,14 +192,10 @@ const DetailModal = {
 
       ${componentsHTML}
 
-      <!-- Vocabulary Example -->
+      <!-- Vocabulary Example (shows pure kana below kanji in Japanese) -->
       <div class="detail-section">
         <div class="detail-label">${isKanji ? '熟語・単語例 (Example Word)' : '단어 예시 (Example Word)'}</div>
-        <div class="detail-value detail-example-word">
-          <strong>${char.example_word}</strong>
-          <span class="detail-reading">${wordSub}</span>
-          <span class="detail-en">${wordEn}</span>
-        </div>
+        ${exampleWordHTML}
       </div>
 
       <!-- Sentence Example -->
@@ -251,27 +262,14 @@ const DetailModal = {
           drawingColor: '#2b3a4a'
         });
 
-        // Auto animate first time
+        // Auto animate on open
         this.writer.animateCharacter();
 
-        // Control buttons
+        // Control button
         const animateBtn = document.getElementById('btn-animate-stroke');
         if (animateBtn) {
           animateBtn.addEventListener('click', () => {
             if (this.writer) this.writer.animateCharacter();
-          });
-        }
-
-        const quizBtn = document.getElementById('btn-quiz-stroke');
-        if (quizBtn) {
-          quizBtn.addEventListener('click', () => {
-            if (this.writer) {
-              this.writer.quiz({
-                onComplete: () => {
-                  alert('🎉 완벽합니다! (Well done!)');
-                }
-              });
-            }
           });
         }
       } catch (e) {
@@ -282,7 +280,7 @@ const DetailModal = {
     }
   },
 
-  /** Fallback static large font display if HanziWriter CDN is not available */
+  /** Fallback static large font display */
   _fallbackStrokeDisplay(target, charSymbol) {
     target.innerHTML = `<div class="static-char-symbol">${charSymbol}</div>`;
   },

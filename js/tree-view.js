@@ -93,15 +93,41 @@ const TreeView = {
     const branchLabel = isKanji ? (branch.name_ja || branch.name_kr) : branch.name_kr;
 
     header.innerHTML = `
-      <h2 class="branch-title">${branch.icon} ${branchLabel} <span class="branch-title-en">${branch.name_en}</span></h2>
-      <div class="branch-progress">
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${branch.characters.length > 0 ? (learnedCount / branch.characters.length * 100) : 0}%"></div>
+      <div class="branch-header-top">
+        <div class="branch-header-info">
+          <h2 class="branch-title">${branch.icon} ${branchLabel} <span class="branch-title-en">${branch.name_en}</span></h2>
+          <div class="branch-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${branch.characters.length > 0 ? (learnedCount / branch.characters.length * 100) : 0}%"></div>
+            </div>
+            <span class="progress-text">${learnedCount}/${branch.characters.length}</span>
+          </div>
         </div>
-        <span class="progress-text">${learnedCount}/${branch.characters.length}</span>
+        <button class="btn-category-quiz ${learnedCount === 0 ? 'is-empty' : ''}" id="btn-category-quiz" title="${isKanji ? 'このカテゴリーをテスト' : '카테고리 퀴즈'}">
+          <span class="quiz-btn-icon">⚡</span>
+          <span class="quiz-btn-label">${isKanji ? 'カテゴリーテスト' : '카테고리 퀴즈'}</span>
+          <span class="quiz-btn-badge">${learnedCount}</span>
+        </button>
       </div>
     `;
     treeContent.appendChild(header);
+
+    // Event listener for category quiz (ONLY shown at top of category)
+    const quizBtn = header.querySelector('#btn-category-quiz');
+    if (quizBtn) {
+      quizBtn.addEventListener('click', () => {
+        const learnedInBranch = branch.characters.filter(c => Storage.isLearned(c.id));
+        if (learnedInBranch.length === 0) {
+          const msg = isKanji 
+            ? '⚠️ まだこのカテゴリーで学習済みの漢字がありません。\n漢字カードを開いて「学習済みにする」にチェックしてください！'
+            : '⚠️ 아직 이 카테고리에서 학습 완료한 한자가 없습니다.\n한자 카드를 클릭해 먼저 「학습 완료」로 표시해주세요!';
+          alert(msg);
+          return;
+        }
+
+        TestMode.startCategoryQuiz(branch);
+      });
+    }
 
     // Build character lookup map and children map for this branch
     const charMap = new Map();

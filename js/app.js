@@ -170,6 +170,10 @@ const App = {
       tab.addEventListener('click', (e) => {
         e.preventDefault();
         const view = tab.dataset.view;
+        if (view === 'test') {
+          TestMode.currentCategory = null;
+          TestMode.isCategoryMode = false;
+        }
         this.navigateTo(view);
       });
     });

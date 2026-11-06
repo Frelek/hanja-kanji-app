@@ -24,7 +24,8 @@
           "example_sentence_ja": "一日はあっという間に過ぎます。",
           "example_sentence_reading": "いちにちはあっというまにすぎます。",
           "example_sentence_en": "A day passes in the blink of an eye.",
-          "image_keyword": "one"
+          "image_keyword": "one",
+          "example_word_kana": "ついたち"
         },
         {
           "id": "kj_two",
@@ -46,7 +47,8 @@
           "example_sentence_ja": "二月は雪がたくさん降ります。",
           "example_sentence_reading": "にがつはゆきがたくさんふります。",
           "example_sentence_en": "A lot of snow falls in February.",
-          "image_keyword": "two"
+          "image_keyword": "two",
+          "example_word_kana": "にがつ"
         },
         {
           "id": "kj_three",
@@ -69,7 +71,8 @@
           "example_sentence_ja": "夜空に綺麗な三日月が浮かんでいます。",
           "example_sentence_reading": "よぞらにきれいなみかづきがうかんでいます。",
           "example_sentence_en": "A beautiful crescent moon floats in the night sky.",
-          "image_keyword": "three"
+          "image_keyword": "three",
+          "example_word_kana": "みかづき"
         },
         {
           "id": "kj_four",
@@ -91,7 +94,8 @@
           "example_sentence_ja": "日本には美しい四季があります。",
           "example_sentence_reading": "にほんにはうつくしいしきがあります。",
           "example_sentence_en": "Japan has four beautiful seasons.",
-          "image_keyword": "four"
+          "image_keyword": "four",
+          "example_word_kana": "しき"
         },
         {
           "id": "kj_five",
@@ -113,7 +117,8 @@
           "example_sentence_ja": "五月の風はとても爽やかです。",
           "example_sentence_reading": "ごがぜのかぜはとてもさわやかです。",
           "example_sentence_en": "The May breeze is very refreshing.",
-          "image_keyword": "five"
+          "image_keyword": "five",
+          "example_word_kana": "ごがつ"
         },
         {
           "id": "kj_six",
@@ -135,7 +140,8 @@
           "example_sentence_ja": "雪の結晶は綺麗な六角形をしています。",
           "example_sentence_reading": "ゆきのけっしょうはきれいなろっかくけいをしています。",
           "example_sentence_en": "Snow crystals form beautiful hexagons.",
-          "image_keyword": "six"
+          "image_keyword": "six",
+          "example_word_kana": "ろっかくけい"
         },
         {
           "id": "kj_seven",
@@ -157,7 +163,8 @@
           "example_sentence_ja": "七夕の夜に短冊へ願い事を書きました。",
           "example_sentence_reading": "たなばたのよるにたんざくへねがいごとをかきました。",
           "example_sentence_en": "On Tanabata night I wrote wishes on paper strips.",
-          "image_keyword": "seven"
+          "image_keyword": "seven",
+          "example_word_kana": "たなばた"
         },
         {
           "id": "kj_eight",
@@ -177,7 +184,8 @@
           "example_sentence_ja": "近所の八百屋で新鮮なトマトを買いました。",
           "example_sentence_reading": "きんじょのやおやでしんせんなとまとをかいました。",
           "example_sentence_en": "I bought fresh tomatoes at the neighborhood greengrocer.",
-          "image_keyword": "eight"
+          "image_keyword": "eight",
+          "example_word_kana": "やおや"
         },
         {
           "id": "kj_nine",
@@ -197,7 +205,8 @@
           "example_sentence_ja": "夏休みに九州へ温泉旅行に行きました。",
           "example_sentence_reading": "なつやすみにきゅうしゅうへおんせんりょこうにいきました。",
           "example_sentence_en": "I went on a hot spring trip to Kyushu during summer vacation.",
-          "image_keyword": "nine"
+          "image_keyword": "nine",
+          "example_word_kana": "きゅうしゅう"
         },
         {
           "id": "kj_ten",
@@ -220,7 +229,8 @@
           "example_sentence_ja": "睡眠を十分にとって体を休めましょう。",
           "example_sentence_reading": "すいみんをじゅうぶんにとってからだをやすめましょう。",
           "example_sentence_en": "Let's rest our bodies getting enough sleep.",
-          "image_keyword": "ten"
+          "image_keyword": "ten",
+          "example_word_kana": "じゅうぶん"
         },
         {
           "id": "kj_hundred",
@@ -243,7 +253,8 @@
           "example_sentence_ja": "テストで百点満点を取りました！",
           "example_sentence_reading": "てすとでひゃくてんまんてんをとりました！",
           "example_sentence_en": "I scored a perfect hundred points on the test!",
-          "image_keyword": "hundred"
+          "image_keyword": "hundred",
+          "example_word_kana": "ひゃっかじてん"
         },
         {
           "id": "kj_thousand",
@@ -266,7 +277,8 @@
           "example_sentence_ja": "この本は千円で買えます。",
           "example_sentence_reading": "このほんはせんえんでかえます。",
           "example_sentence_en": "You can buy this book for one thousand yen.",
-          "image_keyword": "thousand"
+          "image_keyword": "thousand",
+          "example_word_kana": "せんえん"
         },
         {
           "id": "kj_ten_thousand",
@@ -288,7 +300,8 @@
           "example_sentence_ja": "万全の準備をして明日の本番に臨みます。",
           "example_sentence_reading": "ばんぜんのじゅんびをしてあすのほんばんにのぞみます。",
           "example_sentence_en": "I will face tomorrow's performance with thorough preparation.",
-          "image_keyword": "number"
+          "image_keyword": "number",
+          "example_word_kana": "ばんぜん"
         },
         {
           "id": "kj_yen_circle",
@@ -310,7 +323,8 @@
           "example_sentence_ja": "日本の通貨単位は円です。",
           "example_sentence_reading": "にほんのつうかたんいはえんです。",
           "example_sentence_en": "The currency unit of Japan is the yen.",
-          "image_keyword": "gold"
+          "image_keyword": "gold",
+          "example_word_kana": "えんだか"
         },
         {
           "id": "kj_half",
@@ -333,7 +347,8 @@
           "example_sentence_ja": "会議は三時半から始まります。",
           "example_sentence_reading": "かいぎはさんじはんからはじまります。",
           "example_sentence_en": "The meeting begins at half past three.",
-          "image_keyword": "half"
+          "image_keyword": "half",
+          "example_word_kana": "はんとし"
         },
         {
           "id": "kj_number_count",
@@ -357,7 +372,8 @@
           "example_sentence_ja": "星の数を数えるのはとてもロマンチックです。",
           "example_sentence_reading": "ほしのかずをかぞえるのはとてもろまんちっくです。",
           "example_sentence_en": "Counting the number of stars is very romantic.",
-          "image_keyword": "calculate"
+          "image_keyword": "calculate",
+          "example_word_kana": "すうがく"
         }
       ]
     },
@@ -385,7 +401,8 @@
           "example_sentence_ja": "毎朝、新鮮な水を一杯飲みます。",
           "example_sentence_reading": "まいあさ、しんせんなみずをいっぱいのみます。",
           "example_sentence_en": "I drink a glass of fresh water every morning.",
-          "image_keyword": "water"
+          "image_keyword": "water",
+          "example_word_kana": "すいようび"
         },
         {
           "id": "kj_fire",
@@ -405,7 +422,8 @@
           "example_sentence_ja": "キャンプ場で温かい火を囲みました。",
           "example_sentence_reading": "きゃんぷじょうであたたかいひをかこみました。",
           "example_sentence_en": "We gathered around a warm fire at the campsite.",
-          "image_keyword": "fire"
+          "image_keyword": "fire",
+          "example_word_kana": "かようび"
         },
         {
           "id": "kj_mountain",
@@ -425,7 +443,8 @@
           "example_sentence_ja": "週末に友達と山登りに行きました。",
           "example_sentence_reading": "しゅうまつにともだちとやまのぼりにいきました。",
           "example_sentence_en": "I went mountain climbing with a friend on the weekend.",
-          "image_keyword": "mountain"
+          "image_keyword": "mountain",
+          "example_word_kana": "ふじさん"
         },
         {
           "id": "kj_tree",
@@ -445,7 +464,8 @@
           "example_sentence_ja": "庭に大きな桜の木を植えました。",
           "example_sentence_reading": "にわにおおきなさくらのきをうえました。",
           "example_sentence_en": "I planted a large cherry tree in the garden.",
-          "image_keyword": "tree"
+          "image_keyword": "tree",
+          "example_word_kana": "もくようび"
         },
         {
           "id": "kj_earth_soil",
@@ -465,7 +485,8 @@
           "example_sentence_ja": "豊かな土からおいしい野菜が育ちます。",
           "example_sentence_reading": "ゆたかなつちからおいしいやさいがそだちます。",
           "example_sentence_en": "Delicious vegetables grow from rich soil.",
-          "image_keyword": "earth"
+          "image_keyword": "earth",
+          "example_word_kana": "どようび"
         },
         {
           "id": "kj_gold_metal",
@@ -485,7 +506,8 @@
           "example_sentence_ja": "オリンピックで金メダルを獲得しました。",
           "example_sentence_reading": "おりんぴっくできんめだるをかくとくしました。",
           "example_sentence_en": "He won a gold medal at the Olympics.",
-          "image_keyword": "gold"
+          "image_keyword": "gold",
+          "example_word_kana": "きんようび"
         },
         {
           "id": "kj_stone",
@@ -505,7 +527,8 @@
           "example_sentence_ja": "川原で丸い綺麗な石を拾いました。",
           "example_sentence_reading": "かわらでまるいきれいないしをひろいました。",
           "example_sentence_en": "I picked up a round pretty stone on the riverbank.",
-          "image_keyword": "stone"
+          "image_keyword": "stone",
+          "example_word_kana": "かせき"
         },
         {
           "id": "kj_sky_heaven",
@@ -528,7 +551,8 @@
           "example_sentence_ja": "明日は晴れて良い天気になるでしょう。",
           "example_sentence_reading": "あしたははれていいてんきになるでしょう。",
           "example_sentence_en": "Tomorrow will likely be sunny with great weather.",
-          "image_keyword": "sky"
+          "image_keyword": "sky",
+          "example_word_kana": "てんき"
         },
         {
           "id": "kj_ground",
@@ -551,7 +575,8 @@
           "example_sentence_ja": "地図を見ながら新しい街を散策しました。",
           "example_sentence_reading": "ちずをみながらあたらしいまちをさんさくしました。",
           "example_sentence_en": "I strolled around the new town looking at a map.",
-          "image_keyword": "earth"
+          "image_keyword": "earth",
+          "example_word_kana": "ちかてつ"
         },
         {
           "id": "kj_river",
@@ -571,7 +596,8 @@
           "example_sentence_ja": "澄んだ川で魚が元気に泳いでいます。",
           "example_sentence_reading": "すんだかわでさかながげんきにおよいでいます。",
           "example_sentence_en": "Fish are swimming lively in the clear river.",
-          "image_keyword": "river"
+          "image_keyword": "river",
+          "example_word_kana": "おがわ"
         },
         {
           "id": "kj_sea_ocean",
@@ -594,7 +620,8 @@
           "example_sentence_ja": "夏休みに青い海で泳ぎました。",
           "example_sentence_reading": "なつやすみにあおうみでおよぎました。",
           "example_sentence_en": "I swam in the blue sea during summer vacation.",
-          "image_keyword": "sea"
+          "image_keyword": "sea",
+          "example_word_kana": "かいがい"
         },
         {
           "id": "kj_forest",
@@ -617,7 +644,8 @@
           "example_sentence_ja": "雑木林の中を気持ちよく歩きました。",
           "example_sentence_reading": "ぞうきばやしのなかをきもちよくあるきました。",
           "example_sentence_en": "I took a pleasant walk through the copse.",
-          "image_keyword": "forest"
+          "image_keyword": "forest",
+          "example_word_kana": "しんりん"
         },
         {
           "id": "kj_dense_forest",
@@ -641,7 +669,8 @@
           "example_sentence_ja": "深い森の中で静寂を感じました。",
           "example_sentence_reading": "ふかいもりのなかでせいじゃくをかんじました。",
           "example_sentence_en": "I felt deep stillness within the thick forest.",
-          "image_keyword": "forest"
+          "image_keyword": "forest",
+          "example_word_kana": "しんりんよく"
         },
         {
           "id": "kj_rain",
@@ -661,7 +690,8 @@
           "example_sentence_ja": "午後は静かな雨が降り始めました。",
           "example_sentence_reading": "ごごはしずかなあめがふりはじめました。",
           "example_sentence_en": "A gentle rain began falling in the afternoon.",
-          "image_keyword": "rain"
+          "image_keyword": "rain",
+          "example_word_kana": "うき"
         },
         {
           "id": "kj_snow",
@@ -684,7 +714,8 @@
           "example_sentence_ja": "冬の朝、一面に白い雪が積もっていました。",
           "example_sentence_reading": "ふゆのあさ、いちめんにしろいゆきがつもっていました。",
           "example_sentence_en": "On a winter morning white snow covered everywhere.",
-          "image_keyword": "snow"
+          "image_keyword": "snow",
+          "example_word_kana": "ゆきげしき"
         },
         {
           "id": "kj_wind",
@@ -707,7 +738,8 @@
           "example_sentence_ja": "春の暖かい風が頬を優しく撫でました。",
           "example_sentence_reading": "はるのあたたかいかぜがほおをやさしくなでました。",
           "example_sentence_en": "Warm spring wind gently brushed my cheeks.",
-          "image_keyword": "wind"
+          "image_keyword": "wind",
+          "example_word_kana": "たいふう"
         },
         {
           "id": "kj_cloud",
@@ -730,7 +762,8 @@
           "example_sentence_ja": "青空に真っ白な雲がぽっかり浮かんでいます。",
           "example_sentence_reading": "あおぞらにまっしろなくもがぽっかりうかんでいます。",
           "example_sentence_en": "A pure white cloud floats puffy in the blue sky.",
-          "image_keyword": "cloud"
+          "image_keyword": "cloud",
+          "example_word_kana": "あまぐも"
         },
         {
           "id": "kj_clear_weather",
@@ -753,7 +786,8 @@
           "example_sentence_ja": "今日はずっと心地よく晴れています。",
           "example_sentence_reading": "きょうはずっとここちよくはれています。",
           "example_sentence_en": "It has been pleasantly sunny all day today.",
-          "image_keyword": "sky"
+          "image_keyword": "sky",
+          "example_word_kana": "あきばれ"
         },
         {
           "id": "kj_empty_sky",
@@ -776,7 +810,8 @@
           "example_sentence_ja": "見上げるとどこまでも澄んだ青空でした。",
           "example_sentence_reading": "みあげるとどこまでもすんだあおぞらでした。",
           "example_sentence_en": "Looking up it was a clear blue sky stretching endlessly.",
-          "image_keyword": "sky"
+          "image_keyword": "sky",
+          "example_word_kana": "くうこう"
         },
         {
           "id": "kj_flower",
@@ -799,7 +834,8 @@
           "example_sentence_ja": "春になると公園に色とりどりの花が咲きます。",
           "example_sentence_reading": "はるになるとこうえんにいろとりどりのはながさきます。",
           "example_sentence_en": "In spring colorful flowers bloom in the park.",
-          "image_keyword": "flower"
+          "image_keyword": "flower",
+          "example_word_kana": "はなび"
         },
         {
           "id": "kj_grass",
@@ -822,7 +858,8 @@
           "example_sentence_ja": "緑の草の上に寝転がって雲を眺めました。",
           "example_sentence_reading": "みどりのくさのうえにねころがってくもをながめました。",
           "example_sentence_en": "I lay down on green grass watching the clouds.",
-          "image_keyword": "grass"
+          "image_keyword": "grass",
+          "example_word_kana": "そうげん"
         },
         {
           "id": "kj_pond",
@@ -845,7 +882,8 @@
           "example_sentence_ja": "お寺の池で錦鯉が優雅に泳いでいます。",
           "example_sentence_reading": "おてらのいけでにしきごいがゆうがおよいでいます。",
           "example_sentence_en": "Colored carp swim gracefully in the temple pond.",
-          "image_keyword": "river"
+          "image_keyword": "river",
+          "example_word_kana": "でんち"
         }
       ]
     },
@@ -873,7 +911,8 @@
           "example_sentence_ja": "親切な人が道を案内してくれました。",
           "example_sentence_reading": "しんせつなひとがみちをあんないしてくれました。",
           "example_sentence_en": "A kind person guided me along the way.",
-          "image_keyword": "person"
+          "image_keyword": "person",
+          "example_word_kana": "にほんじん"
         },
         {
           "id": "kj_man",
@@ -896,7 +935,8 @@
           "example_sentence_ja": "誠実な男の人が荷物を運んでくれました。",
           "example_sentence_reading": "せいじつなおとこのひとがにもつをはこんでくれました。",
           "example_sentence_en": "A sincere man carried the luggage for me.",
-          "image_keyword": "person"
+          "image_keyword": "person",
+          "example_word_kana": "だんし"
         },
         {
           "id": "kj_woman",
@@ -916,7 +956,8 @@
           "example_sentence_ja": "その女性は笑顔がとても素敵です。",
           "example_sentence_reading": "そのじょせいはえがおがとてもすてきです。",
           "example_sentence_en": "That woman has a wonderfully lovely smile.",
-          "image_keyword": "woman"
+          "image_keyword": "woman",
+          "example_word_kana": "じょせい"
         },
         {
           "id": "kj_child",
@@ -936,7 +977,8 @@
           "example_sentence_ja": "公園で元気な子供たちが遊んでいます。",
           "example_sentence_reading": "こうえんでげんきなこどもたちがあそんでいます。",
           "example_sentence_en": "Energetic children are playing in the park.",
-          "image_keyword": "child"
+          "image_keyword": "child",
+          "example_word_kana": "こども"
         },
         {
           "id": "kj_father",
@@ -956,7 +998,8 @@
           "example_sentence_ja": "父は毎朝早く起きて散歩をします。",
           "example_sentence_reading": "ちちはまいあさはやくおきてさんぽをします。",
           "example_sentence_en": "My father wakes up early every morning for a walk.",
-          "image_keyword": "father"
+          "image_keyword": "father",
+          "example_word_kana": "ちちおや"
         },
         {
           "id": "kj_mother",
@@ -976,7 +1019,8 @@
           "example_sentence_ja": "母の手料理はとても温かくて美味しいです。",
           "example_sentence_reading": "ははのてりょうりはとてもあたたかくておいしいです。",
           "example_sentence_en": "My mother's home cooking is very warm and delicious.",
-          "image_keyword": "mother"
+          "image_keyword": "mother",
+          "example_word_kana": "ははおや"
         },
         {
           "id": "kj_elder_brother",
@@ -999,7 +1043,8 @@
           "example_sentence_ja": "兄は大学で情報工学を学んでいます。",
           "example_sentence_reading": "あにはだいがくでじょうほうこうがくをまなんでいます。",
           "example_sentence_en": "My elder brother studies computer science at university.",
-          "image_keyword": "brother"
+          "image_keyword": "brother",
+          "example_word_kana": "きょうだい"
         },
         {
           "id": "kj_younger_brother",
@@ -1022,7 +1067,8 @@
           "example_sentence_ja": "弟と一緒にテレビゲームを楽しみました。",
           "example_sentence_reading": "おとうとといっしょにてれびげーむをたのしみました。",
           "example_sentence_en": "I enjoyed playing video games with my younger brother.",
-          "image_keyword": "brother"
+          "image_keyword": "brother",
+          "example_word_kana": "でし"
         },
         {
           "id": "kj_elder_sister",
@@ -1045,7 +1091,8 @@
           "example_sentence_ja": "姉は東京でデザイナーとして働いています。",
           "example_sentence_reading": "あねはとうきょうででざいなーとしてはたらいています。",
           "example_sentence_en": "My elder sister works as a designer in Tokyo.",
-          "image_keyword": "sister"
+          "image_keyword": "sister",
+          "example_word_kana": "しまい"
         },
         {
           "id": "kj_younger_sister",
@@ -1068,7 +1115,8 @@
           "example_sentence_ja": "妹はピアノを弾くのが大好きです。",
           "example_sentence_reading": "いもうとはぴあのをひくのがだいすきです。",
           "example_sentence_en": "My younger sister loves playing the piano.",
-          "image_keyword": "sister"
+          "image_keyword": "sister",
+          "example_word_kana": "しまいとし"
         },
         {
           "id": "kj_mouth",
@@ -1088,7 +1136,8 @@
           "example_sentence_ja": "駅の東口で待ち合わせをしましょう。",
           "example_sentence_reading": "えきのひがしぐちでまちあわせをしましょう。",
           "example_sentence_en": "Let's meet at the station's east exit.",
-          "image_keyword": "mouth"
+          "image_keyword": "mouth",
+          "example_word_kana": "いりぐち"
         },
         {
           "id": "kj_eye",
@@ -1108,7 +1157,8 @@
           "example_sentence_ja": "夜空を見上げると星が目の前に輝いて見えました。",
           "example_sentence_reading": "よぞらをみあげるとほしがめのまえにかがやいてみえました。",
           "example_sentence_en": "Looking up at the night sky stars shone before my eyes.",
-          "image_keyword": "eye"
+          "image_keyword": "eye",
+          "example_word_kana": "もくてき"
         },
         {
           "id": "kj_ear",
@@ -1128,7 +1178,8 @@
           "example_sentence_ja": "美しい小鳥のさえずりに耳を傾けました。",
           "example_sentence_reading": "うつくしいことりのさえずりにみみをかたむけました。",
           "example_sentence_en": "I listened closely to the lovely chirping of small birds.",
-          "image_keyword": "ear"
+          "image_keyword": "ear",
+          "example_word_kana": "じびか"
         },
         {
           "id": "kj_hand",
@@ -1148,7 +1199,8 @@
           "example_sentence_ja": "久しぶりに祖母へ感謝の手紙を書きました。",
           "example_sentence_reading": "ひさしぶりにそばへかんしゃのてがみをかきました。",
           "example_sentence_en": "I wrote a thank-you letter to my grandmother after a long time.",
-          "image_keyword": "hand"
+          "image_keyword": "hand",
+          "example_word_kana": "てがみ"
         },
         {
           "id": "kj_foot_leg",
@@ -1171,7 +1223,8 @@
           "example_sentence_ja": "たくさん歩いたので足が心地よく疲れました。",
           "example_sentence_reading": "たくさんあるいたのであしがここちよくつかれました。",
           "example_sentence_en": "Because I walked a lot my legs were pleasantly tired.",
-          "image_keyword": "foot"
+          "image_keyword": "foot",
+          "example_word_kana": "まんぞく"
         },
         {
           "id": "kj_heart_mind",
@@ -1191,7 +1244,8 @@
           "example_sentence_ja": "温かい言葉を聞いて心が和みました。",
           "example_sentence_reading": "あたたかいことばをきいてこころがなごみました。",
           "example_sentence_en": "Hearing warm words my heart felt deeply calmed.",
-          "image_keyword": "heart"
+          "image_keyword": "heart",
+          "example_word_kana": "あんしん"
         },
         {
           "id": "kj_head",
@@ -1214,7 +1268,8 @@
           "example_sentence_ja": "新鮮な空気を吸うと頭がすっきりします。",
           "example_sentence_reading": "しんせんなくうきをすうとあたまがすっきりします。",
           "example_sentence_en": "Breathing fresh air clears one's head completely.",
-          "image_keyword": "head"
+          "image_keyword": "head",
+          "example_word_kana": "ずのう"
         },
         {
           "id": "kj_face",
@@ -1237,7 +1292,8 @@
           "example_sentence_ja": "友達の明るい笑顔を見て嬉しくなりました。",
           "example_sentence_reading": "ともだちのあかるいえがおをみてうれしくなりました。",
           "example_sentence_en": "Seeing my friend's bright smiling face made me glad.",
-          "image_keyword": "face"
+          "image_keyword": "face",
+          "example_word_kana": "えがお"
         },
         {
           "id": "kj_body",
@@ -1260,7 +1316,8 @@
           "example_sentence_ja": "健康のために毎日体を動かしています。",
           "example_sentence_reading": "けんこうのためにまいにちからだをうごかしています。",
           "example_sentence_en": "I move my body every day for good health.",
-          "image_keyword": "body"
+          "image_keyword": "body",
+          "example_word_kana": "たいりょく"
         },
         {
           "id": "kj_power",
@@ -1280,7 +1337,8 @@
           "example_sentence_ja": "日々の努力が大きな成果を生み出します。",
           "example_sentence_reading": "ひびのどりょくがおおきなせいかをうみだします。",
           "example_sentence_en": "Daily effort yields significant achievements.",
-          "image_keyword": "power"
+          "image_keyword": "power",
+          "example_word_kana": "どりょく"
         },
         {
           "id": "kj_neck_chief",
@@ -1300,7 +1358,8 @@
           "example_sentence_ja": "寒い日はマフラーを首に巻いて出かけます。",
           "example_sentence_reading": "さむいひはまふらーをくびにまいてでかけます。",
           "example_sentence_en": "On cold days I wrap a scarf around my neck to go out.",
-          "image_keyword": "head"
+          "image_keyword": "head",
+          "example_word_kana": "しゅと"
         },
         {
           "id": "kj_rest",
@@ -1323,7 +1382,8 @@
           "example_sentence_ja": "週末の休日は温泉でゆっくり過ごしました。",
           "example_sentence_reading": "しゅうまつのきゅうじつはおんせんでゆっくりすごしました。",
           "example_sentence_en": "I spent the weekend holiday relaxing leisurely at hot springs.",
-          "image_keyword": "rest"
+          "image_keyword": "rest",
+          "example_word_kana": "きゅうじつ"
         }
       ]
     },
@@ -1354,7 +1414,8 @@
           "example_sentence_ja": "来週、京都へ旅行に行きます。",
           "example_sentence_reading": "らいしゅう、きょうとへりょこうにいきます。",
           "example_sentence_en": "Next week I will go on a trip to Kyoto.",
-          "image_keyword": "walk"
+          "image_keyword": "walk",
+          "example_word_kana": "りょこう"
         },
         {
           "id": "kj_come",
@@ -1374,7 +1435,8 @@
           "example_sentence_ja": "春が来ると桜が咲き誇ります。",
           "example_sentence_reading": "はるがくるとさくらがさきほこります。",
           "example_sentence_en": "When spring comes cherry blossoms bloom in glory.",
-          "image_keyword": "come"
+          "image_keyword": "come",
+          "example_word_kana": "みらい"
         },
         {
           "id": "kj_return",
@@ -1397,7 +1459,8 @@
           "example_sentence_ja": "夕方に仕事が終わって家に帰りました。",
           "example_sentence_reading": "ゆうがたにしごとがあわってうちにかえりました。",
           "example_sentence_en": "After finishing work in the evening I returned home.",
-          "image_keyword": "return"
+          "image_keyword": "return",
+          "example_word_kana": "きたく"
         },
         {
           "id": "kj_eat",
@@ -1420,7 +1483,8 @@
           "example_sentence_ja": "家族みんなで温かい食事を囲みました。",
           "example_sentence_reading": "かぞくみんなであたたかいしょくじをかこみました。",
           "example_sentence_en": "The whole family sat around enjoying a warm meal.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "しょくじ"
         },
         {
           "id": "kj_drink",
@@ -1443,7 +1507,8 @@
           "example_sentence_ja": "運動の後に冷たいお茶を飲みました。",
           "example_sentence_reading": "うんどうのあとにめたいおちゃをのみました。",
           "example_sentence_en": "After exercising I drank cold tea.",
-          "image_keyword": "drink"
+          "image_keyword": "drink",
+          "example_word_kana": "いんりょう"
         },
         {
           "id": "kj_see",
@@ -1466,7 +1531,8 @@
           "example_sentence_ja": "展望台から綺麗な星空を見ました。",
           "example_sentence_reading": "てんぼうだいからきれいなほしぞらをみました。",
           "example_sentence_en": "From the observation deck I saw the beautiful starry sky.",
-          "image_keyword": "eye"
+          "image_keyword": "eye",
+          "example_word_kana": "けんがく"
         },
         {
           "id": "kj_hear",
@@ -1489,7 +1555,8 @@
           "example_sentence_ja": "ラジオから懐かしい音楽が聞こえてきました。",
           "example_sentence_reading": "らじおからなつかしいおんがくがきこえてきました。",
           "example_sentence_en": "Nostalgic music came playing through the radio.",
-          "image_keyword": "listen"
+          "image_keyword": "listen",
+          "example_word_kana": "しんぶん"
         },
         {
           "id": "kj_speak",
@@ -1509,7 +1576,8 @@
           "example_sentence_ja": "素直に「ありがとう」と言うのは大切です。",
           "example_sentence_reading": "すなおに「ありがとう」というのたいせつです。",
           "example_sentence_en": "Saying thank you candidly is very important.",
-          "image_keyword": "word"
+          "image_keyword": "word",
+          "example_word_kana": "げんご"
         },
         {
           "id": "kj_talk",
@@ -1532,7 +1600,8 @@
           "example_sentence_ja": "久しぶりに親友と楽しく話しました。",
           "example_sentence_reading": "ひさしぶりにしんゆうとたのしくはなしました。",
           "example_sentence_en": "I joyfully talked with my close friend after a long time.",
-          "image_keyword": "word"
+          "image_keyword": "word",
+          "example_word_kana": "かいわ"
         },
         {
           "id": "kj_read",
@@ -1555,7 +1624,8 @@
           "example_sentence_ja": "休日は静かなカフェで本を読みます。",
           "example_sentence_reading": "きゅうじつはしずかなかふぇでほんをよみます。",
           "example_sentence_en": "On holidays I read books in a quiet cafe.",
-          "image_keyword": "read"
+          "image_keyword": "read",
+          "example_word_kana": "どくしょ"
         },
         {
           "id": "kj_write",
@@ -1578,7 +1648,8 @@
           "example_sentence_ja": "万年筆で丁寧に手紙を書きました。",
           "example_sentence_reading": "まんねんひつでていねいにてがみをかきました。",
           "example_sentence_en": "I carefully wrote a letter with a fountain pen.",
-          "image_keyword": "writing"
+          "image_keyword": "writing",
+          "example_word_kana": "としょかん"
         },
         {
           "id": "kj_buy",
@@ -1601,7 +1672,8 @@
           "example_sentence_ja": "デパートでお土産をたくさん買いました。",
           "example_sentence_reading": "でぱーとでおみやげをたくさんかいました。",
           "example_sentence_en": "I bought many souvenirs at the department store.",
-          "image_keyword": "buy"
+          "image_keyword": "buy",
+          "example_word_kana": "ばいばい"
         },
         {
           "id": "kj_sell",
@@ -1624,7 +1696,8 @@
           "example_sentence_ja": "駅の売店で温かいお弁当を売っています。",
           "example_sentence_reading": "えきのばいてんであたたかいおべんとうをうっています。",
           "example_sentence_en": "The station kiosk sells warm bento meals.",
-          "image_keyword": "sell"
+          "image_keyword": "sell",
+          "example_word_kana": "ばいてん"
         },
         {
           "id": "kj_stand",
@@ -1644,7 +1717,8 @@
           "example_sentence_ja": "頂上に立つと素晴らしい景色が広がっていました。",
           "example_sentence_reading": "ちょうじょうにたつとすばらしいけしきがひろがっていました。",
           "example_sentence_en": "Standing on the summit, a magnificent view expanded before me.",
-          "image_keyword": "stand"
+          "image_keyword": "stand",
+          "example_word_kana": "どくりつ"
         },
         {
           "id": "kj_sit",
@@ -1667,7 +1741,8 @@
           "example_sentence_ja": "畳の部屋でゆったり座ってお茶をいただきました。",
           "example_sentence_reading": "たたみのへやでゆったりすわっておちゃをいただきました。",
           "example_sentence_en": "Sitting comfortably in the tatami room I drank tea.",
-          "image_keyword": "sit"
+          "image_keyword": "sit",
+          "example_word_kana": "せいざ"
         },
         {
           "id": "kj_run",
@@ -1690,7 +1765,8 @@
           "example_sentence_ja": "爽快な朝風の中を気持ちよく走りました。",
           "example_sentence_reading": "そうかいなあさかぜのなかをきもちよくはしりました。",
           "example_sentence_en": "I ran pleasantly through the crisp morning wind.",
-          "image_keyword": "run"
+          "image_keyword": "run",
+          "example_word_kana": "そうこう"
         },
         {
           "id": "kj_walk",
@@ -1713,7 +1789,8 @@
           "example_sentence_ja": "川沿いの桜並木をのんびり歩きました。",
           "example_sentence_reading": "かわぞいのさくらなみきをのんびりあるきました。",
           "example_sentence_en": "I strolled leisurely along the cherry-lined riverside.",
-          "image_keyword": "walk"
+          "image_keyword": "walk",
+          "example_word_kana": "さんぽ"
         },
         {
           "id": "kj_stop",
@@ -1733,7 +1810,8 @@
           "example_sentence_ja": "信号が赤になったので車を止めました。",
           "example_sentence_reading": "しんごうがあかになったのでくるまをとめました。",
           "example_sentence_en": "The traffic light turned red so I stopped the car.",
-          "image_keyword": "stop"
+          "image_keyword": "stop",
+          "example_word_kana": "ちゅうし"
         },
         {
           "id": "kj_exit",
@@ -1756,7 +1834,8 @@
           "example_sentence_ja": "朝八時に元気に家を出発しました。",
           "example_sentence_reading": "あさはちじにげんきにいえをしゅっぱつしました。",
           "example_sentence_en": "At eight in the morning I set out from home briskly.",
-          "image_keyword": "exit"
+          "image_keyword": "exit",
+          "example_word_kana": "しゅっぱつ"
         },
         {
           "id": "kj_enter",
@@ -1776,7 +1855,8 @@
           "example_sentence_ja": "暖簾をくぐって温泉に入りました。",
           "example_sentence_reading": "のれんをくぐっておんせんにはいりました。",
           "example_sentence_en": "Passing under the noren curtain I entered the hot spring.",
-          "image_keyword": "enter"
+          "image_keyword": "enter",
+          "example_word_kana": "にゅうがく"
         },
         {
           "id": "kj_meet",
@@ -1799,7 +1879,8 @@
           "example_sentence_ja": "週末に懐かしい旧友と会いました。",
           "example_sentence_reading": "しゅうまつになつかしいきゅうゆうとあいました。",
           "example_sentence_en": "Over the weekend I met an old cherished friend.",
-          "image_keyword": "friend"
+          "image_keyword": "friend",
+          "example_word_kana": "かいしゃ"
         },
         {
           "id": "kj_make",
@@ -1822,7 +1903,8 @@
           "example_sentence_ja": "新鮮な材料を使って美味しい料理を作りました。",
           "example_sentence_reading": "しんせんなざいりょうをつかっておいしいりょうりをつくりました。",
           "example_sentence_en": "Using fresh ingredients I prepared delicious food.",
-          "image_keyword": "make"
+          "image_keyword": "make",
+          "example_word_kana": "さくひん"
         }
       ]
     },
@@ -1853,7 +1935,8 @@
           "example_sentence_ja": "机の上に手紙を置いておきました。",
           "example_sentence_reading": "つくえのうえにてがみをおいておきました。",
           "example_sentence_en": "I left a letter on top of the desk.",
-          "image_keyword": "up"
+          "image_keyword": "up",
+          "example_word_kana": "じょうしょう"
         },
         {
           "id": "kj_down",
@@ -1876,7 +1959,8 @@
           "example_sentence_ja": "木の下のベンチでひと休みしました。",
           "example_sentence_reading": "きのしたのべんちでひとやすみしました。",
           "example_sentence_en": "I took a short rest on the bench under the tree.",
-          "image_keyword": "down"
+          "image_keyword": "down",
+          "example_word_kana": "ちか"
         },
         {
           "id": "kj_left",
@@ -1899,7 +1983,8 @@
           "example_sentence_ja": "次の角を左に曲がると駅が見えます。",
           "example_sentence_reading": "つぎのかどをひだりにまがるとえきがみえます。",
           "example_sentence_en": "Turn left at the next corner and the station appears.",
-          "image_keyword": "left"
+          "image_keyword": "left",
+          "example_word_kana": "させつ"
         },
         {
           "id": "kj_right",
@@ -1922,7 +2007,8 @@
           "example_sentence_ja": "右手に見える美しい建物が美術館です。",
           "example_sentence_reading": "みぎてにみえるうつくしいたてものがびじゅつかんです。",
           "example_sentence_en": "The beautiful building visible on your right is the art museum.",
-          "image_keyword": "right"
+          "image_keyword": "right",
+          "example_word_kana": "うせつ"
         },
         {
           "id": "kj_middle",
@@ -1945,7 +2031,8 @@
           "example_sentence_ja": "箱の中にお気に入りのお菓子が入っています。",
           "example_sentence_reading": "はこのなかにおきにいりのおかしがはいっています。",
           "example_sentence_en": "Favorite sweets are inside the box.",
-          "image_keyword": "middle"
+          "image_keyword": "middle",
+          "example_word_kana": "ちゅうしん"
         },
         {
           "id": "kj_front",
@@ -1969,7 +2056,8 @@
           "example_sentence_ja": "駅の前で待ち合わせをしましょう。",
           "example_sentence_reading": "えきのまえでまちあわせをしましょう。",
           "example_sentence_en": "Let's meet in front of the station.",
-          "image_keyword": "front"
+          "image_keyword": "front",
+          "example_word_kana": "ごぜん"
         },
         {
           "id": "kj_back",
@@ -1993,7 +2081,8 @@
           "example_sentence_ja": "食事の後に美味しい緑茶を飲みました。",
           "example_sentence_reading": "しょくじのあとにおいしいりょくちゃをのみました。",
           "example_sentence_en": "After the meal I drank delicious green tea.",
-          "image_keyword": "back"
+          "image_keyword": "back",
+          "example_word_kana": "ごご"
         },
         {
           "id": "kj_east",
@@ -2016,7 +2105,8 @@
           "example_sentence_ja": "太陽は朝いつも東から昇ります。",
           "example_sentence_reading": "たいようはあさいつもひがしからのぼります。",
           "example_sentence_en": "The sun always rises from the east in the morning.",
-          "image_keyword": "east"
+          "image_keyword": "east",
+          "example_word_kana": "とうきょう"
         },
         {
           "id": "kj_west",
@@ -2036,7 +2126,8 @@
           "example_sentence_ja": "夕日が西の空を茜色に染めました。",
           "example_sentence_reading": "ゆうひがにしのそらをあかねいろにそめました。",
           "example_sentence_en": "The evening sun dyed the western sky madder red.",
-          "image_keyword": "west"
+          "image_keyword": "west",
+          "example_word_kana": "とうざい"
         },
         {
           "id": "kj_south",
@@ -2059,7 +2150,8 @@
           "example_sentence_ja": "南から心地よい暖かい風が吹いてきます。",
           "example_sentence_reading": "みなみからここちよなあたたかいかぜがふいてきます。",
           "example_sentence_en": "A pleasantly warm wind blows from the south.",
-          "image_keyword": "south"
+          "image_keyword": "south",
+          "example_word_kana": "なんごく"
         },
         {
           "id": "kj_north",
@@ -2082,7 +2174,8 @@
           "example_sentence_ja": "冬になると北の山々が白く輝きます。",
           "example_sentence_reading": "ふゆになるときたのやまやまがしろくかがやきます。",
           "example_sentence_en": "When winter arrives northern mountains glitter white.",
-          "image_keyword": "north"
+          "image_keyword": "north",
+          "example_word_kana": "ほっかいどう"
         },
         {
           "id": "kj_inside",
@@ -2105,7 +2198,8 @@
           "example_sentence_ja": "心の内に秘めた夢を大切に育てましょう。",
           "example_sentence_reading": "こころのうちにひめたゆめをたいせつにそだてましょう。",
           "example_sentence_en": "Let us nurture the dreams hidden inside our hearts.",
-          "image_keyword": "inside"
+          "image_keyword": "inside",
+          "example_word_kana": "あんない"
         },
         {
           "id": "kj_outside",
@@ -2128,7 +2222,8 @@
           "example_sentence_ja": "窓の外を見ると優しい雪が舞っていました。",
           "example_sentence_reading": "まどのそとをみるとやさしいゆきがまっていました。",
           "example_sentence_en": "Looking out the window gentle snow was dancing.",
-          "image_keyword": "outside"
+          "image_keyword": "outside",
+          "example_word_kana": "がいこく"
         },
         {
           "id": "kj_interval",
@@ -2151,7 +2246,8 @@
           "example_sentence_ja": "友達との楽しい時間はあっという間です。",
           "example_sentence_reading": "ともだちとのたのしいじかんはあっというまです。",
           "example_sentence_en": "Fun time with friends passes in the blink of an eye.",
-          "image_keyword": "time"
+          "image_keyword": "time",
+          "example_word_kana": "じかん"
         },
         {
           "id": "kj_near",
@@ -2174,7 +2270,8 @@
           "example_sentence_ja": "駅の近くにお洒落で静かな喫茶店があります。",
           "example_sentence_reading": "えきのちかくにおしゃれでしずかなきっさてんがあります。",
           "example_sentence_en": "There is a stylish quiet cafe near the station.",
-          "image_keyword": "village"
+          "image_keyword": "village",
+          "example_word_kana": "きんじょ"
         },
         {
           "id": "kj_far",
@@ -2197,7 +2294,8 @@
           "example_sentence_ja": "遠くの山々が青空の下に綺麗に見えます。",
           "example_sentence_reading": "とおくのやまやまがあおぞらのしたにきれいにみえます。",
           "example_sentence_en": "Distant mountains look lovely beneath the blue sky.",
-          "image_keyword": "road"
+          "image_keyword": "road",
+          "example_word_kana": "えんそく"
         },
         {
           "id": "kj_square_dir",
@@ -2217,7 +2315,8 @@
           "example_sentence_ja": "あちらの方角に広がる海が綺麗です。",
           "example_sentence_reading": "あちらのほうがくにひろがるうみがきれいです。",
           "example_sentence_en": "The sea expanding in that direction is beautiful.",
-          "image_keyword": "north"
+          "image_keyword": "north",
+          "example_word_kana": "ほうほう"
         },
         {
           "id": "kj_toward",
@@ -2239,7 +2338,8 @@
           "example_sentence_ja": "新しい希望に向かって一歩踏み出しましょう。",
           "example_sentence_reading": "あたらしいきぼうにむかっていっぽふみだしましょう。",
           "example_sentence_en": "Let's take a step forward towards new hope.",
-          "image_keyword": "right"
+          "image_keyword": "right",
+          "example_word_kana": "ほうこう"
         }
       ]
     },
@@ -2269,7 +2369,8 @@
           "example_sentence_ja": "今年は新しい趣味に挑戦したいです。",
           "example_sentence_reading": "ことしはあたらしいしゅみにちょうせんしたいです。",
           "example_sentence_en": "This year I want to try new hobbies.",
-          "image_keyword": "year"
+          "image_keyword": "year",
+          "example_word_kana": "ことし"
         },
         {
           "id": "kj_month",
@@ -2289,7 +2390,8 @@
           "example_sentence_ja": "秋の夜空に輝く満月を静かに愛でました。",
           "example_sentence_reading": "あきのよぞらにかがやくまんげつをしずかにめでました。",
           "example_sentence_en": "I quietly admired the full moon shining in the autumn sky.",
-          "image_keyword": "moon"
+          "image_keyword": "moon",
+          "example_word_kana": "まんげつ"
         },
         {
           "id": "kj_day",
@@ -2309,7 +2411,8 @@
           "example_sentence_ja": "暖かな日差しの中で読書を楽しみました。",
           "example_sentence_reading": "あたたかなひざしのなかでどくしょをたのしみました。",
           "example_sentence_en": "I enjoyed reading in the warm sunlight.",
-          "image_keyword": "day"
+          "image_keyword": "day",
+          "example_word_kana": "きゅうじつ"
         },
         {
           "id": "kj_hour",
@@ -2332,7 +2435,8 @@
           "example_sentence_ja": "約束の時間をしっかり守りましょう。",
           "example_sentence_reading": "やくそくのじかんをしっかりまもりましょう。",
           "example_sentence_en": "Let us firmly keep the promised time.",
-          "image_keyword": "time"
+          "image_keyword": "time",
+          "example_word_kana": "じかん"
         },
         {
           "id": "kj_minute",
@@ -2355,7 +2459,8 @@
           "example_sentence_ja": "あと十分で電車が到着します。",
           "example_sentence_reading": "あとじゅっぷんででんしゃがとうちゃくします。",
           "example_sentence_en": "The train will arrive in ten minutes.",
-          "image_keyword": "time"
+          "image_keyword": "time",
+          "example_word_kana": "きぶん"
         },
         {
           "id": "kj_second",
@@ -2378,7 +2483,8 @@
           "example_sentence_ja": "一秒一秒を大切に過ごしたいですね。",
           "example_sentence_reading": "いちびょういちびょうをたいせつにすごしたいですね。",
           "example_sentence_en": "We want to cherish every single second.",
-          "image_keyword": "time"
+          "image_keyword": "time",
+          "example_word_kana": "いちびょう"
         },
         {
           "id": "kj_morning",
@@ -2402,7 +2508,8 @@
           "example_sentence_ja": "朝の爽やかな空気を深く吸い込みました。",
           "example_sentence_reading": "あさのさわやかなくうきをふかくすいこみました。",
           "example_sentence_en": "I took a deep breath of the refreshing morning air.",
-          "image_keyword": "morning"
+          "image_keyword": "morning",
+          "example_word_kana": "ちょうしょく"
         },
         {
           "id": "kj_noon",
@@ -2425,7 +2532,8 @@
           "example_sentence_ja": "昼休みに同僚と楽しくランチを食べました。",
           "example_sentence_reading": "ひるやすみにどうりょうとたのしくらんちをたべました。",
           "example_sentence_en": "During lunch break I enjoyed lunch with colleagues.",
-          "image_keyword": "day"
+          "image_keyword": "day",
+          "example_word_kana": "ひるやすみ"
         },
         {
           "id": "kj_evening",
@@ -2445,7 +2553,8 @@
           "example_sentence_ja": "夕方に綺麗な茜色の空が広がりました。",
           "example_sentence_reading": "ゆうがたにきれいなあかねいろのそらがひろがりました。",
           "example_sentence_en": "A lovely madder-red sky spread across in the evening.",
-          "image_keyword": "evening"
+          "image_keyword": "evening",
+          "example_word_kana": "ゆうがた"
         },
         {
           "id": "kj_night",
@@ -2468,7 +2577,8 @@
           "example_sentence_ja": "静かな夜に温かいハーブティーを飲みました。",
           "example_sentence_reading": "しずかなよるにあたたかいはーぶてぃーをのみました。",
           "example_sentence_en": "I drank warm herbal tea on a peaceful night.",
-          "image_keyword": "night"
+          "image_keyword": "night",
+          "example_word_kana": "こんや"
         },
         {
           "id": "kj_now",
@@ -2490,7 +2600,8 @@
           "example_sentence_ja": "今この瞬間を精一杯生きましょう。",
           "example_sentence_reading": "いまこのしゅんかんをせいいっぱいいきましょう。",
           "example_sentence_en": "Let's live this present moment with all our might.",
-          "image_keyword": "now"
+          "image_keyword": "now",
+          "example_word_kana": "きょう"
         },
         {
           "id": "kj_every",
@@ -2513,7 +2624,8 @@
           "example_sentence_ja": "毎日少しずつ日本語を学習しています。",
           "example_sentence_reading": "まいにちすこしずつにほんごをがくしゅうしています。",
           "example_sentence_en": "I study Japanese little by little every day.",
-          "image_keyword": "day"
+          "image_keyword": "day",
+          "example_word_kana": "まいにち"
         },
         {
           "id": "kj_week",
@@ -2536,7 +2648,8 @@
           "example_sentence_ja": "一週間があっという間に過ぎました。",
           "example_sentence_reading": "いっしゅうかんがあっというまにすぎました。",
           "example_sentence_en": "A week passed by in a flash.",
-          "image_keyword": "time"
+          "image_keyword": "time",
+          "example_word_kana": "らいしゅう"
         },
         {
           "id": "kj_spring",
@@ -2560,7 +2673,8 @@
           "example_sentence_ja": "春の訪れとともに桜が満開になりました。",
           "example_sentence_reading": "はるのおとづれとともにさくらがまんかいになりました。",
           "example_sentence_en": "With the arrival of spring cherries reached full bloom.",
-          "image_keyword": "spring"
+          "image_keyword": "spring",
+          "example_word_kana": "せいしゅん"
         },
         {
           "id": "kj_summer",
@@ -2583,7 +2697,8 @@
           "example_sentence_ja": "夏の青空に入道雲がもくもく湧き上がります。",
           "example_sentence_reading": "なつのあおぞらににゅうどうぐもがもくもくわきあがります。",
           "example_sentence_en": "Thunderclouds billow into the summer blue sky.",
-          "image_keyword": "summer"
+          "image_keyword": "summer",
+          "example_word_kana": "なつやすみ"
         },
         {
           "id": "kj_autumn",
@@ -2606,7 +2721,8 @@
           "example_sentence_ja": "秋になると紅葉が山を美しく彩ります。",
           "example_sentence_reading": "あきになるとこうようがやまをうつくしくいろどります。",
           "example_sentence_en": "In autumn red leaves color the mountains beautifully.",
-          "image_keyword": "autumn"
+          "image_keyword": "autumn",
+          "example_word_kana": "こうよう"
         },
         {
           "id": "kj_winter",
@@ -2629,7 +2745,8 @@
           "example_sentence_ja": "冬の夜に温かい鍋料理を家族で囲みました。",
           "example_sentence_reading": "ふゆのよるにあたたかいなべりょうりをかぞくでかこみました。",
           "example_sentence_en": "We sat around a warm hot pot meal with family on a winter night.",
-          "image_keyword": "winter"
+          "image_keyword": "winter",
+          "example_word_kana": "まふゆ"
         },
         {
           "id": "kj_early_fast",
@@ -2652,7 +2769,8 @@
           "example_sentence_ja": "早起きをすると一日がとても充実します。",
           "example_sentence_reading": "はやおきをするといちにちがとてもじゅうじつします。",
           "example_sentence_en": "Waking up early makes the whole day very fulfilling.",
-          "image_keyword": "fast"
+          "image_keyword": "fast",
+          "example_word_kana": "そうちょう"
         }
       ]
     },
@@ -2683,7 +2801,8 @@
           "example_sentence_ja": "日本は島国で、豊かな自然に恵まれています。",
           "example_sentence_reading": "にほんはしまぐにで、ゆたかなしぜんにめぐまれています。",
           "example_sentence_en": "Japan is an island nation blessed with rich nature.",
-          "image_keyword": "country"
+          "image_keyword": "country",
+          "example_word_kana": "がいこくじん"
         },
         {
           "id": "kj_city",
@@ -2706,7 +2825,8 @@
           "example_sentence_ja": "京都市には歴史ある神社仏閣が多く残っています。",
           "example_sentence_reading": "きょうとしにはれきしあるじんじゃぶっかくがおおくのこっています。",
           "example_sentence_en": "Kyoto City preserves many historical shrines and temples.",
-          "image_keyword": "city"
+          "image_keyword": "city",
+          "example_word_kana": "しみん"
         },
         {
           "id": "kj_town",
@@ -2729,7 +2849,8 @@
           "example_sentence_ja": "古い町並みを歩きながら風情を楽しみました。",
           "example_sentence_reading": "ふるいまちなみをあるきながらふぜいをたのしみました。",
           "example_sentence_en": "I enjoyed the ambiance walking along old town streets.",
-          "image_keyword": "village"
+          "image_keyword": "village",
+          "example_word_kana": "したまち"
         },
         {
           "id": "kj_village",
@@ -2752,7 +2873,8 @@
           "example_sentence_ja": "静かな山村で川のせせらぎに癒やされました。",
           "example_sentence_reading": "しずかなさんそんでかわのせせらぎにいやされました。",
           "example_sentence_en": "I was comforted by stream murmers in a quiet mountain village.",
-          "image_keyword": "village"
+          "image_keyword": "village",
+          "example_word_kana": "のうそん"
         },
         {
           "id": "kj_station",
@@ -2775,7 +2897,8 @@
           "example_sentence_ja": "新幹線の駅で友達を見送りました。",
           "example_sentence_reading": "しんかんせんのえきでともだちをみおくりました。",
           "example_sentence_en": "I saw my friend off at the Shinkansen station.",
-          "image_keyword": "car"
+          "image_keyword": "car",
+          "example_word_kana": "えきまえ"
         },
         {
           "id": "kj_school",
@@ -2798,7 +2921,8 @@
           "example_sentence_ja": "朝から子供たちが元気に学校へ向かいます。",
           "example_sentence_reading": "あさからこどもたちがげんきにがっこうへむかいます。",
           "example_sentence_en": "Children head cheerily towards school in the morning.",
-          "image_keyword": "school"
+          "image_keyword": "school",
+          "example_word_kana": "がっこう"
         },
         {
           "id": "kj_store",
@@ -2821,7 +2945,8 @@
           "example_sentence_ja": "お気に入りの本屋で新しい本を探しました。",
           "example_sentence_reading": "おきにいりのほんやであたらしいほんをさがしました。",
           "example_sentence_en": "I looked for a new book in my favorite bookstore.",
-          "image_keyword": "shop"
+          "image_keyword": "shop",
+          "example_word_kana": "きっさてん"
         },
         {
           "id": "kj_house",
@@ -2844,7 +2969,8 @@
           "example_sentence_ja": "夕方になると家族みんなが家に集まります。",
           "example_sentence_reading": "ゆうがたになるとかぞくみんながいえにあつまります。",
           "example_sentence_en": "In the evening the whole family gathers home.",
-          "image_keyword": "family"
+          "image_keyword": "family",
+          "example_word_kana": "かぞく"
         },
         {
           "id": "kj_room",
@@ -2867,7 +2993,8 @@
           "example_sentence_ja": "明るい教室で友達と楽しく学びました。",
           "example_sentence_reading": "あかるいきょうしつでともだちとたのしくまなびました。",
           "example_sentence_en": "In the bright classroom I enjoyed learning with friends.",
-          "image_keyword": "room"
+          "image_keyword": "room",
+          "example_word_kana": "きょうしつ"
         },
         {
           "id": "kj_gate",
@@ -2887,7 +3014,8 @@
           "example_sentence_ja": "お寺の立派な山門をくぐって境内に入りました。",
           "example_sentence_reading": "おてらのりっぱなさんもんをくぐってけいだ内にはいりました。",
           "example_sentence_en": "Passing under the grand temple gate I stepped inside.",
-          "image_keyword": "gate"
+          "image_keyword": "gate",
+          "example_word_kana": "せいもん"
         },
         {
           "id": "kj_road",
@@ -2910,7 +3038,8 @@
           "example_sentence_ja": "春の陽射しを浴びながら田舎道を散歩しました。",
           "example_sentence_reading": "はるのひざしをあびながらいなかみちをさんぽしました。",
           "example_sentence_en": "Basking in spring sunlight I strolled along country paths.",
-          "image_keyword": "road"
+          "image_keyword": "road",
+          "example_word_kana": "さどう"
         },
         {
           "id": "kj_public",
@@ -2933,7 +3062,8 @@
           "example_sentence_ja": "天気の良い休日に公園でピクニックをしました。",
           "example_sentence_reading": "てんきのいいきゅうじつにこうえんでぴくにっくをしました。",
           "example_sentence_en": "On a fine holiday we had a picnic in the park.",
-          "image_keyword": "park"
+          "image_keyword": "park",
+          "example_word_kana": "こうえん"
         },
         {
           "id": "kj_garden",
@@ -2956,7 +3086,8 @@
           "example_sentence_ja": "植物園で珍しい南国の花を鑑賞しました。",
           "example_sentence_reading": "しょくぶつえんでめずらしいなんごくのはなをかんしょうしました。",
           "example_sentence_en": "I admired rare tropical flowers at the botanical garden.",
-          "image_keyword": "garden"
+          "image_keyword": "garden",
+          "example_word_kana": "どうぶつえん"
         },
         {
           "id": "kj_place",
@@ -2979,7 +3110,8 @@
           "example_sentence_ja": "駅前広場で季節のお祭りが開催されていました。",
           "example_sentence_reading": "えきまえひろばできせつのおまつりがかいさいされていました。",
           "example_sentence_en": "A seasonal festival was taking place at the station square.",
-          "image_keyword": "field"
+          "image_keyword": "field",
+          "example_word_kana": "ひろば"
         },
         {
           "id": "kj_institution",
@@ -3002,7 +3134,8 @@
           "example_sentence_ja": "風邪をひいたので近所の医院へ行きました。",
           "example_sentence_reading": "かぜをひいたのできんじょのいいんへいきました。",
           "example_sentence_en": "Having caught a cold I went to the neighborhood clinic.",
-          "image_keyword": "building"
+          "image_keyword": "building",
+          "example_word_kana": "びょういん"
         },
         {
           "id": "kj_temple",
@@ -3025,7 +3158,8 @@
           "example_sentence_ja": "古都のお寺で朝の鐘の音が響き渡りました。",
           "example_sentence_reading": "ことのおてらであさのかねのねがひびきわたりました。",
           "example_sentence_en": "The morning bell echoed from a temple in the ancient capital.",
-          "image_keyword": "temple"
+          "image_keyword": "temple",
+          "example_word_kana": "じいん"
         },
         {
           "id": "kj_shrine",
@@ -3048,7 +3182,8 @@
           "example_sentence_ja": "初詣で近くの神社へお参りに行きました。",
           "example_sentence_reading": "はつもうででちかくのじんじゃへおまいりにいきました。",
           "example_sentence_en": "For New Year's visit I went praying at the nearby shrine.",
-          "image_keyword": "temple"
+          "image_keyword": "temple",
+          "example_word_kana": "じんじゃ"
         },
         {
           "id": "kj_hall",
@@ -3071,7 +3206,8 @@
           "example_sentence_ja": "学生食堂で安くて美味しい定食を食べました。",
           "example_sentence_reading": "がくせいしょくどうでやすくておいしいていしょくをたべました。",
           "example_sentence_en": "I had an inexpensive tasty set meal at the student cafeteria.",
-          "image_keyword": "house"
+          "image_keyword": "house",
+          "example_word_kana": "しょくどう"
         },
         {
           "id": "kj_bridge",
@@ -3094,7 +3230,8 @@
           "example_sentence_ja": "夕暮れに川にかかる太鼓橋を渡りました。",
           "example_sentence_reading": "ゆうぐれにかわにかかるたいこばしをわたりました。",
           "example_sentence_en": "At dusk I crossed the arched bridge spanning the river.",
-          "image_keyword": "bridge"
+          "image_keyword": "bridge",
+          "example_word_kana": "ほどうきょう"
         },
         {
           "id": "kj_port",
@@ -3117,7 +3254,8 @@
           "example_sentence_ja": "港町で獲れたての新鮮な魚介を味わいました。",
           "example_sentence_reading": "みなとまちでとれたてのしんせんなぎょかいをあじわいました。",
           "example_sentence_en": "In the port town I savored freshly caught seafood.",
-          "image_keyword": "boat"
+          "image_keyword": "boat",
+          "example_word_kana": "みなとまち"
         }
       ]
     },
@@ -3145,7 +3283,8 @@
           "example_sentence_ja": "日本の伝統文化に親しむ一日を過ごしました。",
           "example_sentence_reading": "にほんのでんとうぶんかにしたしむいちにちをすごしました。",
           "example_sentence_en": "I spent a day familiarizing myself with Japanese traditional culture.",
-          "image_keyword": "writing"
+          "image_keyword": "writing",
+          "example_word_kana": "ぶんか"
         },
         {
           "id": "kj_character",
@@ -3168,7 +3307,8 @@
           "example_sentence_ja": "毎日ノートに綺麗な漢字を練習しています。",
           "example_sentence_reading": "まいにちのーとにきれいなかんじをれんしゅうしています。",
           "example_sentence_en": "Every day I practice neat kanji characters in my notebook.",
-          "image_keyword": "writing"
+          "image_keyword": "writing",
+          "example_word_kana": "かんじ"
         },
         {
           "id": "kj_book_origin",
@@ -3191,7 +3331,8 @@
           "example_sentence_ja": "休日は大好きな本を一日中読んで過ごします。",
           "example_sentence_reading": "きゅうじつはだいすきなほんをいちにちじゅうよんですごします。",
           "example_sentence_en": "On holidays I spend the whole day reading books I love.",
-          "image_keyword": "book"
+          "image_keyword": "book",
+          "example_word_kana": "にほん"
         },
         {
           "id": "kj_name",
@@ -3214,7 +3355,8 @@
           "example_sentence_ja": "初めてお会いした人と名刺を交換しました。",
           "example_sentence_reading": "はじめておあいしたひととめいしをこうかんしました。",
           "example_sentence_en": "I exchanged business cards with the person I met for the first time.",
-          "image_keyword": "scholar"
+          "image_keyword": "scholar",
+          "example_word_kana": "ゆうめい"
         },
         {
           "id": "kj_language",
@@ -3237,7 +3379,8 @@
           "example_sentence_ja": "外国の友達と日本語で楽しくおしゃべりしました。",
           "example_sentence_reading": "がいこくのともだちにほんごでたのしくおしゃべりしました。",
           "example_sentence_en": "I chatted pleasantly in Japanese with foreign friends.",
-          "image_keyword": "language"
+          "image_keyword": "language",
+          "example_word_kana": "にほんご"
         },
         {
           "id": "kj_teach",
@@ -3260,7 +3403,8 @@
           "example_sentence_ja": "先生が分かりやすく丁寧に教えてくれました。",
           "example_sentence_reading": "せんせいがわかりやすくていねいにおしえてくれました。",
           "example_sentence_en": "The teacher explained kindly in an easy-to-understand way.",
-          "image_keyword": "teach"
+          "image_keyword": "teach",
+          "example_word_kana": "きょうしつ"
         },
         {
           "id": "kj_learn_habit",
@@ -3283,7 +3427,8 @@
           "example_sentence_ja": "毎日ピアノの練習を欠かさず続けています。",
           "example_sentence_reading": "まいにちぴあののれんしゅうをかかさずつづけています。",
           "example_sentence_en": "I keep practicing the piano daily without missing a day.",
-          "image_keyword": "study"
+          "image_keyword": "study",
+          "example_word_kana": "れんしゅう"
         },
         {
           "id": "kj_study_learn",
@@ -3305,7 +3450,8 @@
           "example_sentence_ja": "好奇心を持って新しい知識を学びましょう。",
           "example_sentence_reading": "こうきしんをもってあたらしいちしきをまなびましょう。",
           "example_sentence_en": "Let's learn new knowledge carrying deep curiosity.",
-          "image_keyword": "study"
+          "image_keyword": "study",
+          "example_word_kana": "がくせい"
         },
         {
           "id": "kj_paper",
@@ -3328,7 +3474,8 @@
           "example_sentence_ja": "手触りの優しい和紙に筆で文字を書きました。",
           "example_sentence_reading": "てざわりのやさしいわしにふでもじをかきました。",
           "example_sentence_en": "I wrote letters with brush on gentle-textured washi paper.",
-          "image_keyword": "book"
+          "image_keyword": "book",
+          "example_word_kana": "わし"
         },
         {
           "id": "kj_sing_song",
@@ -3351,7 +3498,8 @@
           "example_sentence_ja": "美しい小鳥の歌声が森に響き渡っています。",
           "example_sentence_reading": "うつくしいことりのうたごえがもりにひびきわたっています。",
           "example_sentence_en": "Lovely song voices of small birds resonate across the woods.",
-          "image_keyword": "sing"
+          "image_keyword": "sing",
+          "example_word_kana": "かしゅ"
         },
         {
           "id": "kj_picture_drawing",
@@ -3374,7 +3522,8 @@
           "example_sentence_ja": "週末に映画館で心温まる映画を見ました。",
           "example_sentence_reading": "しゅうまつにえいがかんできころあたたまるえいがをみました。",
           "example_sentence_en": "On the weekend I watched a heartwarming movie at the cinema.",
-          "image_keyword": "art"
+          "image_keyword": "art",
+          "example_word_kana": "えいが"
         },
         {
           "id": "kj_sound_tone",
@@ -3397,7 +3546,8 @@
           "example_sentence_ja": "雨の降る静かな音を聞きながらリラックスしました。",
           "example_sentence_reading": "あめのふるしずかなおとをききながらりらっくすしました。",
           "example_sentence_en": "I relaxed listening to the quiet sound of falling rain.",
-          "image_keyword": "music"
+          "image_keyword": "music",
+          "example_word_kana": "おんがく"
         },
         {
           "id": "kj_music_fun",
@@ -3420,7 +3570,8 @@
           "example_sentence_ja": "友達と一緒に過ごす時間は本当に楽しいです。",
           "example_sentence_reading": "ともだちといっしょにすごすじかんはほんとうにたのしいです。",
           "example_sentence_en": "Time spent together with friends is genuinely enjoyable.",
-          "image_keyword": "music"
+          "image_keyword": "music",
+          "example_word_kana": "たのしい"
         },
         {
           "id": "kj_think_ponder",
@@ -3443,7 +3594,8 @@
           "example_sentence_ja": "未来のために何ができるかじっくり考えました。",
           "example_sentence_reading": "みらいのためになにができるかじっくりかんがえました。",
           "example_sentence_en": "I carefully thought about what can be done for the future.",
-          "image_keyword": "think"
+          "image_keyword": "think",
+          "example_word_kana": "しこう"
         },
         {
           "id": "kj_know",
@@ -3466,7 +3618,8 @@
           "example_sentence_ja": "知らなかった新しい世界を知るのは面白いです。",
           "example_sentence_reading": "しらなかったあたらしいせかいをしるのはおもしろいです。",
           "example_sentence_en": "Discovering new unknown worlds is endlessly exciting.",
-          "image_keyword": "wisdom"
+          "image_keyword": "wisdom",
+          "example_word_kana": "ちしき"
         },
         {
           "id": "kj_friend",
@@ -3489,7 +3642,8 @@
           "example_sentence_ja": "大切な友達といつまでも仲良くしていきたいです。",
           "example_sentence_reading": "たいせつなともだちといつまでもなかよくしていきたいです。",
           "example_sentence_en": "I wish to always remain on good terms with precious friends.",
-          "image_keyword": "friend"
+          "image_keyword": "friend",
+          "example_word_kana": "ともだち"
         },
         {
           "id": "kj_brush",
@@ -3512,7 +3666,8 @@
           "example_sentence_ja": "筆に墨をつけて美しい文字をしたためました。",
           "example_sentence_reading": "ふでにすみをつけてうつくしいもじをしたためました。",
           "example_sentence_en": "Dipping brush in sumi ink I composed beautiful characters.",
-          "image_keyword": "writing"
+          "image_keyword": "writing",
+          "example_word_kana": "えんぴつ"
         },
         {
           "id": "kj_poem",
@@ -3535,7 +3690,8 @@
           "example_sentence_ja": "春の情景を描いた美しい詩を朗読しました。",
           "example_sentence_reading": "はるのじょうけいをえがいたうつくしいしをろうどくしました。",
           "example_sentence_en": "I recited a lovely poem portraying the spring scenery.",
-          "image_keyword": "poem"
+          "image_keyword": "poem",
+          "example_word_kana": "しじん"
         },
         {
           "id": "kj_question",
@@ -3558,7 +3714,8 @@
           "example_sentence_ja": "わからないところを先生に優しく質問しました。",
           "example_sentence_reading": "わからないところをせんせいにやさしくしつもんしました。",
           "example_sentence_en": "I politely asked the teacher about parts I didn't understand.",
-          "image_keyword": "ask"
+          "image_keyword": "ask",
+          "example_word_kana": "しつもん"
         },
         {
           "id": "kj_answer",
@@ -3581,7 +3738,8 @@
           "example_sentence_ja": "質問に対して笑顔で明るく答えました。",
           "example_sentence_reading": "しつもんにたいしてえがおであかるくこたえました。",
           "example_sentence_en": "I responded brightly with a smile to the question.",
-          "image_keyword": "answer"
+          "image_keyword": "answer",
+          "example_word_kana": "へんとう"
         }
       ]
     },
@@ -3609,7 +3767,8 @@
           "example_sentence_ja": "自然の中でたくさんの新しい命が生まれます。",
           "example_sentence_reading": "しぜんのなかでたくさんのあたらしいいのちがうまれます。",
           "example_sentence_en": "In nature a great many new lives are born.",
-          "image_keyword": "life"
+          "image_keyword": "life",
+          "example_word_kana": "せいかつ"
         },
         {
           "id": "kj_death",
@@ -3632,7 +3791,8 @@
           "example_sentence_ja": "命の尊さを心から実感しました。",
           "example_sentence_reading": "いのちのとうとさをこころからじっかんしました。",
           "example_sentence_en": "I truly felt the precious sanctity of life.",
-          "image_keyword": "death"
+          "image_keyword": "death",
+          "example_word_kana": "ひっし"
         },
         {
           "id": "kj_horse",
@@ -3652,7 +3812,8 @@
           "example_sentence_ja": "緑の牧場で美しい馬が颯爽と駆けていきました。",
           "example_sentence_reading": "みどりのぼくじょうでうつくしいうまがさっそうとかけていきました。",
           "example_sentence_en": "On green pastures lovely horses galloped dashingly.",
-          "image_keyword": "horse"
+          "image_keyword": "horse",
+          "example_word_kana": "じょうば"
         },
         {
           "id": "kj_cow_ox",
@@ -3672,7 +3833,8 @@
           "example_sentence_ja": "朝ごはんに新鮮で冷たい牛乳を飲みました。",
           "example_sentence_reading": "あさごはんにしんせんでつめたいぎゅうにゅうをのみました。",
           "example_sentence_en": "I drank fresh cold milk with my morning breakfast.",
-          "image_keyword": "cow"
+          "image_keyword": "cow",
+          "example_word_kana": "ぎゅうにゅう"
         },
         {
           "id": "kj_fish",
@@ -3692,7 +3854,8 @@
           "example_sentence_ja": "透き通った小川で小さな魚が群れて泳いでいます。",
           "example_sentence_reading": "すきとおったおがわでちいさなさかながむれておよいでいます。",
           "example_sentence_en": "Small fish swim in schools in the translucent stream.",
-          "image_keyword": "fish"
+          "image_keyword": "fish",
+          "example_word_kana": "きんぎょ"
         },
         {
           "id": "kj_bird",
@@ -3712,7 +3875,8 @@
           "example_sentence_ja": "朝の庭で小鳥たちが楽しそうにさえずっています。",
           "example_sentence_reading": "あさのにわでことりたちがたのしそうにさえずっています。",
           "example_sentence_en": "Small birds chirp merrily in the morning garden.",
-          "image_keyword": "bird"
+          "image_keyword": "bird",
+          "example_word_kana": "ことり"
         },
         {
           "id": "kj_dog",
@@ -3732,7 +3896,8 @@
           "example_sentence_ja": "夕方に愛犬と近所の河原をのんびり散歩しました。",
           "example_sentence_reading": "ゆうがたにあいけんときんじょのかわらをのんびりさんぽしました。",
           "example_sentence_en": "In the evening I strolled leisurely on the riverbank with my dog.",
-          "image_keyword": "dog"
+          "image_keyword": "dog",
+          "example_word_kana": "あいけん"
         },
         {
           "id": "kj_sheep",
@@ -3752,7 +3917,8 @@
           "example_sentence_ja": "広々とした牧場でふわふわの羊を見ました。",
           "example_sentence_reading": "ひろびろとしたぼくじょうでふわふわのひつじをみました。",
           "example_sentence_en": "On the spacious ranch I watched fluffy soft sheep.",
-          "image_keyword": "sheep"
+          "image_keyword": "sheep",
+          "example_word_kana": "ようもう"
         },
         {
           "id": "kj_insect",
@@ -3772,7 +3938,8 @@
           "example_sentence_ja": "夏の夜に草むらから秋の虫の声が聞こえます。",
           "example_sentence_reading": "なつのよるにくさむらからあきのむしのこえがきこえます。",
           "example_sentence_en": "On summer nights insect voices chime from the grassy meadows.",
-          "image_keyword": "insect"
+          "image_keyword": "insect",
+          "example_word_kana": "こんちゅう"
         },
         {
           "id": "kj_shell",
@@ -3795,7 +3962,8 @@
           "example_sentence_ja": "砂浜で綺麗な桜貝を拾って持ち帰りました。",
           "example_sentence_reading": "すなはまできれいなさくらがいをひろってもちかえりました。",
           "example_sentence_en": "I picked up pretty pink shells on the beach and took them home.",
-          "image_keyword": "shell"
+          "image_keyword": "shell",
+          "example_word_kana": "かいがら"
         },
         {
           "id": "kj_cat",
@@ -3818,7 +3986,8 @@
           "example_sentence_ja": "日当たりの良い縁側で猫が気持ちよさそうに丸まっています。",
           "example_sentence_reading": "ひあたりのいいえんがわでねこがきもちよさそうにまるまっています。",
           "example_sentence_en": "On the sunny porch a cat curls up pleasantly.",
-          "image_keyword": "cat"
+          "image_keyword": "cat",
+          "example_word_kana": "あいびょう"
         },
         {
           "id": "kj_elephant",
@@ -3838,7 +4007,8 @@
           "example_sentence_ja": "動物園で大きな象が優しく鼻を動かしていました。",
           "example_sentence_reading": "どうぶつえんでおおきなぞうがやさしくはなをうごかしていました。",
           "example_sentence_en": "At the zoo a large elephant moved its trunk gently.",
-          "image_keyword": "elephant"
+          "image_keyword": "elephant",
+          "example_word_kana": "いんしょう"
         },
         {
           "id": "kj_tiger",
@@ -3861,7 +4031,8 @@
           "example_sentence_ja": "黄金色に輝く力強い虎の掛け軸を鑑賞しました。",
           "example_sentence_reading": "こがねいろにかがやきちからづよいとらのかけじくをかんしょうしました。",
           "example_sentence_en": "I admired a hanging scroll depicting a golden powerful tiger.",
-          "image_keyword": "tiger"
+          "image_keyword": "tiger",
+          "example_word_kana": "こけつ"
         },
         {
           "id": "kj_dragon",
@@ -3884,7 +4055,8 @@
           "example_sentence_ja": "昔話に出てくる優しい竜のお話を読みました。",
           "example_sentence_reading": "むかしばなしにでてくるやさしいりゅうのおはなしをよみました。",
           "example_sentence_en": "I read a story of a gentle dragon in a folklore tale.",
-          "image_keyword": "dragon"
+          "image_keyword": "dragon",
+          "example_word_kana": "たつまき"
         },
         {
           "id": "kj_deer",
@@ -3904,7 +4076,8 @@
           "example_sentence_ja": "奈良公園で可愛い鹿におせんべいをあげました。",
           "example_sentence_reading": "ならこうえんでかわいいしかにおせんべいをあげました。",
           "example_sentence_en": "In Nara Park I fed crackers to cute deer.",
-          "image_keyword": "deer"
+          "image_keyword": "deer",
+          "example_word_kana": "かのこ"
         },
         {
           "id": "kj_feather",
@@ -3924,7 +4097,8 @@
           "example_sentence_ja": "鳥が大きく羽を広げて空へ飛び立ちました。",
           "example_sentence_reading": "とりがおおきくはねをひろげてそらへとびたちました。",
           "example_sentence_en": "Spreading wide wings the bird took flight into the sky.",
-          "image_keyword": "feather"
+          "image_keyword": "feather",
+          "example_word_kana": "うもう"
         }
       ]
     },
@@ -3957,7 +4131,8 @@
           "example_sentence_ja": "家族への愛をいつまでも大切に胸に抱きましょう。",
           "example_sentence_reading": "かぞくへのあいをいつまでもたいせつにむねにいだきましょう。",
           "example_sentence_en": "Let's forever hold love for our family in our hearts.",
-          "image_keyword": "love"
+          "image_keyword": "love",
+          "example_word_kana": "あいじょう"
         },
         {
           "id": "kj_goodness",
@@ -3980,7 +4155,8 @@
           "example_sentence_ja": "日々の小さな善行が温かい社会を築きます。",
           "example_sentence_reading": "ひびのちいさなぜんこうがあたたかいしゃかいをきずきます。",
           "example_sentence_en": "Small daily good deeds build a warmer society.",
-          "image_keyword": "good"
+          "image_keyword": "good",
+          "example_word_kana": "ぜんこう"
         },
         {
           "id": "kj_evil",
@@ -4003,7 +4179,8 @@
           "example_sentence_ja": "他人の悪口を言わず誠実に接しましょう。",
           "example_sentence_reading": "たにんのわるくちをいわずせいじつにせっしましょう。",
           "example_sentence_en": "Treat others sincerely without speaking ill behind them.",
-          "image_keyword": "evil"
+          "image_keyword": "evil",
+          "example_word_kana": "さいあく"
         },
         {
           "id": "kj_correct",
@@ -4026,7 +4203,8 @@
           "example_sentence_ja": "どんな時でも正しい道を選ぶ勇気を持ちたいです。",
           "example_sentence_reading": "どんなときでもただしいみちをえらぶゆうきをもちたいです。",
           "example_sentence_en": "I wish to hold courage choosing the upright path in any situation.",
-          "image_keyword": "correct"
+          "image_keyword": "correct",
+          "example_word_kana": "しょうじき"
         },
         {
           "id": "kj_justice",
@@ -4049,7 +4227,8 @@
           "example_sentence_ja": "正義と思いやりの心は社会の礎です。",
           "example_sentence_reading": "せいぎとおもいやりのこころはしゃかいのいしずえです。",
           "example_sentence_en": "Justice and consideration are cornerstones of society.",
-          "image_keyword": "righteousness"
+          "image_keyword": "righteousness",
+          "example_word_kana": "せいぎ"
         },
         {
           "id": "kj_propriety",
@@ -4072,7 +4251,8 @@
           "example_sentence_ja": "人に会った時は笑顔で礼を尽くして挨拶します。",
           "example_sentence_reading": "ひとにあったときはえがおでれいをつくしてあいさつします。",
           "example_sentence_en": "When meeting people greet politely with courtesy and smiles.",
-          "image_keyword": "propriety"
+          "image_keyword": "propriety",
+          "example_word_kana": "れいぎ"
         },
         {
           "id": "kj_wisdom",
@@ -4096,7 +4276,8 @@
           "example_sentence_ja": "困難な状況を智恵を絞って乗り越えました。",
           "example_sentence_reading": "こんなんなじょうきょうをちえをしぼってのりこえました。",
           "example_sentence_en": "Gathering wisdom we overcame difficult conditions.",
-          "image_keyword": "wisdom"
+          "image_keyword": "wisdom",
+          "example_word_kana": "ちえ"
         },
         {
           "id": "kj_trust",
@@ -4119,7 +4300,8 @@
           "example_sentence_ja": "お互いの信頼関係がすべての友情の基本です。",
           "example_sentence_reading": "おたがいのしんらいかんけいがすべてのゆうじょうのきほんです。",
           "example_sentence_en": "Mutual trust is the basis of all friendships.",
-          "image_keyword": "trust"
+          "image_keyword": "trust",
+          "example_word_kana": "しんよう"
         },
         {
           "id": "kj_loyalty",
@@ -4142,7 +4324,8 @@
           "example_sentence_ja": "与えられた役割を忠実にやり遂げました。",
           "example_sentence_reading": "あたえられたやくわりをちゅうじつにやりとげました。",
           "example_sentence_en": "I faithfully carried out the assigned responsibilities.",
-          "image_keyword": "loyalty"
+          "image_keyword": "loyalty",
+          "example_word_kana": "ちゅうじつ"
         },
         {
           "id": "kj_filial",
@@ -4165,7 +4348,8 @@
           "example_sentence_ja": "初任給で両親に贈り物をし、親孝行をしました。",
           "example_sentence_reading": "しょにんきゅうでりょうしんにおくりものをし、おやこうこうをしました。",
           "example_sentence_en": "With my first salary I gifted parents showing filial appreciation.",
-          "image_keyword": "filial"
+          "image_keyword": "filial",
+          "example_word_kana": "おやこうこう"
         },
         {
           "id": "kj_courage",
@@ -4188,7 +4372,8 @@
           "example_sentence_ja": "一歩を踏み出す勇気が未来を切り拓きます。",
           "example_sentence_reading": "いっぽをふみだすゆうきがみらいをきりひらきます。",
           "example_sentence_en": "Courage to step forward opens up the future.",
-          "image_keyword": "power"
+          "image_keyword": "power",
+          "example_word_kana": "ゆうき"
         },
         {
           "id": "kj_endure",
@@ -4211,7 +4396,8 @@
           "example_sentence_ja": "どんな辛い試練もじっと忍んで前へ進みました。",
           "example_sentence_reading": "どんなつらいしれんもじっとしのんでまえへすすみました。",
           "example_sentence_en": "Enduring trials patiently I continued forward.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "にんじゃ"
         },
         {
           "id": "kj_harmony",
@@ -4234,7 +4420,8 @@
           "example_sentence_ja": "和やかな雰囲気の中でお茶会を楽しみました。",
           "example_sentence_reading": "なごやかなふんいきのなかでおちゃかいをたのしみました。",
           "example_sentence_en": "I enjoyed the tea gathering in a peaceful gentle atmosphere.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "へいわ"
         },
         {
           "id": "kj_happiness",
@@ -4257,7 +4444,8 @@
           "example_sentence_ja": "日々のささやかな出来事に幸せを感じます。",
           "example_sentence_reading": "ひびのささやかなできごとにしあわせをかんじます。",
           "example_sentence_en": "I feel happiness in small daily occurrences.",
-          "image_keyword": "gift"
+          "image_keyword": "gift",
+          "example_word_kana": "しあわせ"
         },
         {
           "id": "kj_blessing",
@@ -4280,7 +4468,8 @@
           "example_sentence_ja": "新年を迎えて皆様の幸福を心より祈ります。",
           "example_sentence_reading": "しんねんをむかえてみなさまのこうふくをこころよりいのります。",
           "example_sentence_en": "Welcoming the New Year I pray for everyone's blessing.",
-          "image_keyword": "gift"
+          "image_keyword": "gift",
+          "example_word_kana": "こうふく"
         },
         {
           "id": "kj_sincerity",
@@ -4303,7 +4492,8 @@
           "example_sentence_ja": "誰に対しても誠実な姿勢で接することを心がけています。",
           "example_sentence_reading": "だれにたいしてもせいじつなしせいでせっすることをこころがけています。",
           "example_sentence_en": "I make it a point to interact sincerely towards everyone.",
-          "image_keyword": "truth"
+          "image_keyword": "truth",
+          "example_word_kana": "せいじつ"
         },
         {
           "id": "kj_respect",
@@ -4326,7 +4516,8 @@
           "example_sentence_ja": "先輩たちの築いた成果に深い敬意を払います。",
           "example_sentence_reading": "せんぱいたちのきずいたせいかにふかいけいいをはらいます。",
           "example_sentence_en": "I pay deep respect to the accomplishments built by seniors.",
-          "image_keyword": "respect"
+          "image_keyword": "respect",
+          "example_word_kana": "けいい"
         },
         {
           "id": "kj_virtue",
@@ -4349,7 +4540,8 @@
           "example_sentence_ja": "徳の高い人々の教えに耳を傾けましょう。",
           "example_sentence_reading": "とくのたかいひとびとのおしえにみみをかたむけましょう。",
           "example_sentence_en": "Let's listen to the teachings of persons of high virtue.",
-          "image_keyword": "virtue"
+          "image_keyword": "virtue",
+          "example_word_kana": "どうとく"
         }
       ]
     },
@@ -4377,7 +4569,8 @@
           "example_sentence_ja": "一面に広がる真っ白な銀世界に感動しました。",
           "example_sentence_reading": "いちめんにひろがるまっしろなぎんせかいにかんどうしました。",
           "example_sentence_en": "I was moved by the pure white snowy expanse.",
-          "image_keyword": "white"
+          "image_keyword": "white",
+          "example_word_kana": "しらゆき"
         },
         {
           "id": "kj_black",
@@ -4400,7 +4593,8 @@
           "example_sentence_ja": "夜空に黒い猫のシルエットが綺麗に浮かびました。",
           "example_sentence_reading": "よぞらにくろいねこのしるえっとがきれいにうかびました。",
           "example_sentence_en": "A black cat's silhouette stood out against the night sky.",
-          "image_keyword": "black"
+          "image_keyword": "black",
+          "example_word_kana": "こくばん"
         },
         {
           "id": "kj_red",
@@ -4423,7 +4617,8 @@
           "example_sentence_ja": "秋になると真っ赤な紅葉が山を包み込みます。",
           "example_sentence_reading": "あきになるとまっかなこうようがやまをつつみこみます。",
           "example_sentence_en": "In autumn bright red maples envelop the mountains.",
-          "image_keyword": "red"
+          "image_keyword": "red",
+          "example_word_kana": "あかちゃん"
         },
         {
           "id": "kj_blue",
@@ -4443,7 +4638,8 @@
           "example_sentence_ja": "晴れた日の青い海を眺めて心が洗われました。",
           "example_sentence_reading": "はれたひのあおうみをながめてこころがあらわれました。",
           "example_sentence_en": "Gazing at the blue sea on a fine day refreshed my spirit.",
-          "image_keyword": "blue"
+          "image_keyword": "blue",
+          "example_word_kana": "あおぞら"
         },
         {
           "id": "kj_yellow",
@@ -4463,7 +4659,8 @@
           "example_sentence_ja": "秋の並木道が黄色いイチョウの葉で染まりました。",
           "example_sentence_reading": "あきのなみきみちがきいろいいちょうのはでそまりました。",
           "example_sentence_en": "The autumn roadside was dyed with yellow ginkgo leaves.",
-          "image_keyword": "yellow"
+          "image_keyword": "yellow",
+          "example_word_kana": "おうごん"
         },
         {
           "id": "kj_green",
@@ -4486,7 +4683,8 @@
           "example_sentence_ja": "初夏の山々に瑞々しい緑が広がっています。",
           "example_sentence_reading": "しょかのやまやまにみずみずしいみどりがひろがっています。",
           "example_sentence_en": "Fresh lush green expands across the early summer hills.",
-          "image_keyword": "green"
+          "image_keyword": "green",
+          "example_word_kana": "しんりょく"
         },
         {
           "id": "kj_big",
@@ -4506,7 +4704,8 @@
           "example_sentence_ja": "広い公園に大きなクスノキが枝を広げています。",
           "example_sentence_reading": "ひろいこうえんにおおきなくすのきがえだをひろげています。",
           "example_sentence_en": "A huge camphor tree spreads branches in the wide park.",
-          "image_keyword": "big"
+          "image_keyword": "big",
+          "example_word_kana": "だいがく"
         },
         {
           "id": "kj_small",
@@ -4526,7 +4725,8 @@
           "example_sentence_ja": "掌に小さな可愛いどんぐりを乗せました。",
           "example_sentence_reading": "てのひらにちいさなかわいいどんぐりをのせました。",
           "example_sentence_en": "I placed a tiny cute acorn in the palm of my hand.",
-          "image_keyword": "small"
+          "image_keyword": "small",
+          "example_word_kana": "ことり"
         },
         {
           "id": "kj_long",
@@ -4546,7 +4746,8 @@
           "example_sentence_ja": "長い散歩路をゆっくり時間をかけて歩きました。",
           "example_sentence_reading": "ながいさんぽろをゆっくりじかんをかけてあるきました。",
           "example_sentence_en": "I walked along the long trail taking my time leisurely.",
-          "image_keyword": "long"
+          "image_keyword": "long",
+          "example_word_kana": "しちょう"
         },
         {
           "id": "kj_short",
@@ -4569,7 +4770,8 @@
           "example_sentence_ja": "春の日は短く、あっという間に夕暮れになります。",
           "example_sentence_reading": "はるのひはみじかく、あっというまにゆうぐれになります。",
           "example_sentence_en": "Spring days are short and dusk arrives quickly.",
-          "image_keyword": "short"
+          "image_keyword": "short",
+          "example_word_kana": "たんか"
         },
         {
           "id": "kj_high",
@@ -4589,7 +4791,8 @@
           "example_sentence_ja": "高いビルの展望デッキから街を一望しました。",
           "example_sentence_reading": "たかいびるのてんぼうでっきからまちをいちぼうしました。",
           "example_sentence_en": "I looked out over the town from the tall building's observation deck.",
-          "image_keyword": "high"
+          "image_keyword": "high",
+          "example_word_kana": "こうこう"
         },
         {
           "id": "kj_low",
@@ -4612,7 +4815,8 @@
           "example_sentence_ja": "気温が低くなってきたので暖かい服を着ました。",
           "example_sentence_reading": "きおんがひくくなってきたのであたたかいふくをきました。",
           "example_sentence_en": "Because temperature became low I put on warm clothes.",
-          "image_keyword": "low"
+          "image_keyword": "low",
+          "example_word_kana": "ていきあつ"
         },
         {
           "id": "kj_many",
@@ -4635,7 +4839,8 @@
           "example_sentence_ja": "図書館には多くの興味深い本が並んでいます。",
           "example_sentence_reading": "としょかんにはおおくのきょうみぶかいほんがならんでいます。",
           "example_sentence_en": "Many fascinating books line the shelves in the library.",
-          "image_keyword": "big"
+          "image_keyword": "big",
+          "example_word_kana": "たしょう"
         },
         {
           "id": "kj_few",
@@ -4658,7 +4863,8 @@
           "example_sentence_ja": "少し休んでから再び元気に歩き始めました。",
           "example_sentence_reading": "すこしやすんでからふたたびげんきにあるきはじめました。",
           "example_sentence_en": "After resting a little I began walking cheerfully again.",
-          "image_keyword": "small"
+          "image_keyword": "small",
+          "example_word_kana": "しょうじょ"
         },
         {
           "id": "kj_new",
@@ -4681,7 +4887,8 @@
           "example_sentence_ja": "新年に新しい目標を日記帳に書き留めました。",
           "example_sentence_reading": "しんねんにあたらしいもくひょうをにっきちょうにかきとめました。",
           "example_sentence_en": "In the New Year I wrote down new goals in my diary.",
-          "image_keyword": "new"
+          "image_keyword": "new",
+          "example_word_kana": "しんかんせん"
         },
         {
           "id": "kj_old",
@@ -4704,7 +4911,8 @@
           "example_sentence_ja": "古都京都の古い町家カフェで落ち着きました。",
           "example_sentence_reading": "こときょうとのふるいまちやかふぇでおちつきました。",
           "example_sentence_en": "I settled down in an old machiya townhouse cafe in ancient Kyoto.",
-          "image_keyword": "old"
+          "image_keyword": "old",
+          "example_word_kana": "こと"
         },
         {
           "id": "kj_heavy",
@@ -4727,7 +4935,8 @@
           "example_sentence_ja": "両手でずっしりと重い陶器の花瓶を持ちました。",
           "example_sentence_reading": "りょうてでずっしりとおもいとうきのかびんをもちました。",
           "example_sentence_en": "I held a reassuringly heavy ceramic vase with both hands.",
-          "image_keyword": "heavy"
+          "image_keyword": "heavy",
+          "example_word_kana": "きちょう"
         },
         {
           "id": "kj_light",
@@ -4750,7 +4959,8 @@
           "example_sentence_ja": "軽やかな音楽を聴きながら散歩を楽しみました。",
           "example_sentence_reading": "かろやかなおんがくをききながらさんぽをたのしみました。",
           "example_sentence_en": "I enjoyed the stroll listening to light-hearted music.",
-          "image_keyword": "light"
+          "image_keyword": "light",
+          "example_word_kana": "けいしょく"
         }
       ]
     },
@@ -4778,7 +4988,8 @@
           "example_sentence_ja": "炊きたての真っ白い新米はおかずなしでも美味しいです。",
           "example_sentence_reading": "たきたてのまっしろなしんまいはおかずなしでもおいしいです。",
           "example_sentence_en": "Freshly cooked pure white new rice is tasty even without side dishes.",
-          "image_keyword": "rice"
+          "image_keyword": "rice",
+          "example_word_kana": "しんまい"
         },
         {
           "id": "kj_tea",
@@ -4802,7 +5013,8 @@
           "example_sentence_ja": "和菓子と一緒に香り高い温かいお茶をいただきました。",
           "example_sentence_reading": "わがしといっしょにかおりたかいあたたかいおちゃをいただきました。",
           "example_sentence_en": "I enjoyed fragrant warm tea together with traditional sweets.",
-          "image_keyword": "tea"
+          "image_keyword": "tea",
+          "example_word_kana": "まっちゃ"
         },
         {
           "id": "kj_alcohol_sake",
@@ -4825,7 +5037,8 @@
           "example_sentence_ja": "美味しい郷土料理とともに地酒を嗜みました。",
           "example_sentence_reading": "おいしいきょうどりょうりとともにじざけをたしなみました。",
           "example_sentence_en": "I savored local sake paired with delicious regional cuisine.",
-          "image_keyword": "drink"
+          "image_keyword": "drink",
+          "example_word_kana": "にほんしゅ"
         },
         {
           "id": "kj_meat",
@@ -4845,7 +5058,8 @@
           "example_sentence_ja": "野菜とお肉をたっぷり使った鍋を作りました。",
           "example_sentence_reading": "やさいとおにくをたっぷりのつかったなべをつくりました。",
           "example_sentence_en": "I made a hot pot using plenty of vegetables and meat.",
-          "image_keyword": "meat"
+          "image_keyword": "meat",
+          "example_word_kana": "ぎゅうにく"
         },
         {
           "id": "kj_vegetable",
@@ -4868,7 +5082,8 @@
           "example_sentence_ja": "毎日の食事に新鮮な緑黄色野菜を取り入れています。",
           "example_sentence_reading": "まいにちのしょくじにしんせんなりょくおうしょくやさいをとりいれています。",
           "example_sentence_en": "I incorporate fresh colorful vegetables into daily meals.",
-          "image_keyword": "grass"
+          "image_keyword": "grass",
+          "example_word_kana": "やさい"
         },
         {
           "id": "kj_boiled_rice",
@@ -4891,7 +5106,8 @@
           "example_sentence_ja": "家族みんなで揃って夕飯のテーブルを囲みました。",
           "example_sentence_reading": "かぞくみんなでそろってゆうはんのてーぶるをかこみました。",
           "example_sentence_en": "The whole family sat gathered around the dinner table.",
-          "image_keyword": "rice"
+          "image_keyword": "rice",
+          "example_word_kana": "あさごはん"
         },
         {
           "id": "kj_hot_water",
@@ -4914,7 +5130,8 @@
           "example_sentence_ja": "旅先でゆっくりと温かい温泉のお湯に浸かりました。",
           "example_sentence_reading": "たびさきでゆっくりとあたたかいおんせんのおゆにつかりました。",
           "example_sentence_en": "At my travel destination I soaked leisurely in warm hot spring waters.",
-          "image_keyword": "water"
+          "image_keyword": "water",
+          "example_word_kana": "おんせん"
         },
         {
           "id": "kj_plate_dish",
@@ -4934,7 +5151,8 @@
           "example_sentence_ja": "綺麗な陶器の皿に季節の和菓子を盛り付けました。",
           "example_sentence_reading": "きれいなとうきのさらにきせつのわがしをもりつけました。",
           "example_sentence_en": "I arranged seasonal sweets on a lovely ceramic plate.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "こざら"
         },
         {
           "id": "kj_clothes",
@@ -4954,7 +5172,8 @@
           "example_sentence_ja": "伝統的な浴衣を着て夏の夜のお祭りに出かけました。",
           "example_sentence_reading": "でんとうてきなゆかたをきてなつのよるのおまつりにでかけました。",
           "example_sentence_en": "Dressed in a traditional yukata I went out to the summer night festival.",
-          "image_keyword": "clothes"
+          "image_keyword": "clothes",
+          "example_word_kana": "いふく"
         },
         {
           "id": "kj_medicine",
@@ -4977,7 +5196,8 @@
           "example_sentence_ja": "風邪をひいたので温かい白湯と一緒に薬を飲みました。",
           "example_sentence_reading": "かぜをひいたのであたたかいさゆといっしょにくすりをのみました。",
           "example_sentence_en": "Having a cold I took medicine with warm plain water.",
-          "image_keyword": "medicine"
+          "image_keyword": "medicine",
+          "example_word_kana": "やっきょく"
         },
         {
           "id": "kj_sleep",
@@ -5000,7 +5220,8 @@
           "example_sentence_ja": "心地よいアロマの香りに包まれて深く眠りました。",
           "example_sentence_reading": "ここちよいあろまのかおりにつつまれてふかくねむりました。",
           "example_sentence_en": "Wrapped in pleasant aroma scents I slept soundly.",
-          "image_keyword": "sleep"
+          "image_keyword": "sleep",
+          "example_word_kana": "すいみん"
         },
         {
           "id": "kj_bath",
@@ -5023,7 +5244,8 @@
           "example_sentence_ja": "一日の終わりに温かいお風呂に入って入浴を楽しみました。",
           "example_sentence_reading": "いちにちのおわりにあたたかいおふろにはいってにゅうよくをたのしみました。",
           "example_sentence_en": "At the end of the day I relaxed taking a warm bath.",
-          "image_keyword": "water"
+          "image_keyword": "water",
+          "example_word_kana": "にゅうよく"
         },
         {
           "id": "kj_oil",
@@ -5046,7 +5268,8 @@
           "example_sentence_ja": "お刺身に少しの醤油とわさびをつけて味わいました。",
           "example_sentence_reading": "おさしみにすこしのしょうゆとわさびをつけてあじわいました。",
           "example_sentence_en": "I enjoyed sashimi dipping with a touch of soy sauce and wasabi.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "しょうゆ"
         },
         {
           "id": "kj_taste",
@@ -5069,7 +5292,8 @@
           "example_sentence_ja": "出汁の効いた優しい味の味噌汁をいただきました。",
           "example_sentence_reading": "だしのきいたやさしいあじのみそしるをいただきました。",
           "example_sentence_en": "I savored gentle-flavored miso soup rich in dashi broth.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "いみ"
         },
         {
           "id": "kj_tool_vessel",
@@ -5092,7 +5316,8 @@
           "example_sentence_ja": "お味噌汁に豆腐とわかめの具をたっぷり入れました。",
           "example_sentence_reading": "おみそしるにとうふとわかめのぐをたっぷりいれました。",
           "example_sentence_en": "I added plenty of tofu and seaweed ingredients to the miso soup.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "どうぐ"
         },
         {
           "id": "kj_vessel",
@@ -5115,7 +5340,8 @@
           "example_sentence_ja": "職人が丹精込めて焼き上げた美しい器を大切に使っています。",
           "example_sentence_reading": "しょくにんがたんせいこめてやきあげたうつくしいうつわをたいせつにつかっています。",
           "example_sentence_en": "I lovingly use lovely vessels fired with utmost devotion by craftsmen.",
-          "image_keyword": "food"
+          "image_keyword": "food",
+          "example_word_kana": "しょっき"
         },
         {
           "id": "kj_silver",
@@ -5138,7 +5364,8 @@
           "example_sentence_ja": "窓から銀色に輝く夜の川面を静かに眺めました。",
           "example_sentence_reading": "まどからぎんいろにかがやくよるのかわもをしずかにながめました。",
           "example_sentence_en": "From the window I quietly watched the silver-glittering river surface.",
-          "image_keyword": "bank"
+          "image_keyword": "bank",
+          "example_word_kana": "ぎんこう"
         },
         {
           "id": "kj_ship",
@@ -5161,7 +5388,8 @@
           "example_sentence_ja": "湖で遊覧船に乗って心地よい風を感じました。",
           "example_sentence_reading": "みずうみでゆうらんせんにのってここちよいかぜをかんじました。",
           "example_sentence_en": "Riding a cruise boat on the lake I felt the soothing breeze.",
-          "image_keyword": "boat"
+          "image_keyword": "boat",
+          "example_word_kana": "きゃくせん"
         }
       ]
     },
@@ -5192,7 +5420,8 @@
           "example_sentence_ja": "歴史ある古都を巡る一人旅に出かけました。",
           "example_sentence_reading": "れきしあることのめぐるひとりたびにでかけました。",
           "example_sentence_en": "I set off on a solo journey visiting historical ancient capitals.",
-          "image_keyword": "walk"
+          "image_keyword": "walk",
+          "example_word_kana": "りょこう"
         },
         {
           "id": "kj_scenery",
@@ -5215,7 +5444,8 @@
           "example_sentence_ja": "山頂からの雄大な景色に息を呑みました。",
           "example_sentence_reading": "さんちょうからのゆうだいなけしきにいきをのみました。",
           "example_sentence_en": "I was breathless at the magnificent scenery from the mountain summit.",
-          "image_keyword": "sky"
+          "image_keyword": "sky",
+          "example_word_kana": "けしき"
         },
         {
           "id": "kj_color",
@@ -5235,7 +5465,8 @@
           "example_sentence_ja": "四季折々の豊かな自然の色を楽しんでいます。",
           "example_sentence_reading": "しきおりおりのゆたかなしぜんのいろをたのしんでいます。",
           "example_sentence_en": "I delight in the abundant natural colors across the four seasons.",
-          "image_keyword": "art"
+          "image_keyword": "art",
+          "example_word_kana": "けしき"
         },
         {
           "id": "kj_capital",
@@ -5259,7 +5490,8 @@
           "example_sentence_ja": "秋の京都でお寺巡りを楽しみました。",
           "example_sentence_reading": "あきのきょうとでおてらめぐりをたのしみました。",
           "example_sentence_en": "I enjoyed temple-hopping in autumn Kyoto.",
-          "image_keyword": "palace"
+          "image_keyword": "palace",
+          "example_word_kana": "きょうと"
         },
         {
           "id": "kj_metropolis",
@@ -5282,7 +5514,8 @@
           "example_sentence_ja": "大都会の夜景は星空のように輝いています。",
           "example_sentence_reading": "だいとかいのやけいはほしぞらのようにかがやいています。",
           "example_sentence_en": "The metropolis night view sparkles like a starry sky.",
-          "image_keyword": "city"
+          "image_keyword": "city",
+          "example_word_kana": "しゅと"
         },
         {
           "id": "kj_shrine_holy",
@@ -5305,7 +5538,8 @@
           "example_sentence_ja": "木々に囲まれた厳かな宮で静かに祈りを捧げました。",
           "example_sentence_reading": "きぎにかこまれたおごそかなみやでしずかにいのりをささげました。",
           "example_sentence_en": "Surrounded by trees in a solemn shrine I offered quiet prayers.",
-          "image_keyword": "palace"
+          "image_keyword": "palace",
+          "example_word_kana": "おみやまいり"
         },
         {
           "id": "kj_castle",
@@ -5328,7 +5562,8 @@
           "example_sentence_ja": "青空を背景に白鷺城の美しい天守閣がそびえ立っています。",
           "example_sentence_reading": "あおぞらをはいけいにしらさぎじょうのうつくしいてんしゅかくがそびえたっています。",
           "example_sentence_en": "Against the blue sky the beautiful castle keep towers proudly.",
-          "image_keyword": "castle"
+          "image_keyword": "castle",
+          "example_word_kana": "じょうかまち"
         },
         {
           "id": "kj_god_spirit",
@@ -5351,7 +5586,8 @@
           "example_sentence_ja": "早朝の静かな森に神聖な空気が漂っています。",
           "example_sentence_reading": "そうちょうのしずかなもりにもしんせいなくうきがただよっています。",
           "example_sentence_en": "In the early morning quiet forest sacred air drifts gently.",
-          "image_keyword": "spirit"
+          "image_keyword": "spirit",
+          "example_word_kana": "じんじゃ"
         },
         {
           "id": "kj_buddha",
@@ -5374,7 +5610,8 @@
           "example_sentence_ja": "奈良の大仏の穏やかなお顔を仰ぎ見ました。",
           "example_sentence_reading": "ならのだいぶつのおだやかなおかおをあおぎみました。",
           "example_sentence_en": "I looked up at the gentle face of Nara's Great Buddha.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "だいぶつ"
         },
         {
           "id": "kj_quiet",
@@ -5397,7 +5634,8 @@
           "example_sentence_ja": "森の奥の静かな湖畔で心洗われる時間を過ごしました。",
           "example_sentence_reading": "もりのおくのしずかなこはんでこころあらわれるじかんをすごしました。",
           "example_sentence_en": "Deep in the woods by a quiet lakeside I spent soul-cleansing time.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "せいじゃく"
         },
         {
           "id": "kj_hot_spring",
@@ -5420,7 +5658,8 @@
           "example_sentence_ja": "岩の間からこんこんと清らかな泉が湧き出ています。",
           "example_sentence_reading": "いわのあいだからこんこんときよらかないずみがわきでています。",
           "example_sentence_en": "From between rocks a pure fresh spring wells up crystal-clear.",
-          "image_keyword": "water"
+          "image_keyword": "water",
+          "example_word_kana": "げんせん"
         },
         {
           "id": "kj_island",
@@ -5443,7 +5682,8 @@
           "example_sentence_ja": "瀬戸内海の美しい島々を船から眺めました。",
           "example_sentence_reading": "せとないかいのうつくしいしまじまをふねからながめました。",
           "example_sentence_en": "From the boat I looked out upon lovely islands in Seto Inland Sea.",
-          "image_keyword": "island"
+          "image_keyword": "island",
+          "example_word_kana": "しまぐに"
         },
         {
           "id": "kj_bell",
@@ -5466,7 +5706,8 @@
           "example_sentence_ja": "夕暮れの古寺から響く除夜の鐘の音に耳を澄ましました。",
           "example_sentence_reading": "ゆうぐれのこじからひびくじょやのかねのねにみみをすましました。",
           "example_sentence_en": "I listened to the resonant chime of the temple bell at dusk.",
-          "image_keyword": "temple"
+          "image_keyword": "temple",
+          "example_word_kana": "ぼんしょう"
         },
         {
           "id": "kj_sea_bay",
@@ -5489,7 +5730,8 @@
           "example_sentence_ja": "穏やかな湾を船がゆっくりと進んでいきます。",
           "example_sentence_reading": "おだやかなわんをふねがゆっくりとすすんでいきます。",
           "example_sentence_en": "A ship moves leisurely across the tranquil bay.",
-          "image_keyword": "sea"
+          "image_keyword": "sea",
+          "example_word_kana": "とうきょうわん"
         },
         {
           "id": "kj_light_glow",
@@ -5512,7 +5754,8 @@
           "example_sentence_ja": "木漏れ日の柔らかな光が足元を照らしています。",
           "example_sentence_reading": "こもれびのやわらかなひかりがあしもとをてらしています。",
           "example_sentence_en": "Gentle sunlight filtering through trees illuminates my footsteps.",
-          "image_keyword": "bright"
+          "image_keyword": "bright",
+          "example_word_kana": "にっこう"
         },
         {
           "id": "kj_wind_style",
@@ -5532,7 +5775,8 @@
           "example_sentence_ja": "石畳の小道に古都の風情が色濃く漂っています。",
           "example_sentence_reading": "いしだたみのこみちにことのふぜいがいろこくただよっています。",
           "example_sentence_en": "The cobblestone alley richly evokes the atmospheric charm of the ancient city.",
-          "image_keyword": "wind"
+          "image_keyword": "wind",
+          "example_word_kana": "ふぜい"
         }
       ]
     },
@@ -5563,7 +5807,8 @@
           "example_sentence_ja": "窓から差し込む朝の光がとても明るいです。",
           "example_sentence_reading": "まどからさしこむあさのひかりがとてもあかるいです。",
           "example_sentence_en": "The morning light pouring through the window is wonderfully bright.",
-          "image_keyword": "bright"
+          "image_keyword": "bright",
+          "example_word_kana": "あした"
         },
         {
           "id": "kj_dark",
@@ -5586,7 +5831,8 @@
           "example_sentence_ja": "日が暮れて周りが少しずつ暗くなってきました。",
           "example_sentence_reading": "ひがくれてまわりがすこしずつくらくなってきました。",
           "example_sentence_en": "The sun set and the surroundings gradually grew dark.",
-          "image_keyword": "dark"
+          "image_keyword": "dark",
+          "example_word_kana": "あんき"
         },
         {
           "id": "kj_peace_safe",
@@ -5609,7 +5855,8 @@
           "example_sentence_ja": "家族みんなが元気で無事に暮らせるのが一番の安心です。",
           "example_sentence_reading": "かぞくみんながげんきでぶじにくらせるのがいちばんのあんしんです。",
           "example_sentence_en": "Living safely with the whole family in good health is the best peace of mind.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "あんぜん"
         },
         {
           "id": "kj_think_field",
@@ -5632,7 +5879,8 @@
           "example_sentence_ja": "大切な人への感謝の思いを胸に抱いています。",
           "example_sentence_reading": "たいせつなひとへのかんしゃのおもいをむねにいだいています。",
           "example_sentence_en": "I hold thoughts of gratitude towards cherished people in my heart.",
-          "image_keyword": "think"
+          "image_keyword": "think",
+          "example_word_kana": "おもいで"
         },
         {
           "id": "kj_imagine",
@@ -5655,7 +5903,8 @@
           "example_sentence_ja": "幼い頃に思い描いた夢を胸に歩み続けます。",
           "example_sentence_reading": "おさないころにおもいえがいたゆめをむねにあゆみつづけます。",
           "example_sentence_en": "I keep walking with the dreams I envisioned in my youth.",
-          "image_keyword": "dream"
+          "image_keyword": "dream",
+          "example_word_kana": "りそう"
         },
         {
           "id": "kj_goods_quality",
@@ -5679,7 +5928,8 @@
           "example_sentence_ja": "手作りの伝統工芸品はとても上品な美しさがあります。",
           "example_sentence_reading": "てづくりのでんとうこうげいひんはとてもじょうひんなうつくしさがあります。",
           "example_sentence_en": "Handmade traditional craft goods carry a very refined elegance.",
-          "image_keyword": "gift"
+          "image_keyword": "gift",
+          "example_word_kana": "ひんしつ"
         },
         {
           "id": "kj_cry_ring",
@@ -5702,7 +5952,8 @@
           "example_sentence_ja": "朝の庭で鈴虫が涼やかに鳴いていました。",
           "example_sentence_reading": "あさのにわですずむしがすずやかになっていました。",
           "example_sentence_en": "Bell-ring crickets were chirping coolly in the morning garden.",
-          "image_keyword": "sing"
+          "image_keyword": "sing",
+          "example_word_kana": "ひめい"
         },
         {
           "id": "kj_protect",
@@ -5725,7 +5976,8 @@
           "example_sentence_ja": "豊かな自然環境を次の世代へ大切に保護しましょう。",
           "example_sentence_reading": "ゆたかなしぜんかんきょうをつぎのせだいへたいせつにほごしましょう。",
           "example_sentence_en": "Let's carefully preserve the rich environment for the next generation.",
-          "image_keyword": "peace"
+          "image_keyword": "peace",
+          "example_word_kana": "ほぞん"
         },
         {
           "id": "kj_mutual",
@@ -5748,7 +6000,8 @@
           "example_sentence_ja": "お互いに助け合って支え合う社会が理想です。",
           "example_sentence_reading": "おたがいにたすけあってささえあうしゃかいがりそうです。",
           "example_sentence_en": "A society where people mutually help and support each other is ideal.",
-          "image_keyword": "friend"
+          "image_keyword": "friend",
+          "example_word_kana": "そうだん"
         },
         {
           "id": "kj_clear_pure",
@@ -5771,7 +6024,8 @@
           "example_sentence_ja": "山の奥深くの清らかな湧き水で喉を潤しました。",
           "example_sentence_reading": "やまのおくふかくのきよらかなわきみずでのどをうるおしました。",
           "example_sentence_en": "I refreshed my throat with pure spring water deep in the mountains.",
-          "image_keyword": "water"
+          "image_keyword": "water",
+          "example_word_kana": "せいりゅう"
         },
         {
           "id": "kj_warm_gentle",
@@ -5794,7 +6048,8 @@
           "example_sentence_ja": "寒い冬の日に飲む温かいスープは心まで温めます。",
           "example_sentence_reading": "さむいふゆのひにのむあたたかいすーぷはこころまであたためます。",
           "example_sentence_en": "Warm soup on a cold winter day warms even the spirit.",
-          "image_keyword": "tea"
+          "image_keyword": "tea",
+          "example_word_kana": "おんど"
         },
         {
           "id": "kj_cold_chilly",
@@ -5817,7 +6072,8 @@
           "example_sentence_ja": "夏の暑い日に冷たい湧き水を一口飲みました。",
           "example_sentence_reading": "なつのあついひにつめたいわきみずをひとくちのみました。",
           "example_sentence_en": "On a hot summer day I drank a sip of chilled spring water.",
-          "image_keyword": "snow"
+          "image_keyword": "snow",
+          "example_word_kana": "れいぞうこ"
         },
         {
           "id": "kj_open_gate",
@@ -5840,7 +6096,8 @@
           "example_sentence_ja": "窓を開けると心地よい朝風が部屋に入ってきました。",
           "example_sentence_reading": "まどをひらけるとここちよいあさかぜがへやにはいってきました。",
           "example_sentence_en": "Opening the window a pleasant morning breeze flowed into the room.",
-          "image_keyword": "open"
+          "image_keyword": "open",
+          "example_word_kana": "かいてん"
         },
         {
           "id": "kj_close_gate",
@@ -5863,7 +6120,8 @@
           "example_sentence_ja": "本を静かに閉じて一日の充実を振り返りました。",
           "example_sentence_reading": "ほんをしずかにとじていちにちのじゅうじつをふりかえりました。",
           "example_sentence_en": "Closing the book quietly I reflected on the day's fulfillment.",
-          "image_keyword": "close"
+          "image_keyword": "close",
+          "example_word_kana": "へいかん"
         },
         {
           "id": "kj_begin",
@@ -5886,7 +6144,8 @@
           "example_sentence_ja": "新しい学期が始まってワクワクしています。",
           "example_sentence_reading": "あたらしいがっきがはじまってわくわくしています。",
           "example_sentence_en": "The new semester has begun and I am thoroughly excited.",
-          "image_keyword": "begin"
+          "image_keyword": "begin",
+          "example_word_kana": "かいし"
         },
         {
           "id": "kj_finish",
@@ -5909,7 +6168,8 @@
           "example_sentence_ja": "仕事が無事に終了してほっと息をつきました。",
           "example_sentence_reading": "しごとがぶじにしゅうりょうしてほっといきをつきました。",
           "example_sentence_en": "Work finished safely and I took a deep sigh of relief.",
-          "image_keyword": "end"
+          "image_keyword": "end",
+          "example_word_kana": "しゅうりょう"
         },
         {
           "id": "kj_flame",
@@ -5932,7 +6192,8 @@
           "example_sentence_ja": "暖炉の赤い炎を見つめながら夜の静けさを楽しみました。",
           "example_sentence_reading": "だんろのあかいほのおをみつめながらよるのしずけさをたのしみました。",
           "example_sentence_en": "Watching the red flames of the fireplace I enjoyed the night's quiet.",
-          "image_keyword": "fire"
+          "image_keyword": "fire",
+          "example_word_kana": "えんてんか"
         },
         {
           "id": "kj_rock_cliff",
@@ -5955,7 +6216,8 @@
           "example_sentence_ja": "海辺の大きな岩の上にカモメがとまっています。",
           "example_sentence_reading": "うみべのおおきなわのうえにかもめがとまっています。",
           "example_sentence_en": "On a large coastal rock a seagull rests comfortably.",
-          "image_keyword": "stone"
+          "image_keyword": "stone",
+          "example_word_kana": "がんせき"
         },
         {
           "id": "kj_shine_glory",
@@ -5978,7 +6240,8 @@
           "example_sentence_ja": "古い街並みが今も温かく栄えています。",
           "example_sentence_reading": "ふるいまちなみがいまもあたたかくさかえています。",
           "example_sentence_en": "The old streetscape still flourishes warmly today.",
-          "image_keyword": "flower"
+          "image_keyword": "flower",
+          "example_word_kana": "はんえい"
         },
         {
           "id": "kj_flourish",
@@ -6001,7 +6264,8 @@
           "example_sentence_ja": "春の訪れとともに庭が一層華やかになりました。",
           "example_sentence_reading": "はるのおとづれとともににわがいっそうはなやかになりました。",
           "example_sentence_en": "With the coming of spring the garden became all the more gorgeous.",
-          "image_keyword": "flower"
+          "image_keyword": "flower",
+          "example_word_kana": "はなやか"
         }
       ]
     }

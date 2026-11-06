@@ -23,6 +23,12 @@ const TestMode = {
   /** Session stats */
   sessionStats: { reviewed: 0, correct: 0 },
 
+  /** Active category when in category-specific quiz mode */
+  currentCategory: null,
+
+  /** Flag to prevent hashchange routing from overriding category quiz */
+  isCategoryMode: false,
+
   /** Initialize test mode */
   init(data) {
     this.data = data;
@@ -34,8 +40,36 @@ const TestMode = {
     this.data = newData;
   },
 
+  /**
+   * Start a quiz for a specific category/branch.
+   * Only includes characters in this branch that are MARKED AS LEARNED.
+   * @param {Object} branch The category branch object
+   */
+  startCategoryQuiz(branch) {
+    this.currentCategory = branch;
+    this.isCategoryMode = true;
+    this.sessionStats = { reviewed: 0, correct: 0 };
+    this.currentIndex = 0;
+    this.answerRevealed = false;
+
+    // Filter strictly to learned characters in this category
+    const learnedInBranch = branch.characters.filter((c) => Storage.isLearned(c.id));
+    this.queue = [...learnedInBranch].sort(() => Math.random() - 0.5);
+
+    App.navigateTo('test');
+    this.render();
+  },
+
   /** Called when the test tab becomes active */
-  activate() {
+  activate(forceGeneral = false) {
+    if (this.isCategoryMode && this.currentCategory && !forceGeneral) {
+      this.isCategoryMode = false;
+      this.render();
+      return;
+    }
+
+    this.currentCategory = null;
+    this.isCategoryMode = false;
     this.sessionStats = { reviewed: 0, correct: 0 };
     this.currentIndex = 0;
     this.answerRevealed = false;
@@ -43,8 +77,16 @@ const TestMode = {
     // Gather all characters from all branches
     const allChars = this.data.branches.flatMap((b) => b.characters);
 
-    // Get due cards
-    this.queue = Storage.getDueCards(allChars);
+    // CRITICAL: Quiz should take ONLY things learned and marked as learned!
+    const learnedChars = allChars.filter((c) => Storage.isLearned(c.id));
+
+    if (learnedChars.length === 0) {
+      this.queue = [];
+    } else {
+      // Get due cards among learned characters
+      const due = Storage.getDueCards(learnedChars);
+      this.queue = due.length > 0 ? due : [...learnedChars].sort(() => Math.random() - 0.5);
+    }
 
     this.render();
   },
@@ -98,7 +140,46 @@ const TestMode = {
     const remainLabel = isKanji ? `残り ${this.queue.length - this.currentIndex}枚` : `${this.queue.length - this.currentIndex} 남음`;
     const streakLabel = isKanji ? `🔥 ${stats.streak}日連続` : `🔥 ${stats.streak}일 연속`;
 
+    let categoryBannerHTML = '';
+    if (this.currentCategory) {
+      const catLabel = isKanji ? (this.currentCategory.name_ja || this.currentCategory.name_kr) : this.currentCategory.name_kr;
+      categoryBannerHTML = `
+        <div class="category-quiz-banner">
+          <button class="btn-quiz-back" id="btn-quiz-back">← ${isKanji ? 'ツリーへ戻る' : '트리로 돌아가기'}</button>
+          <div class="category-quiz-info">
+            <span class="category-quiz-icon">${this.currentCategory.icon}</span>
+            <span class="category-quiz-name">${catLabel}</span>
+            <span class="category-quiz-tag">${isKanji ? 'カテゴリーテスト' : '카테고리 퀴즈'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Example word formatting:
+    // In Japanese, write pure kana right below the Kanji example word
+    let exampleWordHTML = '';
+    if (isKanji) {
+      const pureKana = char.example_word_kana || (char.example_word_reading ? char.example_word_reading.split('(')[0].trim() : '');
+      exampleWordHTML = `
+        <div class="card-example-word-box">
+          <strong class="example-kanji-title">${word}</strong>
+          <div class="card-example-kana">かな: <span class="kana-pure">${pureKana}</span></div>
+          <div class="card-example-reading">${char.example_word_meaning_ja || wordReading}</div>
+          <div class="card-example-meaning">${wordMeaning}</div>
+        </div>
+      `;
+    } else {
+      exampleWordHTML = `
+        <div class="card-example-word-box">
+          <strong class="example-kanji-title">${word}</strong>
+          <span class="card-example-reading">${wordReading}</span>
+          <div class="card-example-meaning">${wordMeaning}</div>
+        </div>
+      `;
+    }
+
     this.el.innerHTML = `
+      ${categoryBannerHTML}
       <div class="test-header">
         <div class="test-progress-bar">
           <div class="test-progress-fill" style="width: ${progress}%"></div>
@@ -125,8 +206,7 @@ const TestMode = {
             <div class="card-back-reading">${reading}</div>
             <div class="card-back-meaning">${meaning}</div>
             <div class="card-back-example">
-              <div class="card-example-word">${word} <span class="card-example-reading">${wordReading}</span></div>
-              <div class="card-example-meaning">${wordMeaning}</div>
+              ${exampleWordHTML}
             </div>
             <div class="card-back-sentence">
               <div class="card-sentence-primary">${sentence}</div>
@@ -192,6 +272,16 @@ const TestMode = {
         });
       }
     }
+
+    // Category quiz back-to-tree button
+    const backBtn = this.el.querySelector('#btn-quiz-back');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        this.currentCategory = null;
+        this.isCategoryMode = false;
+        App.navigateTo('tree');
+      });
+    }
   },
 
   /** Render empty state */
@@ -199,10 +289,16 @@ const TestMode = {
     const stats = Storage.getStats();
     const learnedCount = Storage.getLearnedSet().size;
 
-    const title = isKanji ? '復習するカードがありません！' : '복습할 카드가 없어요!';
-    const sub = isKanji ? 'No cards due for review!' : 'No cards to review!';
-    const cta = isKanji ? '🌳 ツリー画面で新しい漢字を学習しましょう！' : '🌳 트리 뷰에서 더 많은 한자를 학습하세요!';
+    let title = isKanji ? '復習するカードがありません！' : '복습할 카드가 없어요!';
+    let sub = isKanji ? 'No cards due for review!' : 'No cards to review!';
+    let cta = isKanji ? '🌳 ツリー画面で漢字カードを開き、「学習済みにする」にチェックしてください！' : '🌳 트리 뷰에서 한자 카드를 클릭하고 「학습 완료」로 표시해 보세요!';
     const btnText = isKanji ? 'ツリー画面へ戻る (Go to Tree)' : '트리 뷰로 가기 (Go to Tree)';
+
+    if (this.currentCategory) {
+      const catLabel = isKanji ? (this.currentCategory.name_ja || this.currentCategory.name_kr) : this.currentCategory.name_kr;
+      title = isKanji ? `『${catLabel}』に学習済みの漢字がありません！` : `[${catLabel}] 카테고리에 학습 완료된 한자가 없습니다!`;
+      sub = isKanji ? 'No learned cards in this category!' : 'No learned cards in this category!';
+    }
 
     this.el.innerHTML = `
       <div class="test-empty">
@@ -229,6 +325,8 @@ const TestMode = {
     `;
 
     this.el.querySelector('#btn-go-tree').addEventListener('click', () => {
+      this.currentCategory = null;
+      this.isCategoryMode = false;
       App.navigateTo('tree');
     });
   },
@@ -240,9 +338,15 @@ const TestMode = {
       : 0;
     const stats = Storage.getStats();
 
-    const title = isKanji ? '本日の復習完了！' : '복습 완료!';
-    const sub = 'Session Complete!';
-    const btnText = isKanji ? 'ツリー画面へ戻る (Go to Tree)' : '트리 뷰로 가기 (Go to Tree)';
+    let title = isKanji ? '本日の復習完了！' : '복습 완료!';
+    let sub = 'Session Complete!';
+    let btnText = isKanji ? 'ツリー画面へ戻る (Go to Tree)' : '트리 뷰로 가기 (Go to Tree)';
+
+    if (this.currentCategory) {
+      const catLabel = isKanji ? (this.currentCategory.name_ja || this.currentCategory.name_kr) : this.currentCategory.name_kr;
+      title = isKanji ? `🎉 『${catLabel}』テスト完了！` : `🎉 [${catLabel}] 카테고리 퀴즈 완료!`;
+      sub = isKanji ? 'Category Quiz Completed!' : '카테고리 테스트를 성공적으로 마쳤습니다!';
+    }
 
     this.el.innerHTML = `
       <div class="test-complete">
@@ -268,6 +372,8 @@ const TestMode = {
     `;
 
     this.el.querySelector('#btn-go-tree-complete').addEventListener('click', () => {
+      this.currentCategory = null;
+      this.isCategoryMode = false;
       App.navigateTo('tree');
     });
   },
