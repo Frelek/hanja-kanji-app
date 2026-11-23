@@ -19,6 +19,10 @@
     "bytes": 1079,
     "sha256": "8b83a73dd2894ff553d6de6113064b3ad9dfad3f839837b61f3b183881131d01"
   },
+  "NotoSerifKR[wght].ttf": {
+    "bytes": 23795420,
+    "sha256": "11f8d5de6f1b79195efba3828aaa2ec95c1178f5ae976fb23c8d53250a9938f3"
+  },
   "animcjk-APL.txt": {
     "bytes": 6901,
     "sha256": "3a5e90c0957524a89e48203febcd4492ca4393678abaa7e5b4d70f3ff32b386d"

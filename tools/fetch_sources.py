@@ -28,6 +28,7 @@ SOURCES = {
     'KleeOne-SemiBold.ttf': _FONTS + 'kleeone/KleeOne-SemiBold.ttf',
     'GowunBatang-Regular.ttf': _FONTS + 'gowunbatang/GowunBatang-Regular.ttf',
     'GowunBatang-Bold.ttf': _FONTS + 'gowunbatang/GowunBatang-Bold.ttf',
+    'NotoSerifKR[wght].ttf': _FONTS + 'notoserifkr/NotoSerifKR%5Bwght%5D.ttf',
     'htm-preact-standalone.mjs': 'https://unpkg.com/htm@3.1.1/preact/standalone.module.js',
     'ts-fsrs.mjs': 'https://unpkg.com/ts-fsrs@5.4.2/dist/index.mjs',
     'LICENSE-htm': 'https://unpkg.com/htm@3.1.1/LICENSE',
