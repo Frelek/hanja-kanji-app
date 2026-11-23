@@ -2,7 +2,7 @@ import os
 import unittest
 
 from hk.decompose import (VARIANTS, load_ids, direct_parts, components,
-                          find_parents, pick_primary)
+                          find_parents, pick_primary, drop_deep_single_strokes)
 
 IDS = {'休': '⿰亻木', '森': '⿱木林', '林': '⿰木木', '學': '⿱𦥯子',
        '𦥯': '⿰臼爻', '河': '⿰氵可', '東': '東'}
@@ -44,6 +44,19 @@ class DecomposeTests(unittest.TestCase):
         self.assertEqual(pick_primary(['人', '木'], {'人': 4, '木': 4}, '人'), '人')
         self.assertEqual(pick_primary(['人', '木'], {'人': 4, '木': 4}, None), '人')
         self.assertIsNone(pick_primary([], {}, None))
+
+    def test_drop_deep_single_strokes(self):
+        ids = {'二': '⿱一一', '百': '⿱一白', '気': '⿱气㐅', '气': '⿱𠂉⿱一乁',
+               '休': '⿰亻木', '体': '⿰亻本', '本': '⿻木一'}
+        strokes = {'一': 1, '人': 2, '木': 4, '白': 5}
+        self.assertEqual(drop_deep_single_strokes('二', ['一'], ids, strokes), ['一'])
+        self.assertEqual(drop_deep_single_strokes('百', ['一', '白'], ids, strokes),
+                         ['一', '白'])
+        self.assertEqual(drop_deep_single_strokes('気', ['一'], ids, strokes), [])
+        # multi-stroke parents are kept even when deep; unknown strokes are kept
+        self.assertEqual(drop_deep_single_strokes('体', ['一', '人', '木'], ids, strokes),
+                         ['人', '木'])
+        self.assertEqual(drop_deep_single_strokes('気', ['乁'], ids, strokes), ['乁'])
 
     @unittest.skipUnless(os.path.exists(IDS_FILE), 'sources/ids.txt absent')
     def test_real_file_regions(self):

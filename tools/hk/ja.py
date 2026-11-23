@@ -12,12 +12,16 @@ import os
 import re
 
 from hk.decompose import (VARIANTS, load_ids, direct_parts, find_parents,
-                          pick_primary)
+                          pick_primary, drop_deep_single_strokes)
 from hk.text import nfc, is_cjk
 
 LEVELS = (5, 4, 3)                      # study order: N5 first
-_KANA = re.compile(r'^[぀-ヿ・ー]+$')
+_KANA = re.compile('^[' + chr(0x3040) + '-' + chr(0x30FF) + ']+$')   # all kana, incl. ・ and ー
 _PARENS = '（）()'
+_RADICAL = re.compile('radical', re.I)
+_WORD = re.compile(r'[^\W\d_]+')
+_LONE_I = re.compile(r"(?<![\w.'])i(?![\w.'])")
+_AFFIX = '～〜'
 
 
 def nfc_dict(pairs):
@@ -111,6 +115,23 @@ def parse_jlpt_csv(path, n):
     return out
 
 
+def sentence_case(s):
+    """First character as the source has it, the remaining words lowercased,
+    a standalone "I" left upper-case: "Day Off" -> "Day off"."""
+    s = s.strip()
+    if not s:
+        return s
+    return s[0] + _WORD.sub(lambda m: m.group(0) if m.group(0) == 'I'
+                            else m.group(0).lower(), s[1:])
+
+
+def clean_meanings(raw):
+    """kanji.json meanings: drop radical labels, sentence-case, first 3."""
+    out = [sentence_case(nfc(m)) for m in raw or []
+           if m.strip() and not _RADICAL.search(m)]
+    return out[:3]
+
+
 def _tier(ch, level_n, entry, kanji_level):
     if ch not in entry['w']:
         return None
@@ -130,6 +151,8 @@ def pick_words_ja(ch, level_n, vocab, kanji_level):
     T1: list level >= the char's level and every kanji at a level >= it.
     T2: any list, every kanji in N5-N3.  T3: the word equal to the char.
     Within a tier: easier list first, then shorter, then file order.
+    Affix entries (an expression with ～/〜) are used only when the char
+    would otherwise have no words at all.
     """
     ranked = []
     for i, e in enumerate(vocab):
@@ -137,8 +160,9 @@ def pick_words_ja(ch, level_n, vocab, kanji_level):
         if t is not None:
             ranked.append(((t, -e['n'], len(e['w']), i), e))
     ranked.sort(key=lambda x: x[0])
+    plain = [x for x in ranked if not any(a in x[1]['w'] for a in _AFFIX)]
     out, seen = [], set()
-    for _, e in ranked:
+    for _, e in plain or ranked:
         if e['w'] in seen:
             continue
         seen.add(e['w'])
@@ -177,21 +201,37 @@ def _load_animcjk(src):
     return nfc_dict(pairs)
 
 
-def _first_sense(definition):
-    s = nfc(definition or '').split(';')[0].split(',')[0].strip()
-    return s or None
+def _anim_sense(entry):
+    """First ';' sense of an animCJK definition that is not a radical label,
+    cut at its first ','; a standalone pronoun "i" becomes "I"."""
+    for sense in nfc((entry or {}).get('definition') or '').split(';'):
+        sense = sense.strip()
+        if sense and not _RADICAL.search(sense):
+            first = sense.split(',')[0].strip() or sense
+            return _LONE_I.sub('I', first)
+    return None
 
 
-def _part_meaning(p, kanji, animcjk):
-    meanings = kanji.get(p, {}).get('meanings') or []
-    if meanings and meanings[0].strip():
-        return nfc(meanings[0]).strip().lower()
-    return _first_sense(animcjk.get(p, {}).get('definition'))
+def _kanji_sense(entry):
+    m = clean_meanings((entry or {}).get('meanings'))
+    return m[0] if m else None
+
+
+def part_meaning(p, kanji, animcjk):
+    """Meaning shown for a part: its animCJK sense; for a radical variant the
+    meaning of the full form (亻 -> 人 "Person"); then kanji.json; else None."""
+    m = _anim_sense(animcjk.get(p))
+    if m is None and p in VARIANTS:
+        base = VARIANTS[p]
+        m = _kanji_sense(kanji.get(base)) or _anim_sense(animcjk.get(base))
+    return m if m is not None else _kanji_sense(kanji.get(p))
 
 
 def _radical(entry):
+    """animCJK radical, first character, mapped to its full form (亻 -> 人)
+    so it can match a parent."""
     r = nfc((entry or {}).get('radical') or '').strip()
-    return r[0] if r else None
+    return VARIANTS.get(r[0], r[0]) if r else None
 
 
 def _study_order(chars, level, required, freq):
@@ -251,7 +291,8 @@ def build_ja(src):
         if missing:
             raise ValueError(f'kanji missing from {name}: {missing}')
 
-    parents = {c: find_parents(c, ids, study) for c in chars}
+    parents = {c: drop_deep_single_strokes(c, find_parents(c, ids, study), ids, strokes)
+               for c in chars}
     required = {c: [p for p in parents[c] if level[p] >= level[c]] for c in chars}
     order = _study_order(chars, level, required, freq)
 
@@ -265,7 +306,7 @@ def build_ja(src):
         parts = []
         for p in direct_parts(c, ids):
             if p not in part_meanings:
-                part_meanings[p] = _part_meaning(p, kanji, animcjk)
+                part_meanings[p] = part_meaning(p, kanji, animcjk)
             base = p if p in study else VARIANTS.get(p)
             parts.append({'char': p, 'meaning': part_meanings[p],
                           'ref': ref(base) if base in study else None})
@@ -277,7 +318,7 @@ def build_ja(src):
             'sublevel': None,
             'order': i,
             'strokes': strokes[c],
-            'meanings': [nfc(m).strip().lower() for m in kanji[c]['meanings'][:3]],
+            'meanings': clean_meanings(kanji[c]['meanings']),
             'on': on,
             'kun': kun,
             'parts': parts,

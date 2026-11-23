@@ -106,6 +106,14 @@ def find_parents(ch, ids, study):
     return sorted(keep)
 
 
+def drop_deep_single_strokes(ch, parents, ids, strokes):
+    """Keep a one-stroke parent (一, 丨...) only if it is a direct IDS part of
+    ch: 二 = ⿱一一 keeps 一, but 気 does not get 一 from deep inside 气.
+    Parents with more strokes, or unknown strokes, are always kept."""
+    direct = _with_variants(direct_parts(ch, ids))
+    return [p for p in parents if strokes.get(p) != 1 or p in direct]
+
+
 def pick_primary(parents, strokes, radical):
     """Most strokes, then equal to radical, then lowest code point."""
     if not parents:
