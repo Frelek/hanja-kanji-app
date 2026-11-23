@@ -1,48 +1,105 @@
 # 한자 & 漢字 학습 (Hanja & Kanji Learner) 🌸
 
-한자(Korean Hanja)와 일본어 상용한자(Japanese Kanji) **550자+**를 **패밀리 트리(Branch Tree)** 구조로 학습하고, **Anki 방식의 간격 반복(SM-2 Spaced Repetition)** 알고리즘으로 체계적으로 복습할 수 있는 모바일 최적화 웹 애플리케이션(PWA)입니다.
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen)](https://frelekkacper.com/hanja-kanji-app/)
+[![Progressive Web App](https://img.shields.io/badge/PWA-100%25%20Offline-orange)](https://frelekkacper.com/hanja-kanji-app/)
+[![Characters](https://img.shields.io/badge/Vocabulary-551%20Characters-blue)](https://frelekkacper.com/hanja-kanji-app/)
+
+> **Live Application**: [https://frelekkacper.com/hanja-kanji-app/](https://frelekkacper.com/hanja-kanji-app/) (or [https://frelek.github.io/hanja-kanji-app/](https://frelek.github.io/hanja-kanji-app/))  
+> **Source Repository**: [https://github.com/Frelek/hanja-kanji-app](https://github.com/Frelek/hanja-kanji-app)
+
+A mobile-first, 100% offline-capable Progressive Web Application (PWA) designed to teach **Korean Hanja (한자)** and **Japanese Joyo Kanji (漢字)** through an etymological **Family Tree Branching Model**, reinforced with **Anki-style SM-2 Spaced Repetition Flashcards** and **Animated Stroke Order**.
 
 ---
 
-## 🌟 주요 업데이트 및 기능 (Key Features)
+## 🎯 1. Core Vision & Goals of the App
 
-### 1. 🌐 상단 우측 언어 전환기 (Language Switcher)
-- 화면 오른쪽 상단에 위치한 **`[ 🇰🇷 한자 | 🇯🇵 漢字 ]`** 토글 버튼으로 즉시 전환
-- **🇰🇷 한자 모드 (Korean Hanja)**:
-  - 15개 테마 패밀리 브랜치, **287개 필수 한자** 수록
-  - 한국어 음/훈(읽기와 뜻), 실생활 복합 단어, 자연스러운 한국어 문장
-- **🇯🇵 漢字 모드 (Japanese Kanji)**:
-  - 14개 테마 패밀리 브랜치, **264개 상용한자** 수록
-  - 음독(音読み Katakana) / 훈독(訓読み Hiragana), 일본어 어휘, 후리가나가 포함된 예문
+### The Tree-Branch Learning Approach
+Rather than presenting characters as isolated rote lists, the app structures characters into semantic, visual families:
+- **Level 0 (Root Radicals)**: Elementary pictograms and foundational building blocks (e.g., `木` Tree, `日` Sun, `水` Water, `人` Person).
+- **Level 1 (Derivatives)**: Characters created by adding strokes or combining roots (e.g., `木` Tree → `林` Grove, `本` Origin, `休` Rest).
+- **Level 2+ (Compounds)**: Complex ideograms building upon previous tiers (e.g., `林` Grove → `森` Forest).
 
-> **총 수록 어휘**: **551자** (287 한자 + 264 칸지)
+### Dual Language Support (Upper Right Switcher)
+- **🇰🇷 Korean Hanja Mode**: 15 branches with **287 essential Hanja**, Korean readings (`음`), definitions (`훈`), compound words, and natural Korean sentences.
+- **🇯🇵 Japanese Kanji Mode**: 14 branches with **264 Joyo Kanji**, Onyomi (音読み), Kunyomi (訓読み), compound words with **pure kana readings directly beneath**, and Japanese sentences with furigana.
+- **Total Database**: **551 unique characters** (exceeding the 500-word milestone).
 
-### 2. 🖌️ 인터랙티브 획순 애니메이션 & 쓰기 연습 (Animated Stroke Order)
-- 오픈소스 **HanziWriter** 엔진 연동
-- 한자 상세 모달에서 **실시간 획순 애니메이션(▶️)** 재생
-- **직접 쓰기(✍️ Quiz Mode)** 지원: 모바일 화면에서 손가락으로 획순을 직접 따라 쓰는 인터랙티브 쓰기 퀴즈
-- 총 획수(Stroke Count) 정보 표시
+### Strict Quizzing & Spaced Repetition Rules
+1. **No Inline Word Quizzes**: Character detail modals display stroke animations and vocabulary, without inline quiz clutter.
+2. **Category Quiz Only at Top**: Each category branch features a prominent quiz trigger (`⚡ 카테고리 퀴즈` / `⚡ カテゴリーテスト`) at the top of its header.
+3. **Learned Words Only**: Quizzes strictly test only characters that the user has explicitly marked as learned (`Storage.isLearned`).
+4. **Anki SM-2 Spaced Repetition**: 4-grade algorithm (`Again`, `Hard`, `Good`, `Easy`) tracking review intervals, ease factors, streaks, and due dates.
 
-### 3. 📜 따뜻한 한지/와시 베이지 테마 (Bright Beige Aesthetic)
-- 눈이 편안하고 고급스러운 **전통 한지(韓紙) 및 와시(和紙)** 질감의 밝은 베이지/크림 색채 (`#f7f4ed`)
-- 붉은 주칠(朱漆 Vermilion `#c53030`) 포인트와 묵빛 먹물 서체(`#231f1d`)의 미려한 동양 서예풍 디자인
-- 모바일(아이폰 노치 및 홈바) 최적화
-
-### 4. 🌳 패밀리 트리 뷰 (Branch Tree Learning View)
-- 스케치 구조 구현: **루트 기본 부수 → 파생 한자 → 복합 한자**
-- 프로그레시브 언락: 부모 한자를 먼저 학습해야 하위 복합 한자가 잠금 해제
-
-### 5. 📝 Anki SM-2 간격 반복 복습 (Flashcard Review)
-- 카드 3D 플립 애니메이션
-- 4가지 평가 버튼: **다시 (Again)**, **어려움 (Hard)**, **좋음 (Good)**, **쉬움 (Easy)**
-- 언어별로 각각 독립된 `localStorage` 복습 덱 및 스트릭(연속 일수) 기록
+### Traditional Parchment Aesthetic
+- Warm, glare-free **Hanji/Washi bright beige background** (`#f7f4ed`).
+- East Asian **calligraphy sumi ink typography** (`#231f1d`).
+- Traditional **vermilion red accents** (주칠 / 朱色 `#c53030`).
 
 ---
 
-## 📱 아이폰 접속 및 홈 화면 추가 (iPhone Safari)
+## 📂 2. Repository & Directory Structure
 
-1. 동일한 Wi-Fi에 연결된 아이폰 사파리(Safari)에서 접속:
-   👉 **`http://192.168.1.38:8080/`** (또는 PC에서 `http://localhost:8080/`)
-2. 사파리 하단 툴바의 **공유 버튼 `[↑]`** 탭
-3. **'홈 화면에 추가'** 선택 후 **'추가'** 탭
-4. 홈 화면에 생성된 `漢` 아이콘을 누르면 주소창 없는 **전체 화면 독립형 앱**으로 구동됩니다.
+```
+d:/0_Antigravity/6_Hanja_and_Kanji_app/
+├── index.html                  # Single-page PWA shell and meta headers
+├── manifest.json               # Standalone web app configuration & icon map
+├── sw.js                       # ServiceWorker v3 (Cache-first offline engine)
+├── README.md                   # Complete specification & usage documentation
+├── test_app.js                 # Automated Node.js validation test suite
+├── apple-touch-icon.png        # iOS home screen icon (180x180)
+├── make_icons.py               # Generates PWA icon assets
+├── generate_all_data.py        # Dataset builder script
+├── build_full_database.py      # Expanded 551-character dataset compiler
+├── .gitignore                  # Git tracking rules
+├── css/
+│   └── styles.css              # Full aesthetic styling & responsive layout
+├── data/
+│   ├── hanja.json              # 287 Korean Hanja records across 15 branches
+│   └── kanji.json              # 264 Japanese Kanji records across 14 branches
+├── icons/
+│   ├── icon-192.png            # 192x192 PWA maskable icon
+│   └── icon-512.png            # 512x512 PWA maskable icon
+└── js/
+    ├── app.js                  # Main controller, router, SW registrar, language switcher
+    ├── storage.js              # Mode-scoped localStorage & SM-2 state manager
+    ├── tree-view.js            # Branch tabs, vertical tree graph, category quiz header
+    ├── detail-modal.js         # Character bottom sheet, HanziWriter stroke animation
+    ├── test-mode.js            # Anki flashcard engine (SM-2, category & general review)
+    └── hanzi-writer.min.js     # Bundled HanziWriter library (36 KB, 100% offline)
+```
+
+---
+
+## ⚙️ 3. Key Modules & Technical Specifications
+
+| File | Purpose & Responsibilities |
+| :--- | :--- |
+| `js/app.js` | Top-level coordinator. Manages initial JSON fetching, hash-based routing (`#tree`, `#test`, `#settings`), language switching, and ServiceWorker registration. |
+| `js/storage.js` | LocalStorage abstraction. Scopes all keys by mode (`hanja_*` vs `kanji_*`) to keep Korean and Japanese learning data completely isolated. |
+| `js/tree-view.js` | Renders the draggable branch tab strip, the category progress header with the **Category Quiz Button**, and the hierarchically linked node graph. |
+| `js/detail-modal.js` | Interactive bottom sheet. Runs offline animated stroke orders using `HanziWriter`, displays pure kana under Japanese words, and toggles "Mark as Learned". |
+| `js/test-mode.js` | Spaced repetition flashcard runner. Supports Category Quiz and General Due Review, strictly filtering by `Storage.isLearned()`. |
+| `js/hanzi-writer.min.js` | Self-contained stroke order animation library bundled locally so stroke playback does not rely on third-party CDNs. |
+| `sw.js` | Pre-caches all assets during installation. Employs a cache-first strategy with automatic background network caching. |
+
+---
+
+## 🔒 4. Rules & Invariants for Future AI Developers
+
+> [!IMPORTANT]
+> **Preserve these invariants in any future update**:
+> 1. **Do not use external CDNs for core functions**: Keep `HanziWriter` and all fonts/scripts bundled locally so the PWA remains 100% offline capable.
+> 2. **Japanese Pure Kana Display**: Under every Kanji example word, the pure kana (`example_word_kana`) must always be rendered immediately below it.
+> 3. **Quizzing Scope**: Quizzes must **never** test unlearned characters. Always filter test queues using `Storage.isLearned(id)`.
+> 4. **No Inline Quizzes**: Keep the quiz button strictly at the top of the category header; do not re-add quiz buttons inside the character modal.
+> 5. **Mode Isolation**: Keep `hanja` and `kanji` localStorage states strictly separate.
+
+---
+
+## 📱 5. Installation on iPhone (Safari)
+
+1. Open **`https://frelekkacper.com/hanja-kanji-app/`** (or `https://frelek.github.io/hanja-kanji-app/`) in Safari.
+2. Tap the **Share icon** (`↑`) at the bottom of the screen.
+3. Select **Add to Home Screen** (**홈 화면에 추가**).
+4. Ensure **"Open as Web App"** is **ticked / checked** (this launches the app in standalone fullscreen mode without the Safari URL bar).
+5. Tap **Add**. The app will now work completely offline.
