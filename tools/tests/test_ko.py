@@ -5,8 +5,8 @@ import tempfile
 import unittest
 
 from hk.ko import (parse_hun_eum, LEVEL_MAP, KO_MATCH_VARIANTS, load_kengdic,
-                   select_4ii, pick_words_ko, char_meanings, ko_study_order,
-                   build_ko)
+                   load_kengdic_hanja, select_4ii, pick_words_ko, char_meanings,
+                   ko_study_order, build_ko)
 from hk.text import is_cjk
 
 SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'sources')
@@ -49,7 +49,7 @@ class HunEumTests(unittest.TestCase):
                          [{'hun': '지날', 'eum': '경'}, {'hun': '글', 'eum': '경'}])
 
     def test_nfc(self):
-        decomposed = '금'     # 금 as conjoining jamo
+        decomposed = '\u1100\u1173\u11b7'     # 금 as conjoining jamo
         self.assertEqual(parse_hun_eum(f"[[['쇠'], ['{decomposed}']]]"),
                          [{'hun': '쇠', 'eum': '금'}])
 
@@ -108,7 +108,7 @@ class KengdicTests(unittest.TestCase):
     def test_whitespace_collapsed_and_trimmed(self):   # R18 (a)
         got = self.load([
             ('교회', '敎會', 'Preach or  moral instruction', ''),
-            ('국민', '國民', '  The people or 　 a nationality ; x', 'A'),
+            ('국민', '國民', '  The people\u00a0or \u3000 a nationality ; x', 'A'),
         ])
         self.assertEqual([e['en'] for e in got],
                          ['Preach or moral instruction', 'The people or a nationality'])
@@ -119,10 +119,32 @@ class KengdicTests(unittest.TestCase):
             ('시각', '視角', 'angle/point of view.  관점.', ''),
             ('동반', '東班', 'a kind of 兩班', ''),
             ('삼촌', '三寸', 'An uncle; (외삼촌 a brother of the wife)', 'A'),   # later sense
-            ('관동', '關東', 'an area of 가ngwon', ''),          # conjoining jamo
+            ('관동', '關東', 'an area of \u1100\u1161ngwon', ''),          # conjoining jamo
             ('학교', '學校', 'School', 'A'),
         ])
         self.assertEqual([e['w'] for e in got], ['學校'])
+
+    def test_selection_counts_rows_whatever_their_gloss(self):   # R19
+        path = _tsv([
+            ('강국', '强國', '', ''),                            # empty gloss
+            ('국가', '國家', '나라', ''),                        # hangul gloss
+            ('국어', '國語', 'Korean language; 한국어', 'A'),    # hangul in a later sense
+            ('가정', '家庭', 'home', 'A'),
+            ('정원', '庭園', 'garden', 'B'),
+            ('4중주', '四重奏', 'quartet', ''),                  # surface not all hangul
+            ('10월', '十月', 'October', ''),                     # length differs
+            ('산', '山', '', ''),                                # single hanja
+        ])
+        self.paths.append(path)
+        counted = load_kengdic_hanja(path)
+        self.assertEqual(counted, [{'w': '強國', 'hangul': '강국'},
+                                   {'w': '國家', 'hangul': '국가'},
+                                   {'w': '國語', 'hangul': '국어'},
+                                   {'w': '家庭', 'hangul': '가정'},
+                                   {'w': '庭園', 'hangul': '정원'}])
+        self.assertEqual(select_4ii(['國', '庭'], counted, n=1), ['國'])
+        # the gloss-cleaned list (used for picking words) would say the opposite
+        self.assertEqual(select_4ii(['國', '庭'], load_kengdic(path), n=1), ['庭'])
 
 
 class Select4iiTests(unittest.TestCase):
@@ -306,6 +328,11 @@ class FullBuildTests(unittest.TestCase):
                 self.assertEqual(len(w['w']), len(w['hangul']))
         self.assertIn({'w': '學校', 'hangul': '학교', 'en': 'School'},
                       self.by_id['ko:學']['words'] + self.by_id['ko:校']['words'])
+
+    def test_4ii_selection_ignores_gloss_quality(self):          # R19
+        four = {r['char'] for r in self.data['chars'] if r['level'] == '4급Ⅱ'}
+        self.assertTrue({'婦', '肉', '端'} <= four)
+        self.assertNotIn('砲', four)
 
     def test_match_variants_put_char_in_its_words(self):
         self.assertTrue(self.by_id['ko:強']['words'])

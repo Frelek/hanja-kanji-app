@@ -2,8 +2,9 @@
 characters, built purely from the pinned sources.
 
 hanja-grade.csv (rycont/hanja-grade-dataset) gives levels, 훈음, radicals and
-stroke counts; kengdic gives example words, and how many words use each
-character (the 4급Ⅱ selection and the in-level order); cjkvi-ids gives the
+stroke counts; kengdic gives example words (gloss-cleaned rows) and how
+many words use each character (all hanja rows, whatever the gloss: the 4급Ⅱ
+selection and the in-level order); cjkvi-ids gives the
 decomposition; animCJK gives meanings (dictionaryKo, then ZhHant, then Ja)
 and the 8급–5급 cross-check; kanji.json gives part meanings.
 """
@@ -74,33 +75,47 @@ def _has_hangul_or_cjk(s):
                for c in s)
 
 
-def load_kengdic(path):
-    """kengdic.tsv -> [{w, hangul, en, lvl}] in file order.
-
-    Keeps rows whose NFC hanja is >= 2 characters, all CJK, as long as the
-    surface; whose surface is all hangul syllables (drops "4중주" for 四重奏);
-    and whose gloss has no hangul or CJK character anywhere and a non-empty
-    first ';' sense (R18: a word must be explainable in plain English).
-    `w` is the hanja mapped through KO_MATCH_VARIANTS; `en` is the gloss's
-    first ';' sense with whitespace runs collapsed and trimmed (R18);
-    `lvl` is A/B/C/D or ''.
-    """
-    out = []
+def _kengdic_rows(path):
+    """(row, w, hangul) for each kengdic row, in file order, whose NFC hanja
+    is >= 2 characters, all CJK, as long as the surface, and whose surface
+    is all hangul syllables (drops "4중주" for 四重奏). `w` is the hanja
+    mapped through KO_MATCH_VARIANTS."""
     with open(path, encoding='utf-8', newline='') as f:
         for row in csv.DictReader(f, delimiter='\t', quoting=csv.QUOTE_NONE):
             hanja = nfc(row['hanja']).strip()
             surface = nfc(row['surface']).strip()
-            gloss = nfc(row['gloss'])
-            en = ' '.join(gloss.split(';')[0].split())
             if (len(hanja) < 2 or not all(is_cjk(c) for c in hanja)
-                    or len(hanja) != len(surface) or not _is_hangul(surface)
-                    or not en or _has_hangul_or_cjk(gloss)):
+                    or len(hanja) != len(surface) or not _is_hangul(surface)):
                 continue
-            lvl = nfc(row['level']).strip()
-            if lvl not in _LVL_ORDER:
-                raise ValueError(f'unknown kengdic level {lvl!r} in row {row["id"]}')
-            w = ''.join(KO_MATCH_VARIANTS.get(c, c) for c in hanja)
-            out.append({'w': w, 'hangul': surface, 'en': en, 'lvl': lvl})
+            yield row, ''.join(KO_MATCH_VARIANTS.get(c, c) for c in hanja), surface
+
+
+def load_kengdic_hanja(path):
+    """kengdic.tsv -> [{w, hangul}]: every row that passes the hanja/surface
+    filters, whatever its gloss (empty, hangul, anything). R19: this list
+    measures how common a character is in Sino-Korean vocabulary, so it
+    drives the 4급Ⅱ selection and the in-level order."""
+    return [{'w': w, 'hangul': hangul} for _, w, hangul in _kengdic_rows(path)]
+
+
+def load_kengdic(path):
+    """kengdic.tsv -> [{w, hangul, en, lvl}] in file order, for picking words.
+
+    The rows of load_kengdic_hanja whose gloss has no hangul or CJK
+    character anywhere and a non-empty first ';' sense (R18: a word must be
+    explainable in plain English). `en` is that first sense with whitespace
+    runs collapsed and trimmed (R18); `lvl` is A/B/C/D or ''.
+    """
+    out = []
+    for row, w, hangul in _kengdic_rows(path):
+        gloss = nfc(row['gloss'])
+        en = ' '.join(gloss.split(';')[0].split())
+        if not en or _has_hangul_or_cjk(gloss):
+            continue
+        lvl = nfc(row['level']).strip()
+        if lvl not in _LVL_ORDER:
+            raise ValueError(f'unknown kengdic level {lvl!r} in row {row["id"]}')
+        out.append({'w': w, 'hangul': hangul, 'en': en, 'lvl': lvl})
     return out
 
 
@@ -223,12 +238,14 @@ def build_ko(src):
     anims = tuple(load_animcjk(os.path.join(src, name)) for name in _ANIMCJK)
     kanji = load_kanji(os.path.join(src, 'kanji.json'))
     ids = load_ids(os.path.join(src, 'ids.txt'), 'K')
-    words = load_kengdic(os.path.join(src, 'kengdic.tsv'))
-    count = word_counts(words)
+    kengdic = os.path.join(src, 'kengdic.tsv')
+    words = load_kengdic(kengdic)              # gloss-cleaned: for picking words
+    vocab = load_kengdic_hanja(kengdic)        # any gloss: for how common (R19)
+    count = word_counts(vocab)
     _check_animcjk_sets(rows, anims[0])
 
     pool = sorted(c for c, r in rows.items() if r['level'] == '4급Ⅱ')
-    picked = set(select_4ii(pool, words))
+    picked = set(select_4ii(pool, vocab))
     chars = sorted(c for c, r in rows.items() if r['level'] != '4급Ⅱ' or c in picked)
     study = set(chars)
     level = {c: rows[c]['level'] for c in chars}
