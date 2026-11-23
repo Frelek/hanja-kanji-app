@@ -103,3 +103,34 @@ d:/0_Antigravity/6_Hanja_and_Kanji_app/
 3. Select **Add to Home Screen** (**홈 화면에 추가**).
 4. Ensure **"Open as Web App"** is **ticked / checked** (this launches the app in standalone fullscreen mode without the Safari URL bar).
 5. Tap **Add**. The app will now work completely offline.
+
+---
+
+## 🤖 6. GitHub, Authentication & API Guide for AI & Developers
+
+### GitHub Links & Endpoints
+- **Repository**: [https://github.com/Frelek/hanja-kanji-app](https://github.com/Frelek/hanja-kanji-app)
+- **Clone / Remote URL**: `https://github.com/Frelek/hanja-kanji-app.git`
+- **Live Site**: [https://frelekkacper.com/hanja-kanji-app/](https://frelekkacper.com/hanja-kanji-app/) (or [https://frelek.github.io/hanja-kanji-app/](https://frelek.github.io/hanja-kanji-app/))
+- **Actions Workflow**: [https://github.com/Frelek/hanja-kanji-app/actions](https://github.com/Frelek/hanja-kanji-app/actions)
+- **Pages Settings**: [https://github.com/Frelek/hanja-kanji-app/settings/pages](https://github.com/Frelek/hanja-kanji-app/settings/pages)
+
+### Headless Git Authentication for AI Assistants
+- **Owner**: `Frelek`
+- To avoid GUI authentication blocks from Windows Git Credential Manager, automated AI tasks push using a GitHub Personal Access Token (PAT) with `repo` scope:
+  ```powershell
+  # 1. Set temporary authenticated remote
+  git remote set-url origin https://Frelek:<TOKEN>@github.com/Frelek/hanja-kanji-app.git
+
+  # 2. Push to main
+  git push origin main
+
+  # 3. Sanitize remote URL immediately
+  git remote set-url origin https://github.com/Frelek/hanja-kanji-app.git
+  ```
+
+### API Architecture: Zero External APIs
+- The application requires **zero external cloud backend APIs** or subscriptions.
+- **Client-Side Web APIs**: Service Worker API (`sw.js`), Cache API (`hanja-kanji-learner-v3`), Web Storage API (`localStorage`), Hash Navigation (`#tree`, `#test`, `#settings`).
+- **Offline Engine**: HanziWriter 2.x API bundled locally in [hanzi-writer.min.js](file:///d:/0_Antigravity/6_Hanja_and_Kanji_app/js/hanzi-writer.min.js).
+

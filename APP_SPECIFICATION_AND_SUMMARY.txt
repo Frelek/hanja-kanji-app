@@ -17,7 +17,7 @@ TABLE OF CONTENTS
 --------------------------------------------------------------------------------
 1. EXECUTIVE SUMMARY & CORE MISSION
 2. USER REQUIREMENTS & THE TREE-BRANCH CONCEPT
-3. PRODUCTION DEPLOYMENT & REPOSITORY URLS
+3. GITHUB ECOSYSTEM, DEPLOYMENT, APIS & AUTHENTICATION PROTOCOLS FOR AI
 4. COMPLETE REPOSITORY DIRECTORY TREE
 5. DETAILED FILE-BY-FILE MANIFEST & TECHNICAL SPECIFICATIONS
 6. COMPLETE DATA SCHEMAS & FIELD DICTIONARIES
@@ -100,20 +100,110 @@ on an initial hand-drawn wireframe sketch:
    - 100% offline operational capacity via local ServiceWorker caching.
 
 ================================================================================
-3. PRODUCTION DEPLOYMENT & REPOSITORY URLS
+3. GITHUB ECOSYSTEM, DEPLOYMENT, APIS & AUTHENTICATION PROTOCOLS FOR AI
 ================================================================================
+
+3.1 GitHub Ecosystem & Links
+----------------------------
 - Primary Public Repository:
   https://github.com/Frelek/hanja-kanji-app
 
-- Production Live Site (Custom Domain):
+- Git Remote Clone & Push Endpoint:
+  https://github.com/Frelek/hanja-kanji-app.git
+
+- Production Live Deployment (User Custom Domain):
   https://frelekkacper.com/hanja-kanji-app/
 
-- Production Live Site (GitHub Pages Mirror):
+- Production Live Deployment (GitHub Pages Standard):
   https://frelek.github.io/hanja-kanji-app/
 
-- Hosting Infrastructure:
-  GitHub Pages on branch `main` serving from `/` (root directory).
-  HTTPS enforced with automatic SSL certificate management.
+- Repository Settings & Pages Configuration:
+  https://github.com/Frelek/hanja-kanji-app/settings/pages
+
+- CI/CD Actions Workflows (Pages Build & Deployment):
+  https://github.com/Frelek/hanja-kanji-app/actions
+
+- Commit Log & Version History:
+  https://github.com/Frelek/hanja-kanji-app/commits/main
+
+- Repository Owner Profile:
+  https://github.com/Frelek
+
+- Hosting Infrastructure Details:
+  * GitHub Pages deployed directly from branch `main` serving from `/` (root directory).
+  * Domain Routing: Account-level custom domain `frelekkacper.com` routes requests to
+    `https://frelekkacper.com/hanja-kanji-app/` with automatic SSL/HTTPS certificate.
+  * Standard fallback `https://frelek.github.io/hanja-kanji-app/` automatically forwards
+    to the custom domain.
+
+3.2 GitHub Authentication & Login Protocol for AI Agents
+--------------------------------------------------------
+- Account Identity: Frelek (https://github.com/Frelek)
+- Non-Interactive / Headless Git Push Protocol:
+  When an AI or automated script in this environment needs to commit and push changes
+  to `https://github.com/Frelek/hanja-kanji-app`:
+  1. Interactive Credential Avoidance:
+     Standard `git push` on Windows environments will invoke Git Credential Manager,
+     which attempts to spawn an interactive OAuth GUI or browser prompt that stalls
+     automated agent tasks.
+  2. Authentication via Personal Access Token (PAT):
+     To push headlessly, the AI requires a Personal Access Token with the `repo` scope.
+     Tokens can be generated at: https://github.com/settings/tokens/new
+     Note: "hanja-kanji-push", Scope: "repo" (Full control of private and public repositories).
+  3. Execution Pattern:
+     ```powershell
+     # 1. Temporarily embed token into remote URL
+     git remote set-url origin https://Frelek:<TOKEN>@github.com/Frelek/hanja-kanji-app.git
+
+     # 2. Push commits to main branch
+     git push origin main
+
+     # 3. Immediately sanitize remote URL back to clean HTTPS (critical security step)
+     git remote set-url origin https://github.com/Frelek/hanja-kanji-app.git
+     ```
+  4. Security & Secret Management Invariants:
+     - NEVER commit hardcoded Personal Access Tokens, passwords, or SSH private keys
+       into tracked repository files (e.g., inside `.json`, `.js`, or `.txt` files).
+     - Always sanitize the local `.git/config` remote URL after pushing so tokens
+       are not left in plain text on disk.
+
+3.3 API Inventory & Dependency Architecture
+-------------------------------------------
+- Architectural Principle: ZERO External Backend / Cloud API Dependency
+  The application is strictly designed to be 100% self-contained and offline-first.
+  There are NO remote backend servers, NO cloud databases (Firebase, Supabase, etc.),
+  NO REST API endpoints, and NO API keys required to run, learn, animate strokes, or
+  quiz vocabulary.
+
+- Client-Side Web Platform APIs Utilized:
+  1. Service Worker API (navigator.serviceWorker):
+     * Service Worker file: `./sw.js`
+     * Lifecycle: Registered inside `App._registerServiceWorker()` upon app initialization.
+     * Functions: Offline resource interception, background caching, cache invalidation.
+  2. Cache Storage API (window.caches):
+     * Active Cache Name: `hanja-kanji-learner-v3`
+     * Methods Used: `caches.open()`, `cache.addAll()`, `cache.match()`, `cache.put()`, `caches.delete()`.
+     * Caches all HTML, CSS, JavaScript, JSON databases, and icon images.
+  3. Web Storage API (window.localStorage):
+     * Key prefixing: Mode-scoped keys (`hanja_*` vs `kanji_*`).
+     * Methods: `localStorage.getItem()`, `localStorage.setItem()`, `localStorage.removeItem()`.
+     * Storage footprint: < 500 KB (well within standard 5 MB browser quota).
+  4. Browser History & Hash Navigation API (window.location.hash / window.onhashchange):
+     * Hash routes: `#tree` (Branch view), `#test` (Flashcards view), `#settings` (Stats view).
+     * Decouples navigation from server-side routing, enabling static hosting on GitHub Pages.
+  5. Web App Manifest API (manifest.json):
+     * Enables standalone iOS and Android web application installation.
+
+- Third-Party Engine APIs (Bundled Locally):
+  1. HanziWriter 2.x API (js/hanzi-writer.min.js):
+     * Vendor: HanziWriter (Open-source Chinese/CJK stroke animator library).
+     * Physical file: Bundled directly in `js/hanzi-writer.min.js` (~36.4 KB minified).
+     * Invariance: Loaded LOCALLY from relative path `./js/hanzi-writer.min.js`. NEVER load via CDN.
+     * Core API Methods:
+       - `new HanziWriter(targetElementId, characterString, options)`: Creates SVG canvas.
+       - `writer.animateCharacter({ onComplete: callback })`: Runs animated stroke sequence.
+       - `writer.quiz({ onComplete: callback })`: Interactive finger/mouse stroke writing quiz.
+       - `writer.destroy()`: Cleans up SVG nodes and prevents memory leaks upon modal close.
 
 ================================================================================
 4. COMPLETE REPOSITORY DIRECTORY TREE
