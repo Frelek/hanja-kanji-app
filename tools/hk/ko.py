@@ -60,8 +60,18 @@ def parse_hun_eum(s):
     return out
 
 
+# Hangul jamo, compatibility jamo, jamo extended A, syllables, jamo extended B
+_HANGUL_RANGES = ((0x1100, 0x11FF), (0x3130, 0x318F), (0xA960, 0xA97F),
+                  (0xAC00, 0xD7AF), (0xD7B0, 0xD7FF))
+
+
 def _is_hangul(s):
     return bool(s) and all(0xAC00 <= ord(c) <= 0xD7A3 for c in s)
+
+
+def _has_hangul_or_cjk(s):
+    return any(is_cjk(c) or any(a <= ord(c) <= b for a, b in _HANGUL_RANGES)
+               for c in s)
 
 
 def load_kengdic(path):
@@ -69,19 +79,22 @@ def load_kengdic(path):
 
     Keeps rows whose NFC hanja is >= 2 characters, all CJK, as long as the
     surface; whose surface is all hangul syllables (drops "4중주" for 四重奏);
-    and whose gloss (its first ';' sense) is not empty. `w` is the hanja
-    mapped through KO_MATCH_VARIANTS; `en` is the first ';' sense of the
-    gloss as written; `lvl` is A/B/C/D or ''.
+    and whose gloss has no hangul or CJK character anywhere and a non-empty
+    first ';' sense (R18: a word must be explainable in plain English).
+    `w` is the hanja mapped through KO_MATCH_VARIANTS; `en` is the gloss's
+    first ';' sense with whitespace runs collapsed and trimmed (R18);
+    `lvl` is A/B/C/D or ''.
     """
     out = []
     with open(path, encoding='utf-8', newline='') as f:
         for row in csv.DictReader(f, delimiter='\t', quoting=csv.QUOTE_NONE):
             hanja = nfc(row['hanja']).strip()
             surface = nfc(row['surface']).strip()
-            en = nfc(row['gloss']).split(';')[0].strip()
+            gloss = nfc(row['gloss'])
+            en = ' '.join(gloss.split(';')[0].split())
             if (len(hanja) < 2 or not all(is_cjk(c) for c in hanja)
                     or len(hanja) != len(surface) or not _is_hangul(surface)
-                    or not en):
+                    or not en or _has_hangul_or_cjk(gloss)):
                 continue
             lvl = nfc(row['level']).strip()
             if lvl not in _LVL_ORDER:

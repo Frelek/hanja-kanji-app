@@ -7,12 +7,21 @@ import unittest
 from hk.ko import (parse_hun_eum, LEVEL_MAP, KO_MATCH_VARIANTS, load_kengdic,
                    select_4ii, pick_words_ko, char_meanings, ko_study_order,
                    build_ko)
+from hk.text import is_cjk
 
 SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'sources')
 NEEDED = ['hanja-grade.csv', 'kengdic.tsv', 'ids.txt', 'kanji.json',
           'animcjk-dictionaryKo.txt', 'animcjk-dictionaryZhHant.txt',
           'animcjk-dictionaryJa.txt']
 HAVE_SOURCES = all(os.path.exists(os.path.join(SRC, f)) for f in NEEDED)
+HANGUL_RANGES = ((0x1100, 0x11FF), (0x3130, 0x318F), (0xA960, 0xA97F),
+                 (0xAC00, 0xD7AF), (0xD7B0, 0xD7FF))
+
+
+def _hangul(c):
+    return any(a <= ord(c) <= b for a, b in HANGUL_RANGES)
+
+
 HEADER = 'id\tsurface\thanja\tgloss\tlevel\tcreated\tsource\n'
 
 
@@ -85,7 +94,7 @@ class KengdicTests(unittest.TestCase):
     def test_first_sense_variants_and_nfc(self):
         got = self.load([
             ('강국', '强國', 'powerful nation; great power', 'B'),
-            ('금고', '金庫', ' safe, strongbox ', 'C'),    # U+F90A compat 金
+            ('금고', '\uf90a庫', ' safe, strongbox ', 'C'),    # U+F90A compat 金
             ('화가', '畵家', 'painter', ''),
             ('축복', '祝福', '"bless you!"; x', 'D'),
         ])
@@ -95,6 +104,25 @@ class KengdicTests(unittest.TestCase):
             {'w': '畫家', 'hangul': '화가', 'en': 'painter', 'lvl': ''},
             {'w': '祝福', 'hangul': '축복', 'en': '"bless you!"', 'lvl': 'D'},
         ])
+
+    def test_whitespace_collapsed_and_trimmed(self):   # R18 (a)
+        got = self.load([
+            ('교회', '敎會', 'Preach or  moral instruction', ''),
+            ('국민', '國民', '  The people or 　 a nationality ; x', 'A'),
+        ])
+        self.assertEqual([e['en'] for e in got],
+                         ['Preach or moral instruction', 'The people or a nationality'])
+
+    def test_gloss_with_hangul_or_cjk_dropped(self):    # R18 (b)
+        got = self.load([
+            ('수동', '樹洞', '큰 나무의 밑동이 패어 생긴 굴', ''),
+            ('시각', '視角', 'angle/point of view.  관점.', ''),
+            ('동반', '東班', 'a kind of 兩班', ''),
+            ('삼촌', '三寸', 'An uncle; (외삼촌 a brother of the wife)', 'A'),   # later sense
+            ('관동', '關東', 'an area of 가ngwon', ''),          # conjoining jamo
+            ('학교', '學校', 'School', 'A'),
+        ])
+        self.assertEqual([e['w'] for e in got], ['學校'])
 
 
 class Select4iiTests(unittest.TestCase):
@@ -273,6 +301,8 @@ class FullBuildTests(unittest.TestCase):
                 self.assertEqual(list(w), ['w', 'hangul', 'en'])
                 self.assertIn(r['char'], w['w'])
                 self.assertTrue(w['en'])
+                self.assertEqual(w['en'], ' '.join(w['en'].split()))
+                self.assertFalse([c for c in w['en'] if is_cjk(c) or _hangul(c)], w)
                 self.assertEqual(len(w['w']), len(w['hangul']))
         self.assertIn({'w': '學校', 'hangul': '학교', 'en': 'School'},
                       self.by_id['ko:學']['words'] + self.by_id['ko:校']['words'])
