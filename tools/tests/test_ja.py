@@ -72,9 +72,16 @@ class JlptCsvTests(unittest.TestCase):
 
     def test_non_kana_readings_dropped(self):
         got = self.parse(['～円,～えん,yen,JLPT_N5,x',
-                          '結婚,けっこん (する),marriage,JLPT_N5,x',
+                          '来,らい～,next,JLPT_N3,x',
+                          '〜(日本) 式,～(にほん) しき,style,JLPT_N2,x',
                           '青,あお,blue,JLPT_N5,x'])
         self.assertEqual([e['w'] for e in got], ['青'])
+
+    def test_trailing_kana_group_stripped_from_reading(self):
+        self.assertEqual(self.parse(['勉強,べんきょう (する),study,JLPT_N5,x',
+                                     '結婚,けっこん（する）,marriage,JLPT_N5,x']), [
+            {'w': '勉強', 'kana': 'べんきょう', 'en': 'study', 'n': 5},
+            {'w': '結婚', 'kana': 'けっこん', 'en': 'marriage', 'n': 5}])
 
 
 class PickWordsTests(unittest.TestCase):
@@ -161,6 +168,9 @@ class PartMeaningTests(unittest.TestCase):
         '礻': dict(BARE, meanings=['Cult', 'Showing Radical (no. 113)']),
         '宀': dict(BARE, meanings=['Shaped Crown', 'Katakana U Radical (no. 40)']),
         '罒': dict(BARE, meanings=['Net Radical Variant (no. 122)']),
+        '㝵': dict(BARE, meanings=['To Get', 'Complacent']),
+        '乂': dict(BARE, meanings=['Mow', 'Cut Grass']),
+        '丿': dict(BARE, meanings=['Katakana No Radical (no. 4)', 'Slash']),
     }
     ANIM = {'言': {'definition': 'speach, words; Kangxi radical 149'},
             '寺': {'definition': 'court, office; temple, monastery'},
@@ -168,7 +178,16 @@ class PartMeaningTests(unittest.TestCase):
             '宀': {'definition': 'roof; Kangxi radical 40'},
             '罒': {'definition': 'Radical 122'},
             '⺀': {'definition': 'CJK radical repeat; dots; variant of Kangxi radical 3'},
-            '吾': {'definition': 'i, my, our; resist, impede'}}
+            '吾': {'definition': 'i, my, our; resist, impede'},
+            '㝵': {'definition': '(ancient form of 得) to get, complacent, (same as 礙) '
+                                 'to obstruct, to hinder'},
+            '丷': {'definition': '“ears-out” component used in some Chinese characters '
+                                 '(for example, 兑); archaic form of 八; kwukyel'},
+            '𦍌': {'definition': '(variant of 羊), sheep'},
+            '㔾': {'definition': '(same as 筄) last name; Kangxi radical 26'},
+            '㐅': {'definition': '(ancient form of 五) five'},
+            '龷': {'definition': '(variant of 廿); twenty'},
+            '丿': {'definition': 'Kangxi radical 4'}}
 
     def pm(self, p):
         return part_meaning(p, self.KANJI, self.ANIM)
@@ -187,6 +206,23 @@ class PartMeaningTests(unittest.TestCase):
         self.assertEqual(self.pm('宀'), 'Roof')
         self.assertEqual(self.pm('⺀'), 'Dots')
         self.assertEqual(self.pm('吾'), 'I')
+
+    def test_cross_reference_prefix_stripped(self):
+        self.assertEqual(self.pm('㝵'), 'To Get')
+        self.assertEqual(self.pm('𦍌'), 'Sheep')
+        self.assertEqual(self.pm('㔾'), 'Last Name')
+        self.assertEqual(self.pm('㐅'), 'Five')
+        self.assertEqual(self.pm('龷'), 'Twenty')      # empty sense -> next sense
+
+    def test_comma_inside_parentheses_not_split(self):
+        m = self.pm('丷')
+        self.assertEqual(m.count('('), m.count(')'))
+        self.assertEqual(m, '“ears-out” Component Used In Some Chinese Characters '
+                            '(for Example, 兑)')
+
+    def test_kanji_json_fallback_after_animcjk(self):
+        self.assertEqual(self.pm('乂'), 'Mow')          # bare entry, no animCJK
+        self.assertEqual(self.pm('丿'), 'Slash')        # animCJK only a radical label
 
     def test_null(self):
         self.assertIsNone(self.pm('罒'))
@@ -244,8 +280,13 @@ class FullBuildTests(unittest.TestCase):
                 self.assertNotRegex(m, re.compile('radical', re.I))
         parts = self.data['parts']
         for p, m in {'氵': 'Water', '宀': 'Roof', '亻': 'Person', '礻': 'Show', '言': 'Say',
-                     '寺': 'Buddhist Temple', '日': 'Day'}.items():
+                     '寺': 'Buddhist Temple', '日': 'Day', '㝵': 'To Get'}.items():
             self.assertEqual(parts[p], m, p)
+        xref = re.compile(r'^\(.*\b(form|same as|variant|interchangeable)\b', re.I)
+        for p, m in parts.items():
+            if m is not None:
+                self.assertEqual(m.count('('), m.count(')'), (p, m))
+                self.assertNotRegex(m, xref)
 
     def test_compatibility_form_keys_do_not_clobber(self):
         # kanji.json also holds U+FA34 (compat 勤) with no level and no meanings
@@ -262,6 +303,14 @@ class FullBuildTests(unittest.TestCase):
         self.assertNotIn('ja:一', self.by_id['ja:気']['parents'])
         self.assertEqual(self.by_id['ja:二']['parents'], ['ja:一'])
         self.assertIn('ja:一', self.by_id['ja:百']['parents'])
+
+    def test_variant_form_component_keeps_parents_maximal(self):
+        self.assertNotIn('ja:八', self.by_id['ja:求']['parents'])
+        self.assertIn('ja:水', self.by_id['ja:求']['parents'])
+
+    def test_suru_reading_kept(self):
+        words = self.by_id['ja:勉']['words']
+        self.assertIn({'w': '勉強', 'kana': 'べんきょう', 'en': 'study', 'level': 'N5'}, words)
 
     def test_affix_words_not_used_when_others_exist(self):
         self.assertTrue(all('～' not in w['w'] and '〜' not in w['w']

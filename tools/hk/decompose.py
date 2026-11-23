@@ -96,13 +96,24 @@ def _with_variants(chars):
 
 
 def find_parents(ch, ids, study):
-    """Maximal study-set characters that appear inside ch, by code point."""
-    p_set = (_with_variants(components(ch, ids)) & set(study)) - {ch}
-    keep = []
-    for p in p_set:
-        if not any(q != p and p in _with_variants(components(q, ids))
-                   for q in p_set):
-            keep.append(p)
+    """Maximal study-set characters that appear inside ch, by code point.
+
+    A candidate q also contains whatever sits inside a variant form of q that
+    ch uses: 求 holds 氺 (= 水), 氺 holds 八, so 八 is not maximal next to 水.
+    """
+    comps = components(ch, ids)
+    p_set = (_with_variants(comps) & set(study)) - {ch}
+
+    def inside(q):
+        sub = set(components(q, ids))
+        for v in comps:
+            if VARIANTS.get(v) == q:
+                sub |= components(v, ids)
+        return _with_variants(sub)
+
+    within = {q: inside(q) for q in p_set}
+    keep = [p for p in p_set
+            if not any(q != p and p in within[q] for q in p_set)]
     return sorted(keep)
 
 

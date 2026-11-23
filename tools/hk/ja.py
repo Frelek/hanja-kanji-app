@@ -16,8 +16,11 @@ from hk.decompose import (VARIANTS, load_ids, direct_parts, find_parents,
 from hk.text import nfc, is_cjk
 
 LEVELS = (5, 4, 3)                      # study order: N5 first
-_KANA = re.compile('^[' + chr(0x3040) + '-' + chr(0x30FF) + ']+$')   # all kana, incl. ・ and ー
+_KANA_RANGE = chr(0x3040) + '-' + chr(0x30FF)          # all kana, incl. ・ and ー
+_KANA = re.compile('^[' + _KANA_RANGE + ']+$')
+_KANA_GROUP = re.compile(r'\s*[(（][' + _KANA_RANGE + r']+[)）]$')   # " (する)"
 _PARENS = '（）()'
+_XREF = re.compile(r'\b(form|same as|variant|interchangeable)\b', re.I)
 _RADICAL = re.compile('radical', re.I)
 _AFFIX = '～〜'
 _KANJI_MARKS = ('grade', 'jlpt_new', 'jlpt_old', 'freq')
@@ -93,15 +96,18 @@ def _reading_for(i, w, readings, paired):
 def parse_jlpt_csv(path, n):
     """One JLPT vocabulary file -> [{w, kana, en, n}] in file order.
 
-    Expressions listed as alternatives ("川; 河") become one entry each. Rows
-    whose kana is not pure kana are dropped; `en` is the first ';' sense.
+    Expressions listed as alternatives ("川; 河") become one entry each. A
+    trailing parenthesised kana group is cut from a reading ("べんきょう (する)"
+    -> "べんきょう"); rows whose kana is still not pure kana are dropped. `en`
+    is the first ';' sense.
     """
     out = []
     with open(path, encoding='utf-8', newline='') as f:
         for row in csv.DictReader(f):
             exprs = [nfc(e).strip() for e in row['expression'].split(';')]
             exprs = [e for e in exprs if e]
-            reads = [nfc(r).strip() for r in row['reading'].split(';')]
+            reads = [_KANA_GROUP.sub('', nfc(r).strip()).strip()
+                     for r in row['reading'].split(';')]
             reads = [r for r in reads if r]
             if not exprs or not reads:
                 continue
@@ -197,20 +203,54 @@ def _load_animcjk(src):
     return nfc_dict(pairs)
 
 
+def _split_outside_parens(s, sep):
+    """Split s on sep, except inside (...) or （...）."""
+    out, cur, depth = [], '', 0
+    for c in s:
+        if c in '(（':
+            depth += 1
+        elif c in ')）':
+            depth = max(depth - 1, 0)
+        if c == sep and depth == 0:
+            out.append(cur)
+            cur = ''
+        else:
+            cur += c
+    out.append(cur)
+    return out
+
+
+_LEAD_PAREN = re.compile(r'\s*[(（]([^()（）]*)[)）]')
+
+
+def _strip_xref(s):
+    """Drop leading cross-references: "(ancient form of 得) to get" -> "to get",
+    "(variant of 羊), sheep" -> "sheep"."""
+    while True:
+        m = _LEAD_PAREN.match(s)
+        if not m or not _XREF.search(m.group(1)):
+            return s.strip()
+        s = s[m.end():].lstrip(' ,')
+
+
 def _anim_sense(entry):
-    """First ';' sense of an animCJK definition that is not a radical label,
-    cut at its first ',', Title-Cased."""
-    for sense in nfc((entry or {}).get('definition') or '').split(';'):
+    """First usable sense of an animCJK definition: split on ';' and then ','
+    (outside parentheses), skipping radical labels and leading
+    cross-references; Title-Cased."""
+    definition = nfc((entry or {}).get('definition') or '')
+    for sense in _split_outside_parens(definition, ';'):
         sense = sense.strip()
-        if sense and not _RADICAL.search(sense):
-            return title_case(sense.split(',')[0].strip() or sense)
+        if not sense or _RADICAL.search(sense):
+            continue
+        first = _split_outside_parens(_strip_xref(sense), ',')[0].strip()
+        if first:
+            return title_case(first)
     return None
 
 
 def _kanji_sense(entry):
-    """First non-radical kanji.json meaning, but only for a real kanji: an
-    entry with a grade, JLPT level or frequency. Bare radical-form entries
-    (宀 "Shaped Crown", 礻 "Cult") don't count."""
+    """First non-radical kanji.json meaning, used only for kanji that are used
+    in Japanese: entries with a grade, JLPT level or frequency."""
     if not entry or all(entry.get(f) is None for f in _KANJI_MARKS):
         return None
     m = clean_meanings(entry.get('meanings'))
@@ -218,14 +258,18 @@ def _kanji_sense(entry):
 
 
 def part_meaning(p, kanji, animcjk):
-    """Meaning shown for a part: (1) its own kanji.json meaning if it is a
-    kanji (言 "Say"); (2) for a radical variant, the full form's (亻 "Person",
-    礻 "Show"); (3) its animCJK sense (宀 "Roof"); (4) None."""
+    """Meaning shown for a part: (1) its kanji.json meaning if it is a kanji
+    used in Japanese (言 "Say"); (2) for a radical variant, the full form's
+    (亻 "Person", 礻 "Show"); (3) its animCJK sense (宀 "Roof"); (4) its own
+    kanji.json meaning anyway (乂 "Mow"); (5) None."""
     m = _kanji_sense(kanji.get(p))
     if m is None and p in VARIANTS:
         m = _kanji_sense(kanji.get(VARIANTS[p]))
     if m is None:
         m = _anim_sense(animcjk.get(p))
+    if m is None:
+        own = clean_meanings((kanji.get(p) or {}).get('meanings'))
+        m = own[0] if own else None
     return m
 
 

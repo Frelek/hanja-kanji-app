@@ -26,6 +26,16 @@ class DecomposeTests(unittest.TestCase):
     def test_maximal_only(self):
         self.assertEqual(find_parents('森', IDS, {'木', '林', '森'}), ['林'])
 
+    def test_variant_form_counts_for_maximality(self):
+        # 八 sits inside 氺, which stands for the parent 水: 八 is not maximal
+        ids = {'求': '⿺⿻一氺丶', '氺': '⿻亅⿱丷八'}
+        got = find_parents('求', ids, {'一', '八', '水', '求'})
+        self.assertNotIn('八', got)
+        self.assertEqual(got, ['一', '水'])
+        # a variant the char does not contain gives no such shortcut
+        ids2 = {'沢': '⿰氵尺八', '氺': '⿻亅⿱丷八'}
+        self.assertEqual(find_parents('沢', ids2, {'八', '水', '沢'}), ['八', '水'])
+
     def test_nested_component(self):
         self.assertEqual(find_parents('學', IDS, {'子', '學'}), ['子'])
 
