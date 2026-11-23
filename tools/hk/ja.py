@@ -19,9 +19,8 @@ LEVELS = (5, 4, 3)                      # study order: N5 first
 _KANA = re.compile('^[' + chr(0x3040) + '-' + chr(0x30FF) + ']+$')   # all kana, incl. ・ and ー
 _PARENS = '（）()'
 _RADICAL = re.compile('radical', re.I)
-_WORD = re.compile(r'[^\W\d_]+')
-_LONE_I = re.compile(r"(?<![\w.'])i(?![\w.'])")
 _AFFIX = '～〜'
+_KANJI_MARKS = ('grade', 'jlpt_new', 'jlpt_old', 'freq')
 
 
 def nfc_dict(pairs):
@@ -115,19 +114,16 @@ def parse_jlpt_csv(path, n):
     return out
 
 
-def sentence_case(s):
-    """First character as the source has it, the remaining words lowercased,
-    a standalone "I" left upper-case: "Day Off" -> "Day off"."""
-    s = s.strip()
-    if not s:
-        return s
-    return s[0] + _WORD.sub(lambda m: m.group(0) if m.group(0) == 'I'
-                            else m.group(0).lower(), s[1:])
+def title_case(s):
+    """Upper-case the first character of each space-separated word, leaving
+    the rest as is (kanji-data style): "according to" -> "According To"."""
+    return ' '.join(w[:1].upper() + w[1:] for w in s.strip().split(' '))
 
 
 def clean_meanings(raw):
-    """kanji.json meanings: drop radical labels, sentence-case, first 3."""
-    out = [sentence_case(nfc(m)) for m in raw or []
+    """kanji.json meanings in source (Title) case, radical labels dropped,
+    first 3."""
+    out = [nfc(m).strip() for m in raw or []
            if m.strip() and not _RADICAL.search(m)]
     return out[:3]
 
@@ -203,28 +199,34 @@ def _load_animcjk(src):
 
 def _anim_sense(entry):
     """First ';' sense of an animCJK definition that is not a radical label,
-    cut at its first ','; a standalone pronoun "i" becomes "I"."""
+    cut at its first ',', Title-Cased."""
     for sense in nfc((entry or {}).get('definition') or '').split(';'):
         sense = sense.strip()
         if sense and not _RADICAL.search(sense):
-            first = sense.split(',')[0].strip() or sense
-            return _LONE_I.sub('I', first)
+            return title_case(sense.split(',')[0].strip() or sense)
     return None
 
 
 def _kanji_sense(entry):
-    m = clean_meanings((entry or {}).get('meanings'))
+    """First non-radical kanji.json meaning, but only for a real kanji: an
+    entry with a grade, JLPT level or frequency. Bare radical-form entries
+    (宀 "Shaped Crown", 礻 "Cult") don't count."""
+    if not entry or all(entry.get(f) is None for f in _KANJI_MARKS):
+        return None
+    m = clean_meanings(entry.get('meanings'))
     return m[0] if m else None
 
 
 def part_meaning(p, kanji, animcjk):
-    """Meaning shown for a part: its animCJK sense; for a radical variant the
-    meaning of the full form (亻 -> 人 "Person"); then kanji.json; else None."""
-    m = _anim_sense(animcjk.get(p))
+    """Meaning shown for a part: (1) its own kanji.json meaning if it is a
+    kanji (言 "Say"); (2) for a radical variant, the full form's (亻 "Person",
+    礻 "Show"); (3) its animCJK sense (宀 "Roof"); (4) None."""
+    m = _kanji_sense(kanji.get(p))
     if m is None and p in VARIANTS:
-        base = VARIANTS[p]
-        m = _kanji_sense(kanji.get(base)) or _anim_sense(animcjk.get(base))
-    return m if m is not None else _kanji_sense(kanji.get(p))
+        m = _kanji_sense(kanji.get(VARIANTS[p]))
+    if m is None:
+        m = _anim_sense(animcjk.get(p))
+    return m
 
 
 def _radical(entry):

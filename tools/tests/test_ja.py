@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from hk.ja import (parse_joyo_readings, parse_jlpt_csv, pick_words_ja,
-                   build_ja, nfc_dict, sentence_case, clean_meanings,
+                   build_ja, nfc_dict, title_case, clean_meanings,
                    part_meaning)
 
 SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'sources')
@@ -125,12 +125,16 @@ class AffixWordTests(unittest.TestCase):
 
 
 class MeaningTests(unittest.TestCase):
-    def test_sentence_case(self):
-        self.assertEqual(sentence_case('Day Off'), 'Day off')
-        self.assertEqual(sentence_case('Counter For Days'), 'Counter for days')
-        for same in ('Japan', 'England', 'English', 'I'):
-            self.assertEqual(sentence_case(same), same)
-        self.assertEqual(sentence_case('Me And I'), 'Me and I')
+    def test_source_case_kept(self):
+        self.assertEqual(clean_meanings(['Day Off', 'Old Japanese Coin', 'Japan', 'I']),
+                         ['Day Off', 'Old Japanese Coin', 'Japan'])
+        self.assertEqual(clean_meanings(['I', 'Me']), ['I', 'Me'])
+
+    def test_title_case(self):
+        self.assertEqual(title_case('roof'), 'Roof')
+        self.assertEqual(title_case('according to'), 'According To')
+        self.assertEqual(title_case('i'), 'I')
+        self.assertEqual(title_case('east-west CJK'), 'East-west CJK')
 
     def test_radical_items_dropped_then_first_three(self):
         self.assertEqual(clean_meanings(['One', 'One Radical (no.1)']), ['One'])
@@ -142,33 +146,50 @@ class MeaningTests(unittest.TestCase):
 
 
 class PartMeaningTests(unittest.TestCase):
-    KANJI = {'人': {'meanings': ['Person']}, '亻': {'meanings': ['Radical Number 9']},
-             '宀': {'meanings': ['Shaped Crown', 'Katakana U Radical (no. 40)']},
-             '丂': {'meanings': ['Radical Thing', 'Breath Out']}}
-    ANIM = {'氵': {'definition': 'water; radical number 85'},
+    # Bare radical-form entries (no grade, JLPT level or frequency) are not
+    # treated as kanji, which is what makes 宀 "Roof" and 礻 "Show".
+    BARE = {'grade': None, 'jlpt_new': None, 'jlpt_old': None, 'freq': None}
+    KANJI = {
+        '人': {'grade': 1, 'meanings': ['Person']},
+        '水': {'grade': 1, 'meanings': ['Water']},
+        '示': {'grade': 5, 'meanings': ['Show', 'Indicate']},
+        '言': {'grade': 2, 'meanings': ['Say', 'Word']},
+        '寺': {'grade': 2, 'meanings': ['Buddhist Temple']},
+        '一': {'grade': 1, 'meanings': ['One', 'One Radical (no.1)']},
+        '亻': dict(BARE, meanings=['Radical Number 9']),
+        '氵': dict(BARE, meanings=['Water', 'Water Radical (no. 85)']),
+        '礻': dict(BARE, meanings=['Cult', 'Showing Radical (no. 113)']),
+        '宀': dict(BARE, meanings=['Shaped Crown', 'Katakana U Radical (no. 40)']),
+        '罒': dict(BARE, meanings=['Net Radical Variant (no. 122)']),
+    }
+    ANIM = {'言': {'definition': 'speach, words; Kangxi radical 149'},
+            '寺': {'definition': 'court, office; temple, monastery'},
+            '礻': {'definition': 'cult; radical number 113'},
             '宀': {'definition': 'roof; Kangxi radical 40'},
-            '亻': {'definition': 'radical number 9'},
+            '罒': {'definition': 'Radical 122'},
             '⺀': {'definition': 'CJK radical repeat; dots; variant of Kangxi radical 3'},
-            '吾': {'definition': 'i, my, our; resist, impede'},
-            '水': {'definition': 'water, liquid, lotion, juice'}}
+            '吾': {'definition': 'i, my, our; resist, impede'}}
 
-    def pm(self, p, kanji=None):
-        return part_meaning(p, self.KANJI if kanji is None else kanji, self.ANIM)
+    def pm(self, p):
+        return part_meaning(p, self.KANJI, self.ANIM)
 
-    def test_animcjk_first_non_radical_sense(self):
-        self.assertEqual(self.pm('氵'), 'water')
-        self.assertEqual(self.pm('宀'), 'roof')
-        self.assertEqual(self.pm('⺀'), 'dots')
-        self.assertEqual(self.pm('吾'), 'I')        # standalone pronoun kept upper-case
+    def test_kanji_first_non_radical_meaning(self):
+        self.assertEqual(self.pm('言'), 'Say')
+        self.assertEqual(self.pm('寺'), 'Buddhist Temple')
+        self.assertEqual(self.pm('一'), 'One')
 
     def test_variant_takes_full_form_meaning(self):
         self.assertEqual(self.pm('亻'), 'Person')
-        # full form missing from kanji.json -> its animCJK sense
-        self.assertEqual(self.pm('亻', {'亻': {'meanings': ['Radical Number 9']}}), None)
-        self.assertEqual(part_meaning('氵', {}, {'水': self.ANIM['水']}), 'water')
+        self.assertEqual(self.pm('氵'), 'Water')
+        self.assertEqual(self.pm('礻'), 'Show')
 
-    def test_kanji_json_then_null(self):
-        self.assertEqual(self.pm('丂'), 'Breath out')
+    def test_animcjk_sense_title_cased(self):
+        self.assertEqual(self.pm('宀'), 'Roof')
+        self.assertEqual(self.pm('⺀'), 'Dots')
+        self.assertEqual(self.pm('吾'), 'I')
+
+    def test_null(self):
+        self.assertIsNone(self.pm('罒'))
         self.assertIsNone(self.pm('𠂉'))
 
 
@@ -211,7 +232,7 @@ class FullBuildTests(unittest.TestCase):
         r = self.by_id['ja:休']
         self.assertEqual(r['on'], ['キュウ'])
         self.assertEqual(r['kun'], ['やす.む', 'やす.まる', 'やす.める'])
-        self.assertEqual(r['meanings'], ['Rest', 'Day off', 'Retire'])
+        self.assertEqual(r['meanings'], ['Rest', 'Day Off', 'Retire'])
         self.assertEqual(r['parts'][0], {'char': '亻', 'meaning': 'Person', 'ref': 'ja:人'})
 
     def test_meanings_cleaned(self):
@@ -221,8 +242,10 @@ class FullBuildTests(unittest.TestCase):
             self.assertTrue(r['meanings'])
             for m in r['meanings']:
                 self.assertNotRegex(m, re.compile('radical', re.I))
-        self.assertEqual(self.data['parts']['氵'], 'water')
-        self.assertEqual(self.data['parts']['宀'], 'roof')
+        parts = self.data['parts']
+        for p, m in {'氵': 'Water', '宀': 'Roof', '亻': 'Person', '礻': 'Show', '言': 'Say',
+                     '寺': 'Buddhist Temple', '日': 'Day'}.items():
+            self.assertEqual(parts[p], m, p)
 
     def test_compatibility_form_keys_do_not_clobber(self):
         # kanji.json also holds U+FA34 (compat 勤) with no level and no meanings
@@ -233,6 +256,7 @@ class FullBuildTests(unittest.TestCase):
     def test_radical_variant_tie_break(self):
         self.assertEqual(self.by_id['ja:済']['primaryParent'], 'ja:水')
         self.assertEqual(self.by_id['ja:神']['primaryParent'], 'ja:示')
+        self.assertEqual(self.by_id['ja:会']['primaryParent'], 'ja:人')   # 𠆢 -> 人
 
     def test_deep_single_stroke_parents_dropped(self):
         self.assertNotIn('ja:一', self.by_id['ja:気']['parents'])

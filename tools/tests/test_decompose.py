@@ -13,6 +13,9 @@ class DecomposeTests(unittest.TestCase):
     def test_variants_table(self):
         self.assertEqual(VARIANTS['亻'], '人')
         self.assertEqual(VARIANTS['⻌'], '辵')
+        self.assertEqual(VARIANTS['𠆢'], '人')
+        self.assertEqual(VARIANTS['氺'], '水')
+        self.assertEqual(len(VARIANTS), 18)
         for absent in '月阝王':
             self.assertNotIn(absent, VARIANTS)
 
