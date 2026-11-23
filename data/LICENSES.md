@@ -3,19 +3,17 @@
 The files in `data/` and `assets/fonts/` are generated at build time
 (`python tools/build_data.py`) from the third-party sources below. The sources
 are pinned by hash in `tools/sources.lock.json` and fetched by
-`tools/fetch_sources.py`. Where GitHub reports no licence for an upstream
-repository, the entry says so; check the upstream repository before
-redistributing.
+`tools/fetch_sources.py`. Licence notes come from the upstream READMEs and file headers.
 
 ## Data sources
 
 | Source file | Upstream | Licence |
 | --- | --- | --- |
 | kanji.json | https://raw.githubusercontent.com/davidluzgouveia/kanji-data/master/kanji.json | MIT (kanji-data; meanings derive from KANJIDIC, CC BY-SA 4.0, EDRDG) |
-| joyo2010.txt | https://raw.githubusercontent.com/cjkvi/cjkvi-tables/master/joyo2010.txt | No licence declared upstream |
-| ids.txt | https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt | No SPDX licence declared upstream (the project README states GPL) |
-| hanja-grade.csv | https://raw.githubusercontent.com/rycont/hanja-grade-dataset/main/hanja.csv | No licence declared upstream |
-| kengdic.tsv | https://raw.githubusercontent.com/garfieldnate/kengdic/master/kengdic.tsv | No SPDX licence declared upstream; see the kengdic README |
+| joyo2010.txt | https://raw.githubusercontent.com/cjkvi/cjkvi-tables/master/joyo2010.txt | No repo licence; the file header says it comes from Japanese Wikipedia's 常用漢字一覧 (CC BY-SA) |
+| ids.txt | https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt | Derived from the CHISE project, under CHISE's terms (GPLv2); per the repo README, the other cjkvi data is GPLv2 |
+| hanja-grade.csv | https://raw.githubusercontent.com/rycont/hanja-grade-dataset/main/hanja.csv | Data © 한국어문회 (converted from their published xls, per the repo README); used here for private study |
+| kengdic.tsv | https://raw.githubusercontent.com/garfieldnate/kengdic/master/kengdic.tsv | Dual-licensed, your choice of MPL 2.0 or LGPL 2.0+ (per its README) |
 | jlpt-n1.csv to jlpt-n5.csv | https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n1.csv (n2 to n5 alike) | MIT |
 | animcjk-dictionaryJa.txt, -dictionaryKo.txt, -dictionaryZhHant.txt | https://raw.githubusercontent.com/parsimonhi/animCJK/master/ (dictionaryJa.txt, dictionaryKo.txt, dictionaryZhHant.txt) | Arphic Public License (animcjk-APL.txt) and GNU LGPL (animcjk-LGPL.txt) |
 | animcjk-graphicsJa.txt, -graphicsKo.txt, -graphicsZhHant.txt | https://raw.githubusercontent.com/parsimonhi/animCJK/master/ (graphicsJa.txt, graphicsKo.txt, graphicsZhHant.txt) | Arphic Public License and GNU LGPL; only stroke medians are kept in `data/strokes/` |

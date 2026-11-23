@@ -32,6 +32,14 @@ class StrokesTests(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(d, '6728.json')))
             self.assertFalse(os.path.exists(os.path.join(d, '6797.json')))
 
+    def test_three_source_fallback_order(self):
+        ko, zh, ja = {'休': [[[1, 1]]]}, {'休': [[[2, 2]]], '木': [[[3, 3]]]},             {'休': [[[4, 4]]], '木': [[[5, 5]]], '黨': [[[6, 6]]]}
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(write_strokes(['休', '木', '黨', '林'], [ko, zh, ja], d), ['林'])
+            got = {n: json.load(open(os.path.join(d, n), encoding='utf-8'))['m'][0][0][0]
+                   for n in os.listdir(d)}
+            self.assertEqual(got, {'4f11.json': 1, '6728.json': 3, '9ee8.json': 6})
+
     def test_load_graphics_keeps_only_medians(self):
         with tempfile.TemporaryDirectory() as d:
             p = os.path.join(d, 'g.txt')

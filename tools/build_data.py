@@ -69,7 +69,7 @@ def main():
     ko_g = load_graphics(os.path.join(SRC, 'animcjk-graphicsKo.txt'))
     zh_g = load_graphics(os.path.join(SRC, 'animcjk-graphicsZhHant.txt'))
     miss = {}
-    for lang, ds, srcs in (('ja', ja, [ja_g]), ('ko', ko, [ko_g, zh_g])):
+    for lang, ds, srcs in (('ja', ja, [ja_g]), ('ko', ko, [ko_g, zh_g, ja_g])):
         out = os.path.join(DATA, 'strokes', lang)
         clear_json(out)
         chars = [r['char'] for r in ds['chars']]
