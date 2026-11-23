@@ -1,0 +1,102 @@
+{
+  "GowunBatang-Bold.ttf": {
+    "bytes": 8178712,
+    "sha256": "dbfcaa646e5831e7478524924f02906f550285a5050699b4e38c9950b3ec4b94"
+  },
+  "GowunBatang-Regular.ttf": {
+    "bytes": 8433296,
+    "sha256": "466c593e7147412e748af4856d5ad14709b5a860bdf62b9c2546f2c5874e9849"
+  },
+  "KleeOne-SemiBold.ttf": {
+    "bytes": 8905128,
+    "sha256": "b031ec426c23ca1143ef1f7d58bee7a79efe119ed654152f121c922202b303fd"
+  },
+  "LICENSE-htm": {
+    "bytes": 11341,
+    "sha256": "740725f7252e750af735d0028cc534970772f513331e9f68150fede8fb3ce00f"
+  },
+  "LICENSE-ts-fsrs": {
+    "bytes": 1079,
+    "sha256": "8b83a73dd2894ff553d6de6113064b3ad9dfad3f839837b61f3b183881131d01"
+  },
+  "animcjk-APL.txt": {
+    "bytes": 6901,
+    "sha256": "3a5e90c0957524a89e48203febcd4492ca4393678abaa7e5b4d70f3ff32b386d"
+  },
+  "animcjk-LGPL.txt": {
+    "bytes": 7651,
+    "sha256": "a5681bf9b05db14d86776930017c647ad9e6e56ff6bbcfdf21e5848288dfaf1b"
+  },
+  "animcjk-dictionaryJa.txt": {
+    "bytes": 1425352,
+    "sha256": "5f964fefd7629bfbd387de1644b169f0e4d9e805852c9c139dc9ff2825458cdb"
+  },
+  "animcjk-dictionaryKo.txt": {
+    "bytes": 94365,
+    "sha256": "06c3aedeebf4d87c579f93ba79783dd635be1be8a0f87229af648287e8c46876"
+  },
+  "animcjk-dictionaryZhHant.txt": {
+    "bytes": 344668,
+    "sha256": "8dcd443af2718a718bc27239d466f2e1da6a590952eceec3b8b662c2855e7b9d"
+  },
+  "animcjk-graphicsJa.txt": {
+    "bytes": 23294938,
+    "sha256": "60d53220b3b09935c912a8cf1b7d3ba256af0803b7b0abb3b1bb1ba5f1c3e795"
+  },
+  "animcjk-graphicsKo.txt": {
+    "bytes": 1401403,
+    "sha256": "0477707a2682f2ee0fbe549140c3a07ba4079595143e523649d49acb246b92be"
+  },
+  "animcjk-graphicsZhHant.txt": {
+    "bytes": 6326634,
+    "sha256": "0ef2ff93d3b9724b6bb12d2d8c805bf075e911bd0c11e69b774339808e02c7c8"
+  },
+  "hanja-grade.csv": {
+    "bytes": 317113,
+    "sha256": "8a54b274540a46332fedb5f947ca9f437a6e4ac83197580b1c844f88f0251715"
+  },
+  "htm-preact-standalone.mjs": {
+    "bytes": 13194,
+    "sha256": "72284e8e9079c87817145df1110f74e8a2aa040b2fc384922e18dfcb46fc1fd7"
+  },
+  "ids.txt": {
+    "bytes": 2161631,
+    "sha256": "bfc70a8c09f9f5616ebf0543bd6681e67314e9f7ae2307e5ae8c6f15bdc5c6a6"
+  },
+  "jlpt-n1.csv": {
+    "bytes": 191444,
+    "sha256": "120911636c019899552aa6d7bd64b036ecef4bedfe272a744f75735c46aae5cd"
+  },
+  "jlpt-n2.csv": {
+    "bytes": 135869,
+    "sha256": "2d0f1ddd6222881cd9fc2ca701db74300af99b3f1f84d5ac3c18411c20f0c055"
+  },
+  "jlpt-n3.csv": {
+    "bytes": 167423,
+    "sha256": "ba071571d344e60b0e1fd11cd2e98a6aaa04515361653ca45147129460531297"
+  },
+  "jlpt-n4.csv": {
+    "bytes": 49627,
+    "sha256": "0e835f40a8d2a1f191d7aa499076002756fa099b95634758376f43c73793e9f6"
+  },
+  "jlpt-n5.csv": {
+    "bytes": 63965,
+    "sha256": "f89abc86b391c4f2b551bbf8910b0de6cd600973b3a9f8d98347513921929ebe"
+  },
+  "joyo2010.txt": {
+    "bytes": 68779,
+    "sha256": "4fbcab9d8caea697c2a9a2e9e4b959c5a8cbc731c9b24e73bff828df2db4486f"
+  },
+  "kanji.json": {
+    "bytes": 5508152,
+    "sha256": "561b72ea9df703c58fae0c68585812e172aaa7611d2fcee6719d55fd2dfd4fa4"
+  },
+  "kengdic.tsv": {
+    "bytes": 11650286,
+    "sha256": "d23236d5676f506514721e605534647ba4735a85bbb76b9e12d1ec067b8cfdb4"
+  },
+  "ts-fsrs.mjs": {
+    "bytes": 61245,
+    "sha256": "ad4a4b3b7e259fcbf02764454c8f9db4ea3bf5aae2f473198129ecb7728f1a19"
+  }
+}

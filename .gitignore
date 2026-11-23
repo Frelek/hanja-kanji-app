@@ -7,3 +7,6 @@ __pycache__/
 Thumbs.db
 
 .superpowers/
+
+sources/
+node_modules/
