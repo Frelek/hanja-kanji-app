@@ -6,11 +6,12 @@ words; cjkvi-ids gives the decomposition; animCJK gives radicals and fallback
 part meanings.
 """
 import csv
-import heapq
-import json
 import os
 import re
 
+from hk.common import (nfc_dict, clean_meanings, part_meaning, load_kanji,
+                       load_animcjk, radical_full_form, study_order)
+from hk.common import title_case  # noqa: F401  (re-exported: callers import it from hk.ja)
 from hk.decompose import (VARIANTS, load_ids, direct_parts, find_parents,
                           pick_primary, drop_deep_single_strokes)
 from hk.text import nfc, is_cjk
@@ -20,24 +21,7 @@ _KANA_RANGE = chr(0x3040) + '-' + chr(0x30FF)          # all kana, incl. ・ and
 _KANA = re.compile('^[' + _KANA_RANGE + ']+$')
 _KANA_GROUP = re.compile(r'\s*[(（][' + _KANA_RANGE + r']+[)）]$')   # " (する)"
 _PARENS = '（）()'
-_XREF = re.compile(r'\b(form|same as|variant|interchangeable)\b', re.I)
-_RADICAL = re.compile('radical', re.I)
 _AFFIX = '～〜'
-_KANJI_MARKS = ('grade', 'jlpt_new', 'jlpt_old', 'freq')
-
-
-def nfc_dict(pairs):
-    """Dict keyed by NFC(key). A key that is already NFC wins over a
-    compatibility form that normalises onto it; otherwise the first wins."""
-    out, exact = {}, set()
-    for key, value in pairs:
-        k = nfc(key)
-        if k == key and k not in exact:
-            out[k] = value
-            exact.add(k)
-        elif k not in out:
-            out[k] = value
-    return out
 
 
 def _is_katakana(s):
@@ -120,20 +104,6 @@ def parse_jlpt_csv(path, n):
     return out
 
 
-def title_case(s):
-    """Upper-case the first character of each space-separated word, leaving
-    the rest as is (kanji-data style): "according to" -> "According To"."""
-    return ' '.join(w[:1].upper() + w[1:] for w in s.strip().split(' '))
-
-
-def clean_meanings(raw):
-    """kanji.json meanings in source (Title) case, radical labels dropped,
-    first 3."""
-    out = [nfc(m).strip() for m in raw or []
-           if m.strip() and not _RADICAL.search(m)]
-    return out[:3]
-
-
 def _tier(ch, level_n, entry, kanji_level):
     if ch not in entry['w']:
         return None
@@ -177,11 +147,6 @@ def pick_words_ja(ch, level_n, vocab, kanji_level):
 
 # ---------------------------------------------------------------- loaders
 
-def _load_kanji(src):
-    with open(os.path.join(src, 'kanji.json'), encoding='utf-8') as f:
-        return nfc_dict(json.load(f).items())
-
-
 def _load_joyo(src):
     pairs = []
     with open(os.path.join(src, 'joyo2010.txt'), encoding='utf-8') as f:
@@ -193,93 +158,6 @@ def _load_joyo(src):
     return nfc_dict(pairs)
 
 
-def _load_animcjk(src):
-    pairs = []
-    with open(os.path.join(src, 'animcjk-dictionaryJa.txt'), encoding='utf-8') as f:
-        for line in f:
-            if line.strip():
-                d = json.loads(line)
-                pairs.append((d['character'], d))
-    return nfc_dict(pairs)
-
-
-def _split_outside_parens(s, sep):
-    """Split s on sep, except inside (...) or （...）."""
-    out, cur, depth = [], '', 0
-    for c in s:
-        if c in '(（':
-            depth += 1
-        elif c in ')）':
-            depth = max(depth - 1, 0)
-        if c == sep and depth == 0:
-            out.append(cur)
-            cur = ''
-        else:
-            cur += c
-    out.append(cur)
-    return out
-
-
-_LEAD_PAREN = re.compile(r'\s*[(（]([^()（）]*)[)）]')
-
-
-def _strip_xref(s):
-    """Drop leading cross-references: "(ancient form of 得) to get" -> "to get",
-    "(variant of 羊), sheep" -> "sheep"."""
-    while True:
-        m = _LEAD_PAREN.match(s)
-        if not m or not _XREF.search(m.group(1)):
-            return s.strip()
-        s = s[m.end():].lstrip(' ,')
-
-
-def _anim_sense(entry):
-    """First usable sense of an animCJK definition: split on ';' and then ','
-    (outside parentheses), skipping radical labels and leading
-    cross-references; Title-Cased."""
-    definition = nfc((entry or {}).get('definition') or '')
-    for sense in _split_outside_parens(definition, ';'):
-        sense = sense.strip()
-        if not sense or _RADICAL.search(sense):
-            continue
-        first = _split_outside_parens(_strip_xref(sense), ',')[0].strip()
-        if first:
-            return title_case(first)
-    return None
-
-
-def _kanji_sense(entry):
-    """First non-radical kanji.json meaning, used only for kanji that are used
-    in Japanese: entries with a grade, JLPT level or frequency."""
-    if not entry or all(entry.get(f) is None for f in _KANJI_MARKS):
-        return None
-    m = clean_meanings(entry.get('meanings'))
-    return m[0] if m else None
-
-
-def part_meaning(p, kanji, animcjk):
-    """Meaning shown for a part: (1) its kanji.json meaning if it is a kanji
-    used in Japanese (言 "Say"); (2) for a radical variant, the full form's
-    (亻 "Person", 礻 "Show"); (3) its animCJK sense (宀 "Roof"); (4) its own
-    kanji.json meaning anyway (乂 "Mow"); (5) None."""
-    m = _kanji_sense(kanji.get(p))
-    if m is None and p in VARIANTS:
-        m = _kanji_sense(kanji.get(VARIANTS[p]))
-    if m is None:
-        m = _anim_sense(animcjk.get(p))
-    if m is None:
-        own = clean_meanings((kanji.get(p) or {}).get('meanings'))
-        m = own[0] if own else None
-    return m
-
-
-def _radical(entry):
-    """animCJK radical, first character, mapped to its full form (亻 -> 人)
-    so it can match a parent."""
-    r = nfc((entry or {}).get('radical') or '').strip()
-    return VARIANTS.get(r[0], r[0]) if r else None
-
-
 def _study_order(chars, level, required, freq):
     """Kahn topological sort per level over same-level required edges; the
     available node with the lowest (freq, null last; code point) goes next."""
@@ -287,40 +165,17 @@ def _study_order(chars, level, required, freq):
         f = freq.get(c)
         return (f is None, f if f is not None else 0, ord(c))
 
-    order = []
-    for n in LEVELS:
-        nodes = [c for c in chars if level[c] == n]
-        indeg = {c: 0 for c in nodes}
-        children = {c: [] for c in nodes}
-        for c in nodes:
-            for p in required[c]:
-                if level[p] == n:
-                    indeg[c] += 1
-                    children[p].append(c)
-        heap = [(key(c), c) for c in nodes if indeg[c] == 0]
-        heapq.heapify(heap)
-        done = []
-        while heap:
-            _, c = heapq.heappop(heap)
-            done.append(c)
-            for k in children[c]:
-                indeg[k] -= 1
-                if indeg[k] == 0:
-                    heapq.heappush(heap, (key(k), k))
-        if len(done) != len(nodes):
-            stuck = sorted(set(nodes) - set(done))
-            raise ValueError(f'cycle in required parents at N{n}: {stuck}')
-        order += done
-    return order
+    groups = [(f'N{n}', [c for c in chars if level[c] == n]) for n in LEVELS]
+    return study_order(groups, required, key)
 
 
 # ---------------------------------------------------------------- build
 
 def build_ja(src):
     """Build the Japanese dataset dict from the sources folder `src`."""
-    kanji = _load_kanji(src)
+    kanji = load_kanji(os.path.join(src, 'kanji.json'))
     joyo = _load_joyo(src)
-    animcjk = _load_animcjk(src)
+    animcjk = load_animcjk(os.path.join(src, 'animcjk-dictionaryJa.txt'))
     ids = load_ids(os.path.join(src, 'ids.txt'), 'J')
     vocab = []
     for n in LEVELS + (2, 1):
@@ -356,7 +211,8 @@ def build_ja(src):
             base = p if p in study else VARIANTS.get(p)
             parts.append({'char': p, 'meaning': part_meanings[p],
                           'ref': ref(base) if base in study else None})
-        primary = pick_primary(required[c], strokes, _radical(animcjk.get(c)))
+        radical = radical_full_form((animcjk.get(c) or {}).get('radical'))
+        primary = pick_primary(required[c], strokes, radical)
         records.append({
             'id': ref(c),
             'char': c,
