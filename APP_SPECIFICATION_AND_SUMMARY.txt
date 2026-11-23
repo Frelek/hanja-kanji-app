@@ -1,0 +1,594 @@
+================================================================================
+HANJA & KANJI LEARNING APPLICATION
+COMPREHENSIVE SYSTEM ARCHITECTURE, SPECIFICATION, AND DIRECTORY SUMMARY
+================================================================================
+Target Audience: Developers, System Administrators, and Future AI Assistants
+Repository: https://github.com/Frelek/hanja-kanji-app
+Production URL: https://frelekkacper.com/hanja-kanji-app/
+GitHub Pages Mirror: https://frelek.github.io/hanja-kanji-app/
+Working Directory: d:\0_Antigravity\6_Hanja_and_Kanji_app\
+Date of Record: 2026-11-23
+Status: Production Deployed (v3.0 PWA)
+Total Vocabulary: 529 Characters (265 Korean Hanja + 264 Japanese Kanji)
+================================================================================
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. EXECUTIVE SUMMARY & CORE MISSION
+2. USER REQUIREMENTS & THE TREE-BRANCH CONCEPT
+3. PRODUCTION DEPLOYMENT & REPOSITORY URLS
+4. COMPLETE REPOSITORY DIRECTORY TREE
+5. DETAILED FILE-BY-FILE MANIFEST & TECHNICAL SPECIFICATIONS
+6. COMPLETE DATA SCHEMAS & FIELD DICTIONARIES
+7. CURRICULUM CATALOGUE: 14 HANJA & 14 KANJI BRANCHES
+8. ARCHITECTURAL MODULE IMPLEMENTATION DETAILS
+   8.1 App Controller & Router (js/app.js)
+   8.2 Mode-Scoped LocalStorage Abstraction (js/storage.js)
+   8.3 Tree View & Category Quiz Header (js/tree-view.js)
+   8.4 Character Detail Modal & Stroke Animator (js/detail-modal.js)
+   8.5 Anki SM-2 Spaced Repetition Engine (js/test-mode.js)
+   8.6 Service Worker & Offline Caching Engine (sw.js)
+9. DESIGN SYSTEM & VISUAL TOKENS (TRADITIONAL PARCHMENT AESTHETIC)
+10. CORE ALGORITHMS (SM-2, PROGRESSIVE UNLOCK, HANZIWRITER INTEGRATION)
+11. MANDATORY INVARIANTS FOR FUTURE AI ASSISTANTS (RULES & NON-NEGOTIABLES)
+12. MOBILE INSTALLATION & OFFLINE STANDALONE EXECUTION (IPHONE SAFARI)
+13. TESTING, SYNTAX VERIFICATION & QA PROTOCOLS
+
+================================================================================
+1. EXECUTIVE SUMMARY & CORE MISSION
+================================================================================
+The Hanja & Kanji Learning Application is a mobile-first Progressive Web App (PWA)
+specifically engineered to solve the cognitive overload associated with East
+Asian ideogram memorization. By structuring characters into etymological,
+derivative "family trees" rather than isolated lists or arbitrary frequency
+tables, learners understand *why* characters look the way they do before they are
+tested on them.
+
+The app provides a seamless dual-language environment:
+- Korean Hanja (한자): Focusing on Korean phonetic readings (음), native Korean
+  definitions (훈), and Sino-Korean compound vocabulary used in everyday Korean.
+- Japanese Kanji (漢字): Focusing on On-readings (音読み), Kun-readings (訓読み),
+  authentic compound words (熟語), furigana-annotated sentences, and a strict
+  pedagogical display where pure kana is explicitly printed below all kanji.
+
+The app functions completely offline without requiring any external cloud APIs,
+backend servers, or third-party CDNs. It is optimized to run as a native-like
+standalone application when added to an iPhone Home Screen via Safari.
+
+================================================================================
+2. USER REQUIREMENTS & THE TREE-BRANCH CONCEPT
+================================================================================
+The user specified a precise set of architectural and aesthetic guidelines based
+on an initial hand-drawn wireframe sketch:
+
+1. Tree-Branch Layout:
+   - Root elements on the left / top (Level 0 fundamental pictograms / radicals).
+   - Stems branching vertically and connecting rightward to compound ideograms.
+   - Each successive tier adds strokes or combines components.
+   - Progressive unlock: child nodes remain locked until their parent ideogram
+     is reviewed and marked as learned.
+
+2. Visual Identity & Atmosphere:
+   - "Bright, beige or smth like that": A warm, glare-free traditional parchment
+     aesthetic evoking Korean Hanji (韓紙) and Japanese Washi (和紙).
+   - Deep calligraphy sumi-ink typography (#231f1d) on soft beige (#f7f4ed).
+   - Accents of traditional cinnabar / vermilion red (주칠 / 朱色, #c53030).
+
+3. Dual-Language Switcher:
+   - Positioned prominently in the upper right header: [ 🇰🇷 한자 | 🇯🇵 漢字 ].
+   - One-tap instantaneous language switching without reloading the page.
+   - Complete isolation between Korean and Japanese learning statistics.
+
+4. Japanese Reading Invariance:
+   - In the Japanese section, under every example word written with kanji, the
+     exact pure kana pronunciation (without kanji) MUST be printed directly below.
+
+5. Quizzing Placement & Scope Invariance:
+   - Quiz buttons must NEVER appear next to individual words or in the modal.
+   - Quizzing is accessed ONLY at the top of each category branch header.
+   - Quizzes MUST strictly filter to only characters the user has marked as
+     learned. Unlearned characters must never appear in quizzes.
+
+6. Spaced Repetition (Anki SM-2):
+   - A dedicated flashcard test mode with 3D card flips.
+   - SuperMemo SM-2 interval calculations with Again, Hard, Good, Easy ratings.
+
+7. Offline & Standalone Execution:
+   - Must be publishable via GitHub Pages.
+   - Must support iOS "Add to Home Screen" with "Open as Web App" checked.
+   - 100% offline operational capacity via local ServiceWorker caching.
+
+================================================================================
+3. PRODUCTION DEPLOYMENT & REPOSITORY URLS
+================================================================================
+- Primary Public Repository:
+  https://github.com/Frelek/hanja-kanji-app
+
+- Production Live Site (Custom Domain):
+  https://frelekkacper.com/hanja-kanji-app/
+
+- Production Live Site (GitHub Pages Mirror):
+  https://frelek.github.io/hanja-kanji-app/
+
+- Hosting Infrastructure:
+  GitHub Pages on branch `main` serving from `/` (root directory).
+  HTTPS enforced with automatic SSL certificate management.
+
+================================================================================
+4. COMPLETE REPOSITORY DIRECTORY TREE
+================================================================================
+D:\0_Antigravity\6_Hanja_and_Kanji_app\
+│
+├── .gitignore                      [Git ignore configuration]
+├── README.md                       [Bilingual project overview & docs]
+├── index.html                      [Application entrypoint & PWA shell]
+├── manifest.json                   [PWA manifest metadata & icon mappings]
+├── sw.js                           [ServiceWorker v3 offline cache controller]
+├── test_app.js                     [Automated Node.js validation test suite]
+├── apple-touch-icon.png            [180x180 PNG icon for iOS Home Screen]
+├── make_icons.py                   [Python generator for PWA icon assets]
+├── generate_all_data.py            [Python dataset compiler (initial draft)]
+├── build_full_database.py          [Python dataset compiler (500+ character builder)]
+├── APP_SPECIFICATION_AND_SUMMARY.txt [This authoritative reference file]
+│
+├── css/
+│   └── styles.css                  [1,200+ lines: parchment design system]
+│
+├── data/
+│   ├── hanja.json                  [265 Korean Hanja across 14 branches]
+│   └── kanji.json                  [264 Japanese Kanji across 14 branches]
+│
+├── icons/
+│   ├── icon-192.png                [192x192 maskable PWA icon]
+│   └── icon-512.png                [512x512 maskable PWA icon]
+│
+└── js/
+    ├── app.js                      [Global coordinator, router, SW init]
+    ├── storage.js                  [Mode-scoped localStorage & SM-2 state]
+    ├── tree-view.js                [Hierarchical tree renderer & quiz header]
+    ├── detail-modal.js             [Bottom sheet & stroke order animator]
+    ├── test-mode.js                [Anki SM-2 flashcard testing engine]
+    └── hanzi-writer.min.js         [Bundled offline stroke animation library]
+
+================================================================================
+5. DETAILED FILE-BY-FILE MANIFEST & TECHNICAL SPECIFICATIONS
+================================================================================
+
+5.1 index.html
+- Purpose: Application HTML shell, header navigation, view viewports, modal targets.
+- Key Elements:
+  * Brand title with dynamic badge (`<span class="brand-title">한자 학습</span>`).
+  * Upper right toggle `<div class="lang-switcher">` with buttons `[data-lang="hanja"]` and `[data-lang="kanji"]`.
+  * Live stats counters `#stat-learned-count` and `#stat-streak-count`.
+  * Three primary section containers: `<section id="tree-view">`, `<section id="test-view">`, `<section id="settings-view">`.
+  * Fixed bottom navigation tab bar `<nav class="bottom-nav">`.
+  * Character detail modal wrapper `<div id="detail-modal" class="modal-backdrop">`.
+  * Local `<script src="./js/hanzi-writer.min.js">` loaded synchronously before app logic.
+
+5.2 css/styles.css
+- Purpose: Complete application stylesheet (no external CSS frameworks like Tailwind or Bootstrap).
+- Key Sections:
+  * CSS Custom Properties (:root design tokens for parchment palette).
+  * iOS PWA safe area support (`padding-bottom: env(safe-area-inset-bottom)`).
+  * Horizontal draggable `.branch-tabs` strip.
+  * Hierarchical tree flexbox structure with `.node-connector` stems.
+  * `.branch-header` with `.branch-header-top` flex layout housing the `.btn-category-quiz`.
+  * `.modal-backdrop` and `.modal-sheet` slide-up sheet animations.
+  * `.writer-target` SVG container for HanziWriter canvas.
+  * `.example-kana-sub` and `.card-example-kana` highlight pills for Japanese pure kana.
+  * `.flashcard-container` with 3D perspective (`perspective: 1000px`) and card flip transforms (`transform: rotateY(180deg)`).
+
+5.3 js/app.js
+- Purpose: Top-level application controller and state manager.
+- Exposed Global: `const App = { ... }`
+- Key Methods:
+  * `init()`: Asynchronously pre-fetches `data/hanja.json` and `data/kanji.json`, initializes submodules, binds hash change routing, registers ServiceWorker.
+  * `setLanguage(mode)`: Switches between `'hanja'` and `'kanji'`, updates active UI badges, stores selection in localStorage, cascades updates to `TreeView` and `TestMode`.
+  * `navigateTo(view)`: Updates `window.location.hash` (`#tree`, `#test`, `#settings`).
+  * `_handleRoute()`: Activates the target section DOM element, updates bottom nav tabs, triggers view refresh methods.
+  * `updateHeaderStats()`: Updates header counter badges (`#stat-learned-count`, `#stat-streak-count`).
+  * `_registerServiceWorker()`: Installs `sw.js` with registration error catching.
+
+5.4 js/storage.js
+- Purpose: LocalStorage persistence layer with strict mode scoping.
+- Exposed Global: `const Storage = { ... }`
+- Key Methods:
+  * `setMode(mode)` / `getMode()`: Manages key `'hk_active_mode'`.
+  * `getLearnedSet()`: Reads `${currentMode}_learned` Set of character IDs.
+  * `markLearned(id)` / `unmarkLearned(id)`: Adds/removes ID and creates initial SM-2 card state.
+  * `isLearned(id)`: Returns boolean check whether ID is in learned set.
+  * `getCardState(id)` / `setCardState(id, state)`: Manages `${currentMode}_srs_cards` dictionary.
+  * `getAllCardStates()`: Returns full dictionary of SM-2 states.
+  * `getDueCards(allCharacters)`: Filters characters where `state.dueDate <= now`, sorted by oldest due.
+  * `getStats()` / `saveStats(stats)`: Manages `${currentMode}_stats` (reviews, streak, lastDate).
+
+5.5 js/tree-view.js
+- Purpose: Renders branch navigation and vertical hierarchical tree nodes.
+- Exposed Global: `const TreeView = { ... }`
+- Key Methods:
+  * `init(data)` / `updateData(newData)`: Sets active data source and renders.
+  * `render()`: Builds branch tabs, branch header with category quiz button, and tree container.
+  * `_renderNode(char, childrenMap, charMap, depth, isKanji)`: Recursively builds tree nodes with visual connectors.
+  * Progressive unlock logic: checks if parent node is learned before unlocking child node.
+  * Category Quiz button click handler: verifies `learnedCount > 0`; alerts if 0; otherwise calls `TestMode.startCategoryQuiz(branch)`.
+
+5.6 js/detail-modal.js
+- Purpose: Character bottom sheet modal with animated stroke order and vocabulary.
+- Exposed Global: `const DetailModal = { ... }`
+- Key Methods:
+  * `init()`: Binds close buttons and backdrop dismiss handlers.
+  * `open(char, fullData, mode)`: Populates modal content, initializes HanziWriter instance, animates strokes.
+  * `close()`: Closes bottom sheet and safely destroys HanziWriter instance.
+  * Renders pure kana reading (`.example-kana-sub`) directly beneath Japanese example words.
+  * "Mark as Learned" toggle: updates `Storage` and immediately updates tree checkmarks.
+
+5.7 js/test-mode.js
+- Purpose: Anki SM-2 Spaced Repetition flashcard testing engine.
+- Exposed Global: `const TestMode = { ... }`
+- Key Properties:
+  * `queue`: Array of character objects currently scheduled for review.
+  * `currentIndex`: Pointer to the active card in `queue`.
+  * `answerRevealed`: Boolean state tracking front vs. back card flip.
+  * `currentCategory`: Branch object when in Category Quiz mode (null for general review).
+  * `isCategoryMode`: Flag to prevent routing hash changes from wiping a category quiz session.
+- Key Methods:
+  * `startCategoryQuiz(branch)`: Strictly queues characters in `branch` where `Storage.isLearned(c.id)` is true. Navigates to `#test`.
+  * `activate(forceGeneral)`: Standard Anki review mode. Strictly queues all learned characters across all branches that are due.
+  * `render()`: Renders 3D flashcard, category banner if in category mode, pure kana under Japanese example words, and 4 rating buttons.
+  * `_rateCard(char, grade)`: Executes SM-2 calculation, updates card state in storage, advances index.
+  * `_sm2(card, grade)`: Mathematical SM-2 algorithm updating interval, repetition, and efactor.
+
+5.8 js/hanzi-writer.min.js
+- Purpose: High-performance, offline SVG-based Chinese/Kanji stroke order animator.
+- Size: 36.4 KB (minified). Bundled locally in `js/` to guarantee zero CDN reliance.
+
+5.9 sw.js
+- Purpose: Progressive Web App Service Worker (Cache Version: `hanja-kanji-learner-v3`).
+- Cache Strategy: Cache-first with network fallback and automatic background runtime caching of GET requests.
+- Offline Fallback: If offline and a navigation request occurs, returns cached `./index.html`.
+
+5.10 test_app.js
+- Purpose: Node.js validation script.
+- Verifies:
+  1. JavaScript syntax validity of all 6 project scripts using `new Function(code)`.
+  2. Integrity of `data/hanja.json` (valid JSON, branches array, character count).
+  3. Integrity of `data/kanji.json` (valid JSON, branches array, character count).
+  4. Enforces the > 500 total character threshold requirement.
+
+================================================================================
+6. COMPLETE DATA SCHEMAS & FIELD DICTIONARIES
+================================================================================
+
+6.1 Korean Hanja JSON Schema (`data/hanja.json`)
+Root Object:
+{
+  "branches": [ BranchObject, ... ]
+}
+
+BranchObject:
+- id: string (Unique identifier, e.g., "nature", "numbers")
+- name_kr: string (Korean category name, e.g., "자연")
+- name_en: string (English category name, e.g., "Nature Elements")
+- icon: string (Category emoji icon, e.g., "🌲")
+- characters: Array of CharacterObject
+
+CharacterObject:
+- id: string (Unique identifier, e.g., "tree", "mountain")
+- hanja: string (Single ideogram glyph, e.g., "木")
+- reading: string (Korean phonetic reading, e.g., "목")
+- meaning_kr: string (Native Korean definition, e.g., "나무")
+- meaning_en: string (English definition, e.g., "tree / wood")
+- strokes: integer (Total stroke count, e.g., 4)
+- level: integer (Hierarchy depth: 0=root, 1=derivative, 2=compound)
+- parent_id: string | null (ID of parent character, or null for root)
+- components: array of strings (Constituent ideograms, e.g., ["木"])
+- example_word: string (Sino-Korean compound word, e.g., "목요일")
+- example_word_reading: string (Hangul reading + romanization, e.g., "목요일 (mok-yo-il)")
+- example_word_meaning_kr: string (Korean definition of example word, e.g., "나무의 날")
+- example_word_meaning_en: string (English definition of example word, e.g., "Thursday")
+- example_sentence_kr: string (Natural exemplary sentence in Korean)
+- example_sentence_en: string (English translation of sentence)
+- image_keyword: string (Keyword used for emoji and visual hint association)
+
+6.2 Japanese Kanji JSON Schema (`data/kanji.json`)
+Root Object:
+{
+  "branches": [ BranchObject, ... ]
+}
+
+BranchObject:
+- id: string (Unique identifier, e.g., "nature_kj", "numbers_kj")
+- name_ja: string (Japanese category name, e.g., "自然と天候")
+- name_en: string (English category name, e.g., "Nature & Weather")
+- icon: string (Category emoji icon, e.g., "🌲")
+- characters: Array of CharacterObject
+
+CharacterObject:
+- id: string (Unique identifier, e.g., "kj_tree", "kj_sun")
+- kanji: string (Single ideogram glyph, e.g., "木")
+- onyomi: string (On-reading in Katakana + romaji, e.g., "モク (moku) / ボク (boku)")
+- kunyomi: string (Kun-reading in Hiragana + romaji, e.g., "き (ki) / こ (ko)")
+- meaning_ja: string (Japanese definition, e.g., "き")
+- meaning_en: string (English definition, e.g., "tree / wood")
+- strokes: integer (Total stroke count, e.g., 4)
+- level: integer (Hierarchy depth: 0=root, 1=derivative, 2=compound)
+- parent_id: string | null (ID of parent character, or null for root)
+- components: array of strings (Constituent ideograms, e.g., ["木"])
+- example_word: string (Compound word with kanji, e.g., "木曜日")
+- example_word_reading: string (Hiragana reading + romaji, e.g., "もくようび (mokuyoubi)")
+- example_word_kana: string (PURE KANA ONLY without kanji, e.g., "もくようび")  <-- MANDATORY FIELD
+- example_word_meaning_ja: string (Japanese definition, e.g., "週の第5日")
+- example_word_meaning_en: string (English definition, e.g., "Thursday")
+- example_sentence_ja: string (Authentic Japanese sentence with kanji)
+- example_sentence_reading: string (Full sentence in Hiragana furigana)
+- example_sentence_en: string (English translation of sentence)
+- image_keyword: string (Visual hint association keyword)
+
+================================================================================
+7. CURRICULUM CATALOGUE: 14 HANJA & 14 KANJI BRANCHES
+================================================================================
+
+7.1 Korean Hanja Branches (265 Total Characters):
+1.  numbers      - 숫자 (Numbers)                     : 15 characters
+2.  nature       - 자연 (Nature Elements)             : 22 characters
+3.  people       - 사람과 신체 (People & Body)        : 24 characters
+4.  actions      - 동작과 생활 (Actions & Life)       : 22 characters
+5.  space        - 공간과 방향 (Space & Direction)    : 18 characters
+6.  time         - 시간과 계절 (Time & Seasons)       : 16 characters
+7.  society      - 사회와 국가 (Society & Governance) : 20 characters
+8.  buildings    - 건물과 장소 (Buildings & Places)   : 16 characters
+9.  knowledge    - 지식과 학문 (Knowledge & Culture)  : 20 characters
+10. animals      - 동물과 생물 (Animals & Life)       : 16 characters
+11. virtues      - 도덕과 덕목 (Virtues & Ethics)     : 18 characters
+12. qualities    - 색상과 상태 (Colors & Qualities)   : 16 characters
+13. compounds    - 합체자와 파생자 (Compounds)        : 20 characters
+14. food_living  - 식생활과 일상 (Food & Living)      : 22 characters
+
+7.2 Japanese Kanji Branches (264 Total Characters):
+1.  numbers_kj   - 数字 (Numbers)                     : 16 characters
+2.  nature_kj    - 自然と天候 (Nature & Weather)      : 22 characters
+3.  people_kj    - 人と身体 (People & Body)           : 22 characters
+4.  actions_kj   - 動作と暮らし (Actions & Living)    : 22 characters
+5.  space_kj     - 位置と方角 (Space & Direction)     : 18 characters
+6.  time_kj      - 時間と季節 (Time & Seasons)        : 18 characters
+7.  society_kj   - 社会と街 (Society & Towns)         : 20 characters
+8.  knowledge_kj - 学びと文化 (Learning & Culture)    : 20 characters
+9.  animals_kj   - 生き物と命 (Animals & Life)        : 16 characters
+10. virtues_kj   - 心と美徳 (Heart & Virtues)         : 18 characters
+11. qualities_kj - 色彩と状態 (Colors & Qualities)    : 18 characters
+12. food_kj      - 和食と暮らし (Food & Daily Life)   : 18 characters
+13. travel_kj    - 旅と名所 (Travel & Sights)         : 16 characters
+14. compounds_kj - 会意と形声 (Compound Formations)   : 20 characters
+
+Grand Total Vocabulary Count: 529 Characters (exceeds the 500-word milestone).
+
+================================================================================
+8. ARCHITECTURAL MODULE IMPLEMENTATION DETAILS
+================================================================================
+
+8.1 App Controller & Router (js/app.js)
+The application acts as a single-page reactive controller:
+- State Machine:
+  * `currentMode`: 'hanja' or 'kanji'
+  * `currentView`: 'tree', 'test', or 'settings'
+  * Data caches: `dataHanja` and `dataKanji` stored in memory for zero-latency toggling.
+- Event Delegation:
+  * Tab bar clicks intercept default anchors, route via `window.location.hash`.
+  * Hash change listener sanitizes route, activates the target view, and invokes
+    the respective view refresh method (`TreeView.refreshNodeStates()`, `TestMode.activate()`, etc.).
+
+8.2 Mode-Scoped LocalStorage Abstraction (js/storage.js)
+To prevent cross-language data contamination, every data structure in localStorage
+is keyed by the active mode prefix:
+- `${mode}_learned`    -> Array of IDs marked as learned.
+- `${mode}_srs_cards`  -> Key-value map of card SRS states.
+- `${mode}_stats`      -> Cumulative review count, current streak, last active timestamp.
+- `hk_active_mode`     -> Global string preserving user's language selection across reloads.
+
+8.3 Tree View & Category Quiz Header (js/tree-view.js)
+- Renders the `.branch-header` at the top of the active branch.
+- Contains `.btn-category-quiz`:
+  * Displays a lightning badge with the count of learned characters in this category.
+  * If `learnedCount === 0`: has class `.is-empty`. Clicking triggers an alert:
+    "⚠️ 아직 이 카테고리에서 학습 완료한 한자가 없습니다. 한자 카드를 클릭해 먼저 '학습 완료'로 표시해주세요!"
+    (or Japanese equivalent).
+  * If `learnedCount > 0`: calls `TestMode.startCategoryQuiz(branch)`.
+
+8.4 Character Detail Modal & Stroke Animator (js/detail-modal.js)
+- Activated by clicking on any unlocked tree node.
+- Initializes `new HanziWriter('character-writer-target', charSymbol, { ... })`.
+- Stroke animator options:
+  * `width: 160, height: 160, padding: 10`
+  * `strokeColor: '#231f1d'` (calligraphy ink)
+  * `radicalColor: '#c53030'` (vermilion red)
+  * `strokeAnimationSpeed: 1.2, delayBetweenStrokes: 180`
+- Pure Kana Display Rule:
+  In Japanese mode, renders:
+  <strong class="example-kanji-title">${char.example_word}</strong>
+  <div class="example-kana-sub">かな: <span class="kana-pure">${char.example_word_kana}</span></div>
+  <div class="detail-reading">${char.example_word_meaning_ja}</div>
+  <div class="detail-en">${char.example_word_meaning_en}</div>
+
+8.5 Anki SM-2 Spaced Repetition Engine (js/test-mode.js)
+- Flashcard front displays ideogram and image hint emoji.
+- Flashcard back reveals readings, meanings, example words (with pure kana in Japanese),
+  and sentences with furigana.
+- Renders 4 grading buttons with dynamic preview intervals:
+  * Again (0): Interval resets to 1 day; repetition resets to 0.
+  * Hard  (1): Interval = 1 day (or interval * 1.2).
+  * Good  (2): Interval advances based on ease factor.
+  * Easy  (3): Interval advances with bonus ease factor increment.
+- Category Banner:
+  When initiated via `startCategoryQuiz(branch)`, renders top bar:
+  `[← 트리로 돌아가기]` with category icon, name, and `[카테고리 퀴즈]` badge.
+  Exiting resets `currentCategory = null` and returns to `#tree`.
+
+8.6 Service Worker & Offline Caching Engine (sw.js)
+- Cache Bucket: `hanja-kanji-learner-v3`
+- Pre-caches all 15 core files during the `install` lifecycle event.
+- During `activate`, purges all obsolete cache versions (`v1`, `v2`, etc.).
+- During `fetch`, serves cached assets instantly; falls back to network; clones
+  and saves successful GET responses into cache for permanent offline persistence.
+
+================================================================================
+9. DESIGN SYSTEM & VISUAL TOKENS (TRADITIONAL PARCHMENT AESTHETIC)
+================================================================================
+The application's visual language is modeled on classical East Asian calligraphy:
+
+Design Tokens (:root in css/styles.css):
+- Background Main:       #f7f4ed (Warm parchment cream / Hanji-Washi paper)
+- Background Secondary:  #ede6d8 (Darker parchment for headers and cards)
+- Background Card:       #ffffff (Pure card background for contrast)
+- Border Color:          #e5ded2 (Subtle sand border)
+- Text Main:             #231f1d (Deep calligraphy sumi carbon ink)
+- Text Sub:              #635c54 (Muted ink for secondary explanations)
+- Text Muted:            #8c8273 (Light ink for tertiary labels)
+- Primary Accent:        #c53030 (Traditional Vermilion / Cinnabar red)
+- Primary Light:         rgba(197, 48, 48, 0.08) (Soft red tint for pills)
+- Secondary Accent:      #4a5568 (Indigo slate for contrast)
+- Card Shadow:           0 2px 8px rgba(0, 0, 0, 0.05)
+- Elevation Shadow:      0 8px 24px rgba(0, 0, 0, 0.12)
+- Border Radius (Cards): 14px
+- Border Radius (Pills): 20px
+
+================================================================================
+10. CORE ALGORITHMS
+================================================================================
+
+10.1 SuperMemo SM-2 Algorithm Implementation
+Given a flashcard with state `{ interval, repetition, efactor }` and user grade `g` (0 to 3 mapped to 0, 2, 4, 5):
+
+1. Update Ease Factor (efactor):
+   efactor' = efactor + (0.1 - (5 - g) * (0.08 + (5 - g) * 0.02))
+   efactor' = max(1.3, efactor')
+
+2. Update Repetition Count & Interval:
+   If g >= 3 (Good or Easy):
+     If repetition == 0:
+       interval = 1 day
+     Else if repetition == 1:
+       interval = 6 days
+     Else:
+       interval = round(interval * efactor')
+     repetition = repetition + 1
+   Else (Again or Hard):
+     repetition = 0
+     interval = 1 day
+
+3. Update Due Date:
+   dueDate = now + (interval * 24 * 60 * 60 * 1000) ms
+
+10.2 Progressive Unlock Logic
+In `js/tree-view.js`:
+- A character is locked if:
+  1. It has a `parent_id` specified, AND
+  2. The parent character exists in the current branch, AND
+  3. `Storage.isLearned(char.parent_id)` returns false.
+- When clicked, a locked character triggers an educational toast:
+  "🔒 먼저 부모 한자 [Parent]을(를) 학습하세요!"
+  ("🔒 まず親の漢字 [Parent] を学習してください！")
+
+10.3 HanziWriter Character Destruction & Initialization
+To avoid memory leaks on mobile devices:
+- Prior to mounting a new character, `DetailModal.writer` is inspected. If it exists,
+  `DetailModal.writer.destroy()` is called.
+- The DOM node `#character-writer-target` is purged of previous SVG nodes before
+  constructing the new instance.
+
+================================================================================
+11. MANDATORY INVARIANTS FOR FUTURE AI ASSISTANTS (RULES & NON-NEGOTIABLES)
+================================================================================
+CRITICAL: Any future AI or developer modifying this repository MUST observe
+the following hard rules:
+
+Rule 1: NO INLINE WORD QUIZZES
+- Do NOT place quiz buttons inside the character modal or next to individual tree cards.
+- Category quizzing belongs EXCLUSIVELY at the top of the category header.
+
+Rule 2: STRICT LEARNED FILTER FOR ALL QUIZZES
+- Quizzes must NEVER queue unlearned characters.
+- Every quiz queue (`TestMode.queue`) must strictly filter candidates using:
+  `candidates.filter(c => Storage.isLearned(c.id))`
+- If 0 characters are learned, prompt the user with instructions to mark characters
+  as learned first. Never fall back to testing unlearned words.
+
+Rule 3: JAPANESE PURE KANA SUB-LINE RULE
+- Whenever Japanese example words containing kanji are rendered (in modals, cards,
+  or lists), the pure kana pronunciation (`example_word_kana`) MUST be displayed
+  directly below the kanji word in a dedicated highlight pill (`.example-kana-sub`
+  or `.card-example-kana`).
+
+Rule 4: ZERO EXTERNAL CDN DEPENDENCY
+- Never import scripts, stylesheets, or fonts from external CDNs (such as unpkg,
+  cdnjs, or cdn.jsdelivr.net).
+- All libraries (including `HanziWriter`) and assets must remain bundled locally
+  in the repository so the PWA retains 100% offline capability.
+
+Rule 5: STRICT STORAGE SCOPING
+- Korean (`hanja_*`) and Japanese (`kanji_*`) progress must remain strictly
+  isolated in localStorage.
+- Marking a Hanja as learned must NEVER mark the corresponding Kanji as learned.
+
+Rule 6: PWA PATH RELATIVITY
+- In `manifest.json`, `sw.js`, and `index.html`, paths must remain relative (`./`)
+  to ensure correct functioning whether served from a custom domain root (`/`) or
+  a GitHub Pages project subfolder (`/hanja-kanji-app/`).
+
+================================================================================
+12. MOBILE INSTALLATION & OFFLINE STANDALONE EXECUTION (IPHONE SAFARI)
+================================================================================
+To install on iOS:
+1. Open Safari on iPhone and navigate to:
+   https://frelekkacper.com/hanja-kanji-app/
+   (or https://frelek.github.io/hanja-kanji-app/)
+2. Tap the Share button at the bottom of Safari (square with up arrow: [↑]).
+3. Scroll down and tap "Add to Home Screen" (홈 화면에 추가).
+4. CRITICAL: Keep "Open as Web App" TICKED / CHECKED.
+5. Tap "Add" in the upper right.
+
+Outcome:
+- Launches in standalone fullscreen mode without the Safari address bar or navigation bar.
+- Runs in an isolated sandbox with dedicated localStorage persistence.
+- ServiceWorker v3 caches all assets; app works with Airplane Mode enabled.
+
+================================================================================
+13. TESTING, SYNTAX VERIFICATION & QA PROTOCOLS
+================================================================================
+To verify application integrity locally before committing or deploying:
+
+1. Run the automated test suite:
+   node test_app.js
+
+   Expected Output:
+   --- 1. Testing JavaScript Files Syntax ---
+   ✓ Syntax OK: js/storage.js
+   ✓ Syntax OK: js/detail-modal.js
+   ✓ Syntax OK: js/tree-view.js
+   ✓ Syntax OK: js/test-mode.js
+   ✓ Syntax OK: js/app.js
+   ✓ Syntax OK: sw.js
+
+   --- 2. Testing hanja.json Database ---
+   Hanja: 14 branches, 265 characters
+
+   --- 3. Testing kanji.json Database ---
+   Kanji: 14 branches, 264 characters
+
+   =======================================
+   GRAND TOTAL CHARACTERS: 529 (265 Hanja + 264 Kanji)
+   ✓ Requirement met: Over 500 characters loaded successfully!
+   =======================================
+
+2. Local Development Server:
+   python -m http.server 8080 -d d:\0_Antigravity\6_Hanja_and_Kanji_app
+   Access at: http://localhost:8080/
+
+3. Git Push Protocol:
+   git add .
+   git commit -m "commit message"
+   git push origin main
+
+================================================================================
+END OF AUTHORITATIVE SPECIFICATION
+================================================================================
