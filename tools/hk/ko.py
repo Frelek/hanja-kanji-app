@@ -2,7 +2,8 @@
 characters, built purely from the pinned sources.
 
 hanja-grade.csv (rycont/hanja-grade-dataset) gives levels, 훈음, radicals and
-stroke counts; kengdic gives example words (gloss-cleaned rows) and how
+stroke counts; kengdic gives example words (gloss-cleaned rows, minus the
+audited wrong-gloss words in tools/data/ko_word_exclusions.json) and how
 many words use each character (all hanja rows, whatever the gloss: the 4급Ⅱ
 selection and the in-level order); cjkvi-ids gives the
 decomposition; animCJK gives meanings (dictionaryKo, then ZhHant, then Ja)
@@ -10,6 +11,7 @@ and the 8급–5급 cross-check; kanji.json gives part meanings.
 """
 import ast
 import csv
+import json
 import os
 from collections import Counter
 
@@ -43,6 +45,11 @@ KO_MATCH_VARIANTS = {
 
 N_4II = 110
 _LVL_ORDER = {'A': 0, 'B': 1, 'C': 2, 'D': 3, '': 4}     # kengdic learner level
+
+# kengdic rows whose gloss is wrong for the word (Task 6b audit): never picked
+# as example words. Only excludes; a gloss is never written or edited.
+EXCLUSIONS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          'data', 'ko_word_exclusions.json')
 _ANIMCJK = ('animcjk-dictionaryKo.txt', 'animcjk-dictionaryZhHant.txt',
             'animcjk-dictionaryJa.txt')
 
@@ -119,6 +126,14 @@ def load_kengdic(path):
     return out
 
 
+def load_exclusions(path):
+    """ko_word_exclusions.json -> {(hanja, hangul)}, NFC. The file is a list
+    of {hanja, hangul, gloss, reason}; gloss and reason document the audit."""
+    with open(path, encoding='utf-8') as f:
+        rows = json.load(f)
+    return {(nfc(r['hanja']).strip(), nfc(r['hangul']).strip()) for r in rows}
+
+
 def word_counts(words):
     """Character -> number of words that contain it."""
     count = Counter()
@@ -149,16 +164,20 @@ def _tier(ch, entry, rank):
     return None
 
 
-def pick_words_ko(ch, rank, words):
+def pick_words_ko(ch, rank, words, exclude=frozenset()):
     """Up to 3 example words for ch, best first.
 
     rank: character -> level index (8급 0 ... 4급Ⅱ 4) for the 610.
+    exclude: (w, hangul) pairs never picked, whatever their gloss (every row
+    of such a pair is skipped, so the next candidate takes its place).
     T1: kengdic level A/B and every hanja at a level <= ch's.
     T2: every hanja in the 610.  T3: at most one hanja outside them.
     Within a tier: level A, B, C, D, none; then shorter; then file order.
     """
     ranked = []
     for i, e in enumerate(words):
+        if (e['w'], e['hangul']) in exclude:
+            continue
         t = _tier(ch, e, rank)
         if t is not None:
             ranked.append(((t, _LVL_ORDER[e['lvl']], len(e['w']), i), e))
@@ -232,14 +251,16 @@ def _check_animcjk_sets(rows, ko):
 
 # ---------------------------------------------------------------- build
 
-def build_ko(src):
-    """Build the Korean dataset dict from the sources folder `src`."""
+def build_ko(src, exclusions=EXCLUSIONS):
+    """Build the Korean dataset dict from the sources folder `src`.
+    `exclusions`: the audited wrong-gloss word list (Task 6b)."""
     rows = _load_grade(src)
     anims = tuple(load_animcjk(os.path.join(src, name)) for name in _ANIMCJK)
     kanji = load_kanji(os.path.join(src, 'kanji.json'))
     ids = load_ids(os.path.join(src, 'ids.txt'), 'K')
     kengdic = os.path.join(src, 'kengdic.tsv')
     words = load_kengdic(kengdic)              # gloss-cleaned: for picking words
+    excluded = load_exclusions(exclusions)     # wrong glosses: never picked
     vocab = load_kengdic_hanja(kengdic)        # any gloss: for how common (R19)
     count = word_counts(vocab)
     _check_animcjk_sets(rows, anims[0])
@@ -289,7 +310,7 @@ def build_ko(src):
             'parents': [ref(p) for p in parents[c]],
             'required': [ref(p) for p in required[c]],
             'primaryParent': ref(primary) if primary else None,
-            'words': pick_words_ko(c, rank, words),
+            'words': pick_words_ko(c, rank, words, excluded),
         })
 
     return {
