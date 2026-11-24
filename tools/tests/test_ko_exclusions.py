@@ -164,6 +164,19 @@ class FullBuildExclusionTests(unittest.TestCase):
                     ('米飮', 'rece water')]:
             self.assertNotIn(row, chosen)
 
+    def test_wrong_senses_from_review_not_chosen(self):          # fix round 1
+        chosen = {(w['w'], w['hangul'], w['en'])
+                  for r in self.data['chars'] for w in r['words']}
+        rows = [('移送', '이송', 'remitter'), ('敎權', '교권', 'church'),
+                ('貴重', '귀중', 'richness'),
+                # the replacements those brought in for 移: a typo, then a wrong sense
+                ('移植', '이식', 'implantion, naturalization, transplantation'),
+                ('移入', '이입', 'naturalization')]
+        self.assertEqual([r for r in rows if r in chosen], [])
+        self.assertEqual([r for r in rows if r not in self.excluded], [])
+        for ch in '移權貴':
+            self.assertEqual(len(self.by_char[ch]['words']), 3, ch)
+
     def test_correct_rows_of_partly_excluded_pairs_still_available(self):   # R24
         cand = {(e['w'], e['hangul'], e['en']) for e in self.words} - self.excluded
         for row in [('植物', '식물', 'a plant'), ('洋食', '양식', 'bread, crust, Western food'),
