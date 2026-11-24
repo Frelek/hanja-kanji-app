@@ -127,11 +127,14 @@ def load_kengdic(path):
 
 
 def load_exclusions(path):
-    """ko_word_exclusions.json -> {(hanja, hangul)}, NFC. The file is a list
-    of {hanja, hangul, gloss, reason}; gloss and reason document the audit."""
+    """ko_word_exclusions.json -> {(hanja, hangul, gloss)}, NFC. The file is a
+    list of {hanja, hangul, gloss, reason}, one entry per wrong kengdic row
+    (R24): gloss is that row's `en` from load_kengdic, verbatim; reason
+    documents the audit."""
     with open(path, encoding='utf-8') as f:
         rows = json.load(f)
-    return {(nfc(r['hanja']).strip(), nfc(r['hangul']).strip()) for r in rows}
+    return {(nfc(r['hanja']).strip(), nfc(r['hangul']).strip(),
+             ' '.join(nfc(r['gloss']).split())) for r in rows}
 
 
 def word_counts(words):
@@ -168,15 +171,15 @@ def pick_words_ko(ch, rank, words, exclude=frozenset()):
     """Up to 3 example words for ch, best first.
 
     rank: character -> level index (8급 0 ... 4급Ⅱ 4) for the 610.
-    exclude: (w, hangul) pairs never picked, whatever their gloss (every row
-    of such a pair is skipped, so the next candidate takes its place).
+    exclude: (w, hangul, en) rows never picked (R24); another row of the same
+    word with a correct gloss can still be, else the next candidate is.
     T1: kengdic level A/B and every hanja at a level <= ch's.
     T2: every hanja in the 610.  T3: at most one hanja outside them.
     Within a tier: level A, B, C, D, none; then shorter; then file order.
     """
     ranked = []
     for i, e in enumerate(words):
-        if (e['w'], e['hangul']) in exclude:
+        if (e['w'], e['hangul'], e['en']) in exclude:
             continue
         t = _tier(ch, e, rank)
         if t is not None:
