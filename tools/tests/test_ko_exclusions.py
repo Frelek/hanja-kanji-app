@@ -110,6 +110,7 @@ class ExclusionFileTests(unittest.TestCase):
         for r in self.rows:
             self.assertTrue(r['reason'].endswith('.'), r)
             self.assertEqual(r['reason'], ' '.join(r['reason'].split()), r)
+            self.assertTrue(r['hanja'] in r['reason'] or r['hangul'] in r['reason'], r)
 
     def test_loader_matches_file(self):
         self.assertEqual(load_exclusions(EXCLUSIONS),
