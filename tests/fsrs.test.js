@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeScheduler, newCard, formatInterval, replay, RATING, STATE } from '../src/engine/fsrs.js';
+import { makeScheduler, newCard, formatInterval, replay, countedIds, RATING, STATE } from '../src/engine/fsrs.js';
 
 const s = { retention: 0.9, learningSteps: ['1m', '10m'], relearningSteps: ['10m'] };
 const settingsFor = () => s;
@@ -63,4 +63,21 @@ test('prevState records the state before each review', () => {
   assert.equal(r.prevState.get('e01'), STATE.new);
   assert.equal(r.prevState.get('e02'), STATE.learning);
   assert.equal(RATING.good, 3);
+});
+
+test('countedIds equals the prevState key set, incl. undo and same-timestamp reset', () => {
+  const t = m => new Date(now.getTime() + m * 6e4).toISOString();
+  const R = (id, card, at) => ({ id, type: 'review', card, rating: 3, at, ms: 1, dev: 'a' });
+  const resetAt = t(10);
+  const entries = [
+    R('a01', 'ja:a', t(0)), R('a02', 'ja:a', t(1)), R('a03', 'ko:a', t(2)),
+    { id: 'u1', type: 'undo', target: 'a02', at: t(3), dev: 'a' },
+    R('a04', 'ja:b', resetAt), // sorts before the reset: wiped
+    { id: 'b05', type: 'reset', lang: 'ja', at: resetAt, dev: 'a' },
+    R('c06', 'ja:c', resetAt), // sorts after the reset: survives
+    R('a07', 'ja:d', t(11)),
+  ];
+  const ids = countedIds(entries);
+  assert.deepEqual([...ids].sort(), [...replay(entries, settingsFor).prevState.keys()].sort());
+  assert.deepEqual([...ids].sort(), ['a03', 'a07', 'c06']);
 });

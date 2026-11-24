@@ -1,27 +1,16 @@
-import { STATE } from './fsrs.js';
+import { STATE, countedIds } from './fsrs.js';
 import { dayStart } from './queue.js';
 
 const DAY_MS = 864e5;
-const langOf = id => id.slice(0, id.indexOf(':'));
-
-// Review entries that still count: not undone, not before a reset of their language.
-function countedReviews(entries) {
-  const undone = new Set(entries.filter(e => e.type === 'undo').map(e => e.target));
-  const resetAt = new Map();
-  for (const e of entries) {
-    if (e.type === 'reset' && !(resetAt.get(e.lang) >= e.at)) resetAt.set(e.lang, e.at);
-  }
-  return entries.filter(e => e.type === 'review' && !undone.has(e.id)
-    && !(resetAt.has(langOf(e.card)) && e.at <= resetAt.get(langOf(e.card))));
-}
-
 export function reviewsToday(entries, now, startHour = 4) {
   const start = dayStart(now, startHour).getTime();
-  return countedReviews(entries).filter(e => new Date(e.at).getTime() >= start).length;
+  const counted = countedIds(entries);
+  return entries.filter(e => counted.has(e.id) && new Date(e.at).getTime() >= start).length;
 }
 
 export function streak(entries, now, startHour = 4) {
-  const days = new Set(countedReviews(entries).map(e => dayStart(new Date(e.at), startHour).getTime()));
+  const counted = countedIds(entries);
+  const days = new Set(entries.filter(e => counted.has(e.id)).map(e => dayStart(new Date(e.at), startHour).getTime()));
   let d = dayStart(now, startHour);
   if (!days.has(d.getTime())) d.setDate(d.getDate() - 1);
   let n = 0;

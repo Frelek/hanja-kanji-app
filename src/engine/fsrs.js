@@ -44,10 +44,33 @@ export function makeScheduler(s) {
 
 const langOf = id => id.slice(0, id.indexOf(':'));
 
-export function replay(entries, settingsFor) {
-  const sorted = [...entries].sort((a, b) =>
-    a.at < b.at ? -1 : a.at > b.at ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+const sortEntries = entries => [...entries].sort((a, b) =>
+  a.at < b.at ? -1 : a.at > b.at ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+
+// Ids of review entries that count: not undone and not wiped by a later
+// same-language reset, using the (at, id) order replay uses.
+export function countedIds(entries) {
+  const sorted = sortEntries(entries);
   const undone = new Set(sorted.filter(e => e.type === 'undo').map(e => e.target));
+  const ids = new Set();
+  const byLang = new Map();
+  for (const e of sorted) {
+    if (e.type === 'reset') {
+      for (const id of byLang.get(e.lang) ?? []) ids.delete(id);
+      byLang.delete(e.lang);
+    } else if (e.type === 'review' && !undone.has(e.id)) {
+      ids.add(e.id);
+      const lang = langOf(e.card);
+      if (!byLang.has(lang)) byLang.set(lang, []);
+      byLang.get(lang).push(e.id);
+    }
+  }
+  return ids;
+}
+
+export function replay(entries, settingsFor) {
+  const sorted = sortEntries(entries);
+  const counted = countedIds(entries);
   const states = new Map();
   const prevState = new Map();
   const schedulers = new Map();
@@ -58,14 +81,13 @@ export function replay(entries, settingsFor) {
   for (const e of sorted) {
     if (e.type === 'reset') {
       for (const id of [...states.keys()]) if (langOf(id) === e.lang) states.delete(id);
-      for (const eid of [...prevState.keys()]) if (prevState.get(eid).lang === e.lang) prevState.delete(eid);
-    } else if (e.type === 'review' && !undone.has(e.id)) {
+    } else if (e.type === 'review' && counted.has(e.id)) {
       const lang = langOf(e.card);
       const at = new Date(e.at);
       const card = states.get(e.card) ?? newCard(at);
-      prevState.set(e.id, { state: card.state, lang });
+      prevState.set(e.id, card.state);
       states.set(e.card, schedFor(lang).next(card, e.rating, at));
     }
   }
-  return { states, prevState: new Map([...prevState].map(([k, v]) => [k, v.state])) };
+  return { states, prevState };
 }

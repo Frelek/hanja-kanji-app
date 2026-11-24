@@ -81,3 +81,16 @@ test('retention30 works on a real replay log', () => {
   assert.equal(prevState.get(entries[1].id), STATE.review);
   assert.equal(retention30(entries, prevState, now), 1);
 });
+
+test('streak and reviewsToday agree with replay on a review at the reset timestamp', () => {
+  const now = D(2026, 3, 10, 12);
+  const at = D(2026, 3, 10, 9).toISOString();
+  const R = (id, card) => ({ id, type: 'review', card, rating: 3, at, ms: 1, dev: 'x' });
+  const reset = { id: 'b05', type: 'reset', lang: 'ja', at, dev: 'x' };
+  const wiped = [R('a04', 'ja:b'), reset];
+  assert.equal(reviewsToday(wiped, now, 4), 0);
+  assert.equal(streak(wiped, now, 4), 0);
+  const kept = [reset, R('c06', 'ja:c')];
+  assert.equal(reviewsToday(kept, now, 4), 1);
+  assert.equal(streak(kept, now, 4), 1);
+});
