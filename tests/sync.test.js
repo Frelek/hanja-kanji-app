@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { openDb, defaultSettings } from '../src/store/db.js';
 import { createStore } from '../src/state.js';
 import { RATING } from '../src/engine/fsrs.js';
-import { SyncError } from '../src/sync/github.js';
+import { SyncError, fileText } from '../src/sync/github.js';
 import {
   syncProfile, createSyncManager, syncLabel, clientFromMeta, githubClient, testText,
   DEFAULT_REPO, TOKEN_ERROR,
@@ -32,10 +32,15 @@ async function device({ entries = [], ...extra } = {}) {
   return db;
 }
 
+// The Contents API reads files of up to 1 MB; a larger one gets a 403 "too_large".
+const READ_LIMIT = 1024 * 1024;
+const sizeOf = (json) => new TextEncoder().encode(fileText(json)).length;
+
 /**
  * GitHub in memory, behind the client interface: a Map of path -> {sha, json}, shas from a
- * counter, PUTs checked against the sha precondition as the Contents API does, and
- * conflicts that can be injected per path.
+ * counter, PUTs checked against the sha precondition as the Contents API does, conflicts
+ * that can be injected per path, and the 1 MB read limit (measured on the text the real
+ * client writes; the real client turns GitHub's 403 into this SyncError).
  */
 function fakeGitHub() {
   const files = new Map();
@@ -49,6 +54,7 @@ function fakeGitHub() {
     gets: () => calls.filter((c) => c.op === 'get'),
     conflictNext(path, times = 1) { forced.set(path, (forced.get(path) ?? 0) + times); },
     entriesOf(path) { return files.get(path)?.json.entries.map((e) => e.id); },
+    sizeOf(path) { return sizeOf(files.get(path).json); },
     client({ beforePut } = {}) {
       return {
         async listDir(dir) {
@@ -61,6 +67,7 @@ function fakeGitHub() {
         async getJson(path) {
           calls.push({ op: 'get', path });
           const f = files.get(path);
+          if (f && sizeOf(f.json) > READ_LIMIT) throw new SyncError('http', 403, 'GitHub responded 403');
           return f ? { sha: f.sha, json: structuredClone(f.json) } : null;
         },
         async putJson(path, json, sha, message) {
@@ -104,7 +111,7 @@ const label = (store) => syncLabel(store.get().sync, NOW);
 
 // --- syncProfile ---------------------------------------------------------------------------
 
-test('local-only entries are pushed to their month file; a second sync pushes 0 and pulls 0', async () => {
+test('local-only entries are pushed to their week file; a second sync pushes 0 and pulls 0', async () => {
   const gh = fakeGitHub();
   const db = await device({ entries: [
     entry('a-1', '2026-11-25T09:00:00.000Z'),
@@ -115,19 +122,19 @@ test('local-only entries are pushed to their month file; a second sync pushes 0 
 
   const r = await syncProfile({ db, client, profileKey: KEY, now });
   assert.deepEqual(r, { pulled: 0, pushed: 3, created: true, existed: false });
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['a-1', 'a-2', 'a-3']);
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W48.json`), ['a-1', 'a-2', 'a-3']);
   assert.deepEqual(gh.files.get(`${DIR}/profile.json`).json, {
     name: 'Kacper', tag: '1234', createdAt: '2026-11-20T10:00:00.000Z',
     settings: defaultSettings(), settingsUpdatedAt: {},
   });
   assert.deepEqual(gh.puts().map((c) => [c.path, c.sha, c.message]), [
-    [`${DIR}/log-2026-11.json`, null, `sync ${KEY} 2026-11`],
+    [`${DIR}/log-2026-W48.json`, null, `sync ${KEY} 2026-W48`],
     [`${DIR}/profile.json`, null, `sync ${KEY} profile`],
   ]);
   assert.deepEqual(await db.unsynced(KEY), []);
   assert.deepEqual(await db.getMeta(`sync:${KEY}`), {
     shas: {
-      'log-2026-11.json': gh.files.get(`${DIR}/log-2026-11.json`).sha,
+      'log-2026-W48.json': gh.files.get(`${DIR}/log-2026-W48.json`).sha,
       'profile.json': gh.files.get(`${DIR}/profile.json`).sha,
     },
     lastSync: NOW.toISOString(),
@@ -138,30 +145,68 @@ test('local-only entries are pushed to their month file; a second sync pushes 0 
   const again = await syncProfile({ db, client, profileKey: KEY, now });
   assert.deepEqual(again, { pulled: 0, pushed: 0, created: false, existed: true });
   assert.equal(gh.puts().length, putsBefore, 'nothing is uploaded');
-  // the unchanged month is not downloaded again; profile.json is read to compare settings
+  // the unchanged week is not downloaded again; profile.json is read to compare settings
   assert.deepEqual(gh.gets().slice(getsBefore).map((c) => c.path), [`${DIR}/profile.json`]);
 
-  // one more answer: only that month is uploaded, with its sha as the precondition
+  // one more answer: only that week is uploaded, with its sha as the precondition
   await db.addEntries(KEY, [entry('a-4', '2026-11-26T08:00:00.000Z')]);
-  const sha = gh.files.get(`${DIR}/log-2026-11.json`).sha;
+  const sha = gh.files.get(`${DIR}/log-2026-W48.json`).sha;
   const third = await syncProfile({ db, client, profileKey: KEY, now });
   assert.deepEqual(third, { pulled: 0, pushed: 1, created: false, existed: true });
   assert.equal(gh.puts().at(-1).sha, sha);
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['a-1', 'a-2', 'a-3', 'a-4']);
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W48.json`), ['a-1', 'a-2', 'a-3', 'a-4']);
 });
 
-test('entries either side of a month boundary go to their own month files', async () => {
+test('entries either side of a week boundary go to their own ISO-week files', async () => {
   const gh = fakeGitHub();
   const db = await device({ entries: [
-    entry('a-oct', '2026-10-31T23:59:59.999Z'),
-    entry('a-nov', '2026-11-01T00:00:00.000Z'),
+    entry('a-sun', '2026-11-22T23:59:59.999Z'),
+    entry('a-mon', '2026-11-23T00:00:00.000Z'),
+    entry('a-nye', '2027-01-01T12:00:00.000Z'), // in the week-based year 2026
+    entry('a-jan', '2027-01-04T00:00:00.000Z'),
   ] });
   const r = await syncProfile({ db, client: gh.client(), profileKey: KEY, now });
-  assert.equal(r.pushed, 2);
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-10.json`), ['a-oct']);
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['a-nov']);
-  assert.deepEqual(gh.puts(`${DIR}/log-2026-10.json`).map((c) => c.message), [`sync ${KEY} 2026-10`]);
-  assert.deepEqual(gh.puts(`${DIR}/log-2026-11.json`).map((c) => c.message), [`sync ${KEY} 2026-11`]);
+  assert.equal(r.pushed, 4);
+  const weeks = { 'a-sun': '2026-W47', 'a-mon': '2026-W48', 'a-nye': '2026-W53', 'a-jan': '2027-W01' };
+  for (const [id, week] of Object.entries(weeks)) {
+    assert.deepEqual(gh.entriesOf(`${DIR}/log-${week}.json`), [id]);
+    assert.deepEqual(gh.puts(`${DIR}/log-${week}.json`).map((c) => c.message), [`sync ${KEY} ${week}`]);
+  }
+  assert.deepEqual([...gh.files.keys()].sort(), [
+    `${DIR}/log-2026-W47.json`, `${DIR}/log-2026-W48.json`, `${DIR}/log-2026-W53.json`,
+    `${DIR}/log-2027-W01.json`, `${DIR}/profile.json`,
+  ]);
+});
+
+test('a long study history syncs in week files that stay far below the 1 MB read limit', async () => {
+  const gh = fakeGitHub();
+  // 6,000 answers in four weeks of one month (1,500 a week), with ids as long as real ones
+  const dev = 'k3x9q2wz';
+  const monday = Date.parse('2026-11-02T06:00:00.000Z');
+  const many = Array.from({ length: 6000 }, (_, i) => {
+    const t = monday + Math.floor(i / 1500) * 7 * 864e5 + (i % 1500) * 20e3;
+    return {
+      id: `${dev}-${t}-${i + 1}`, type: 'review', card: i % 2 ? 'ja:日' : 'ko:學',
+      rating: 1 + (i % 4), at: new Date(t).toISOString(), ms: 4321, dev,
+    };
+  });
+  // the fake refuses what GitHub refuses
+  gh.files.set('too-big.json', { sha: 'b', json: { entries: [...many, ...many.map((e) => ({ ...e, id: `${e.id}x` }))] } });
+  await assert.rejects(gh.client().getJson('too-big.json'), (e) => e instanceof SyncError && e.kind === 'http' && e.status === 403);
+  gh.files.delete('too-big.json');
+
+  const laptop = await device({ entries: many });
+  assert.equal((await syncProfile({ db: laptop, client: gh.client(), profileKey: KEY, now })).pushed, 6000);
+  // a new device reads every file back
+  const phone = await device();
+  const r = await syncProfile({ db: phone, client: gh.client(), profileKey: KEY, now });
+  assert.equal(r.pulled, 6000);
+  assert.equal((await phone.getEntries(KEY)).length, 6000);
+  assert.deepEqual(await phone.unsynced(KEY), []);
+
+  const logs = [...gh.files.keys()].filter((p) => p !== `${DIR}/profile.json`).sort();
+  assert.deepEqual(logs, ['W45', 'W46', 'W47', 'W48'].map((w) => `${DIR}/log-2026-${w}.json`));
+  for (const p of logs) assert.ok(gh.sizeOf(p) < 256 * 1024, `${p} holds ${gh.sizeOf(p)} bytes`);
 });
 
 test('another device\'s entries are pulled once, stored as already synced', async () => {
@@ -217,7 +262,7 @@ test('Review Focus 2: the same profile created offline on two devices merges, no
   assert.equal(phoneAgain.existed, true);
 
   const all = ['l-1', 'l-2', 'p-1'];
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['p-1', 'l-1', 'l-2'], 'in time order');
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W47.json`), ['p-1', 'l-1', 'l-2'], 'in time order');
   assert.deepEqual(ids(await laptop.getEntries(KEY)), all);
   assert.deepEqual(ids(await phone.getEntries(KEY)), all);
   assert.deepEqual(await laptop.unsynced(KEY), []);
@@ -234,33 +279,33 @@ test('Review Focus 2: the same profile created offline on two devices merges, no
   assert.deepEqual(remote.settings, a.settings);
 });
 
-test('a conflict on a month file is retried up to 3 times, then SyncError conflict', async () => {
+test('a conflict on a week file is retried up to 3 times, then SyncError conflict', async () => {
   const gh = fakeGitHub();
   const db = await device({ entries: [entry('a-1', '2026-11-25T09:00:00.000Z')] });
-  gh.conflictNext(`${DIR}/log-2026-11.json`, 3);
+  gh.conflictNext(`${DIR}/log-2026-W48.json`, 3);
   const r = await syncProfile({ db, client: gh.client(), profileKey: KEY, now });
   assert.equal(r.pushed, 1);
-  assert.equal(gh.puts(`${DIR}/log-2026-11.json`).length, 4);
+  assert.equal(gh.puts(`${DIR}/log-2026-W48.json`).length, 4);
 
   const gh2 = fakeGitHub();
   const db2 = await device({ entries: [entry('a-1', '2026-11-25T09:00:00.000Z')] });
-  gh2.conflictNext(`${DIR}/log-2026-11.json`, 4);
+  gh2.conflictNext(`${DIR}/log-2026-W48.json`, 4);
   await assert.rejects(
     syncProfile({ db: db2, client: gh2.client(), profileKey: KEY, now }),
     (e) => e instanceof SyncError && e.kind === 'conflict',
   );
-  assert.equal(gh2.puts(`${DIR}/log-2026-11.json`).length, 4);
+  assert.equal(gh2.puts(`${DIR}/log-2026-W48.json`).length, 4);
   assert.deepEqual(ids(await db2.unsynced(KEY)), ['a-1'], 'nothing is marked synced');
 });
 
-test('a conflict re-fetches the month, keeps the other device\'s entries and pulls them', async () => {
+test('a conflict re-fetches the week, keeps the other device\'s entries and pulls them', async () => {
   const gh = fakeGitHub();
   const laptop = await device({ entries: [entry('l-1', '2026-11-25T09:00:00.000Z')] });
   const phone = await device({ entries: [entry('p-1', '2026-11-25T08:00:00.000Z')] });
   let once = false;
   const client = gh.client({
     async beforePut(path) {
-      if (path.endsWith('log-2026-11.json') && !once) {
+      if (path.endsWith('log-2026-W48.json') && !once) {
         once = true;
         await syncProfile({ db: phone, client: gh.client(), profileKey: KEY, now });
       }
@@ -269,7 +314,7 @@ test('a conflict re-fetches the month, keeps the other device\'s entries and pul
   const r = await syncProfile({ db: laptop, client, profileKey: KEY, now });
   assert.equal(r.pulled, 1);
   assert.equal(r.pushed, 1);
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['p-1', 'l-1']);
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W48.json`), ['p-1', 'l-1']);
   assert.deepEqual(ids(await laptop.getEntries(KEY)), ['l-1', 'p-1']);
 });
 
@@ -306,7 +351,7 @@ test('malformed remote settings and entries are skipped; unknown entries stay on
       "settings":{"ja":{"newPerDay":"lots","learningSteps":"1m"},"dayStartHour":5,"__proto__":{"polluted":true}},
       "settingsUpdatedAt":{"ja.newPerDay":"2099-01-01T00:00:00.000Z","dayStartHour":"2099-01-01T00:00:00.000Z"}}`),
   });
-  gh.files.set(`${DIR}/log-2026-11.json`, {
+  gh.files.set(`${DIR}/log-2026-W45.json`, {
     sha: 'x2',
     json: { entries: [
       null, 'junk',
@@ -315,7 +360,7 @@ test('malformed remote settings and entries are skipped; unknown entries stay on
       { id: 'later-1', type: 'note', at: '2026-11-02T00:00:02.000Z' },
     ] },
   });
-  const db = await device({ entries: [entry('a-1', '2026-11-25T09:00:00.000Z')] });
+  const db = await device({ entries: [entry('a-1', '2026-11-03T09:00:00.000Z')] });
   const r = await syncProfile({ db, client: gh.client(), profileKey: KEY, now });
   assert.equal(r.pulled, 1);
   assert.deepEqual(ids(await db.getEntries(KEY)), ['a-1', 'ok-1']);
@@ -326,7 +371,7 @@ test('malformed remote settings and entries are skipped; unknown entries stay on
   assert.equal(p.createdAt, '2026-01-01T00:00:00.000Z');
   assert.equal({}.polluted, undefined);
   // the server keeps entries this version cannot read, and gets a valid profile back
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`), ['ok-1', 'bad-1', 'later-1', 'a-1']);
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W45.json`), ['ok-1', 'bad-1', 'later-1', 'a-1']);
   assert.equal(gh.files.get(`${DIR}/profile.json`).json.settings.ja.newPerDay, 10);
 });
 
@@ -387,7 +432,7 @@ test('pulled entries change the active profile\'s states', async () => {
   assert.equal(s.sync.error, null);
   assert.equal(s.sync.lastSync, NOW.toISOString());
   assert.equal(label(store), 'Synced just now');
-  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`).length, 2);
+  assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-W48.json`).length, 2);
 });
 
 test('a pull followed by a failed upload still shows the pulled entries', async () => {
@@ -456,7 +501,7 @@ test('a settings change during a sync keeps both it and the pulled remote value'
 test('a sync for a profile that is not active leaves the active state alone', async () => {
   const gh = fakeGitHub();
   const olaDir = 'profiles/ola-0001';
-  gh.files.set(`${olaDir}/log-2026-11.json`, { sha: 'o1', json: { entries: [entry('o-1', '2026-11-25T09:00:00.000Z')] } });
+  gh.files.set(`${olaDir}/log-2026-W48.json`, { sha: 'o1', json: { entries: [entry('o-1', '2026-11-25T09:00:00.000Z')] } });
 
   const { db, store } = await studying('Ola', '0001');
   await store.actions.addProfile('Kacper', '1234');
@@ -560,7 +605,7 @@ test('any other exception counts as an http problem, never offline, and never re
   assert.equal(store.get().sync.error, 'http');
   assert.notEqual(store.get().sync.status, 'off');
 
-  getClient = async () => ({ async listDir() { return [{ name: 'log-2026-11.json', path: 'x', sha: 's' }]; }, async getJson() { return { sha: 's', json: { entries: 7 } }; }, async putJson() { throw new RangeError('odd'); } });
+  getClient = async () => ({ async listDir() { return [{ name: 'log-2026-W48.json', path: 'x', sha: 's' }]; }, async getJson() { return { sha: 's', json: { entries: 7 } }; }, async putJson() { throw new RangeError('odd'); } });
   await sync.trigger('manual');
   assert.equal(store.get().sync.error, 'http');
 });

@@ -2,11 +2,12 @@
 // The review log is the source of truth: logs merge as a union by entry id, settings merge
 // per field by settingsUpdatedAt, and card states always come from replaying the log.
 //
-// Repo layout: profiles/<key>/profile.json  = { name, tag, createdAt, settings, settingsUpdatedAt }
-//              profiles/<key>/log-YYYY-MM.json = { entries: [...] }
+// Repo layout: profiles/<key>/profile.json    = { name, tag, createdAt, settings, settingsUpdatedAt }
+//              profiles/<key>/log-YYYY-Www.json = { entries: [...] }, the ISO week of each entry's
+//              UTC time, as compact JSON: a heavy week is ~200 KB, far below the 1 MB read limit.
 // The shas seen at the last sync live in meta `sync:<key>` = { shas: { [file]: sha }, lastSync }.
 import { SyncError, createGitHubClient } from './github.js';
-import { mergeEntries, mergeProfile, groupByMonth } from './merge.js';
+import { mergeEntries, mergeProfile, groupByWeek } from './merge.js';
 import { defaultSettings } from '../store/db.js';
 import { settingError } from '../state.js';
 
@@ -18,13 +19,13 @@ export const REPO_ERROR = 'Enter the repo as owner/name';
 const TOKEN_RE = /^[\x21-\x7e]+$/;
 const REPO_RE = /^[\w.-]+\/[\w.-]+$/;
 const PROFILE_FILE = 'profile.json';
-const LOG_RE = /^log-\d{4}-\d{2}\.json$/;
+const LOG_RE = /^log-\d{4}-W\d{2}\.json$/;
 const TIMEOUT_MS = 30e3;
 const WELCOME_WAIT_MS = 15e3;
 const KINDS = new Set(['auth', 'notfound', 'conflict', 'offline', 'http']);
 
 const isPlain = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
-const logFile = (month) => `log-${month}.json`;
+const logFile = (week) => `log-${week}.json`;
 
 /** The pasted token, trimmed; tokens are printable ASCII with no spaces (R32). */
 export function checkToken(text) {
@@ -91,7 +92,7 @@ function stable(v) {
 
 // --- reading what the server holds -----------------------------------------------------------
 
-/** The entries of a month file that can be merged: objects with an id and a time. */
+/** The entries of a week file that can be merged: objects with an id and a time. */
 function rawEntries(json) {
   const list = Array.isArray(json?.entries) ? json.entries : [];
   return list.filter((e) => isPlain(e) && typeof e.id === 'string' && e.id !== '' && typeof e.at === 'string');
@@ -251,7 +252,7 @@ export async function syncProfile({
     }
   }
 
-  // 2–3. Download the months whose sha changed since the last sync, and profile.json.
+  // 2–3. Download the weeks whose sha changed since the last sync, and profile.json.
   for (const [name, sha] of listed) {
     if (name === PROFILE_FILE) await fetchFile(name);
     else if (LOG_RE.test(name)) {
@@ -275,15 +276,15 @@ export async function syncProfile({
   const firstProfile = remote.get(PROFILE_FILE) ?? null;
   const merged = await mergeLocal(firstProfile);
 
-  // 6. Upload every month whose server file lacks some of this device's entries: the new
-  //    content is the server's entries plus this device's entries for that month.
+  // 6. Upload every week whose server file lacks some of this device's entries: the new
+  //    content is the server's entries plus this device's entries for that week.
   const unsyncedIds = new Set((await db.unsynced(profileKey)).map((e) => e.id));
   let pushed = 0;
-  for (const [month, entries] of groupByMonth(local)) {
-    const name = logFile(month);
+  for (const [week, entries] of groupByWeek(local)) {
+    const name = logFile(week);
     const pending = entries.filter((e) => unsyncedIds.has(e.id)).map((e) => e.id);
     if (listed.has(name) && !remote.has(name)) {
-      // Unchanged since the last sync: it already holds every synced entry of the month.
+      // Unchanged since the last sync: it already holds every synced entry of the week.
       if (!pending.length) continue;
       await fetchFile(name);
     }
@@ -293,9 +294,9 @@ export async function syncProfile({
       const onServer = new Set(have.map((e) => e.id));
       added = entries.filter((e) => !onServer.has(e.id)).length;
       return added ? { entries: mergeEntries(have, entries) } : null;
-    }, `sync ${profileKey} ${month}`);
+    }, `sync ${profileKey} ${week}`);
     if (wrote) pushed += added;
-    // 8. Every entry of this month is now on the server.
+    // 8. Every entry of this week is now on the server.
     if (pending.length) await db.markSynced(pending);
   }
 

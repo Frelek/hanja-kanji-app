@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mergeEntries, mergeProfile, monthOf, groupByMonth } from '../src/sync/merge.js';
+import { mergeEntries, mergeProfile, weekOf, groupByWeek } from '../src/sync/merge.js';
 
 const rv = (id, at, card = 'c1') => ({ id, type: 'review', card, rating: 3, at, ms: 900, dev: 'd' });
 const A = [rv('a1', '2026-11-01T10:00:00Z'), rv('a2', '2026-11-03T10:00:00Z')];
@@ -58,11 +58,30 @@ test('mergeProfile: stamped side beats unstamped side', () => {
   assert.equal(mergeProfile(remote, local).settings.ja.retention, 0.8);
 });
 
-test('monthOf and groupByMonth', () => {
-  assert.equal(monthOf('2026-12-31T23:59:59Z'), '2026-12');
-  const g = groupByMonth([rv('z', '2026-12-01T00:00:00Z'), rv('b', '2026-11-02T00:00:00Z'), rv('a', '2026-11-02T00:00:00Z'), rv('c', '2026-10-30T00:00:00Z')]);
-  assert.deepEqual([...g.keys()], ['2026-10', '2026-11', '2026-12']);
-  assert.deepEqual(g.get('2026-11').map(e => e.id), ['a', 'b']);
+test('weekOf is the ISO-8601 week of the UTC time, with the week-based year', () => {
+  assert.equal(weekOf('2026-11-23T08:00:00Z'), '2026-W48');
+  assert.equal(weekOf('2026-11-22T23:59:59.999Z'), '2026-W47'); // Sunday ends a week
+  assert.equal(weekOf('2026-11-23T00:00:00.000Z'), '2026-W48'); // Monday starts one
+  assert.equal(weekOf('2026-01-01T00:00:00Z'), '2026-W01'); // a Thursday
+  assert.equal(weekOf('2026-12-31T23:59:59Z'), '2026-W53'); // 2026 has 53 weeks
+  assert.equal(weekOf('2027-01-03T12:00:00Z'), '2026-W53'); // still 2026's last week
+  assert.equal(weekOf('2027-01-04T00:00:00Z'), '2027-W01');
+  assert.equal(weekOf('2024-12-30T00:00:00Z'), '2025-W01'); // Monday of 2025's first week
+  assert.equal(weekOf('2021-01-03T23:00:00Z'), '2020-W53');
+  assert.equal(weekOf('2026-03-02T00:00:00Z'), '2026-W10');
+  assert.equal(weekOf('2025-12-28T23:59:59Z'), '2025-W52');
+  // the UTC date counts, whatever the offset written in the stamp
+  assert.equal(weekOf('2026-11-23T01:00:00+02:00'), '2026-W47');
+});
+
+test('groupByWeek', () => {
+  const g = groupByWeek([
+    rv('z', '2027-01-01T00:00:00Z'), rv('b', '2026-11-24T00:00:00Z'), rv('a', '2026-11-24T00:00:00Z'),
+    rv('c', '2026-11-22T23:00:00Z'), rv('d', '2026-11-29T23:59:59Z'),
+  ]);
+  assert.deepEqual([...g.keys()], ['2026-W47', '2026-W48', '2026-W53']);
+  assert.deepEqual(g.get('2026-W48').map(e => e.id), ['a', 'b', 'd']);
+  assert.deepEqual(g.get('2026-W53').map(e => e.id), ['z']);
 });
 
 const mk = (name, settings, upd) => prof(settings, upd, { name });

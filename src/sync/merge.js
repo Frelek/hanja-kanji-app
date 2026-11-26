@@ -11,16 +11,29 @@ export function mergeEntries(a, b) {
   return [...seen.values()].sort(byAtId);
 }
 
-export const monthOf = at => at.slice(0, 7);
+const DAY = 864e5;
 
-/** Map of 'YYYY-MM' -> entries, months ascending, entries sorted by (at, id). */
-export function groupByMonth(entries) {
+/**
+ * The ISO-8601 week of a time, in UTC, as 'YYYY-Www'. The year is the week-based year:
+ * a week belongs to the year of its Thursday, so 2027-01-01 falls in '2026-W53'.
+ */
+export function weekOf(at) {
+  const d = new Date(at);
+  const monday0 = (d.getUTCDay() + 6) % 7; // Monday 0 ... Sunday 6
+  const thursday = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - monday0 + 3);
+  const year = new Date(thursday).getUTCFullYear();
+  const week = 1 + Math.floor((thursday - Date.UTC(year, 0, 1)) / (7 * DAY));
+  return `${String(year).padStart(4, '0')}-W${String(week).padStart(2, '0')}`;
+}
+
+/** Map of 'YYYY-Www' -> entries, weeks ascending, entries sorted by (at, id). */
+export function groupByWeek(entries) {
   const sorted = [...entries].sort(byAtId);
   const out = new Map();
   for (const e of sorted) {
-    const m = monthOf(e.at);
-    if (!out.has(m)) out.set(m, []);
-    out.get(m).push(e);
+    const w = weekOf(e.at);
+    if (!out.has(w)) out.set(w, []);
+    out.get(w).push(e);
   }
   return out;
 }

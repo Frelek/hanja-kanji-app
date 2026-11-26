@@ -31,10 +31,41 @@ export function fromBase64(b64) {
 
 const encodePath = (path) => String(path).split('/').map(encodeURIComponent).join('/');
 
-function kindFor(status) {
-  if (status === 401 || status === 403) return 'auth';
-  if (status === 409 || status === 422) return 'conflict';
+/** The exact text putJson stores for a value: compact JSON, so a week of the log stays small. */
+export const fileText = (json) => JSON.stringify(json) + '\n';
+
+/**
+ * Whether a 403 is about something a new token would not fix: a file over the Contents
+ * API's 1 MB read limit ("too_large") or a rate limit. Any other 403 is the token's.
+ */
+async function notTheToken(res) {
+  if (res.headers?.get?.('x-ratelimit-remaining') === '0') return true;
+  let body;
+  try {
+    body = await res.json();
+  } catch {
+    return false;
+  }
+  if (Array.isArray(body?.errors) && body.errors.some((e) => e?.code === 'too_large')) return true;
+  return /too large|rate limit/i.test(String(body?.message ?? ''));
+}
+
+async function kindOf(res) {
+  if (res.status === 401) return 'auth';
+  if (res.status === 403) return (await notTheToken(res)) ? 'http' : 'auth';
+  if (res.status === 409 || res.status === 422) return 'conflict';
   return 'http';
+}
+
+const fail = async (res) => new SyncError(await kindOf(res), res.status, `GitHub responded ${res.status}`);
+
+/** The JSON body of a response. One that cannot be read (cut off, timed out) is an http problem. */
+async function bodyOf(res) {
+  try {
+    return await res.json();
+  } catch {
+    throw new SyncError('http', res.status, 'GitHub sent an answer that could not be read');
+  }
 }
 
 export function createGitHubClient({ token, repo, fetch = globalThis.fetch }) {
@@ -61,14 +92,12 @@ export function createGitHubClient({ token, repo, fetch = globalThis.fetch }) {
     }
   }
 
-  const fail = (res) => new SyncError(kindFor(res.status), res.status, `GitHub responded ${res.status}`);
-
   return {
     async listDir(path) {
       const res = await request(`${base}/contents/${encodePath(path)}`);
       if (res.status === 404) return [];
-      if (!res.ok) throw fail(res);
-      const list = await res.json();
+      if (!res.ok) throw await fail(res);
+      const list = await bodyOf(res);
       if (!Array.isArray(list)) return [];
       return list.map(({ name, path: p, sha }) => ({ name, path: p, sha }));
     },
@@ -76,20 +105,29 @@ export function createGitHubClient({ token, repo, fetch = globalThis.fetch }) {
     async getJson(path) {
       const res = await request(`${base}/contents/${encodePath(path)}`);
       if (res.status === 404) return null;
-      if (!res.ok) throw fail(res);
-      const body = await res.json();
-      return { sha: body.sha, json: JSON.parse(fromBase64(body.content)) };
+      if (!res.ok) throw await fail(res);
+      const body = await bodyOf(res);
+      // A file over 1 MB read with the object media type comes with empty content.
+      if (typeof body?.sha !== 'string' || typeof body.content !== 'string' || body.content === '') {
+        throw new SyncError('http', res.status, `${path} came without its content`);
+      }
+      try {
+        return { sha: body.sha, json: JSON.parse(fromBase64(body.content)) };
+      } catch {
+        throw new SyncError('http', res.status, `${path} is not valid JSON`);
+      }
     },
 
     async putJson(path, json, sha, message) {
-      const payload = { message, content: toBase64(JSON.stringify(json, null, 2) + '\n') };
+      const payload = { message, content: toBase64(fileText(json)) };
       if (sha != null) payload.sha = sha;
       const res = await request(`${base}/contents/${encodePath(path)}`, {
         method: 'PUT',
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw fail(res);
-      const body = await res.json();
+      if (!res.ok) throw await fail(res);
+      const body = await bodyOf(res);
+      if (typeof body?.content?.sha !== 'string') throw new SyncError('http', res.status, `${path} was not confirmed`);
       return { sha: body.content.sha };
     },
 
@@ -98,7 +136,7 @@ export function createGitHubClient({ token, repo, fetch = globalThis.fetch }) {
         const res = await request(base);
         if (res.ok) return { ok: true };
         if (res.status === 404) return { ok: false, kind: 'notfound' };
-        return { ok: false, kind: kindFor(res.status) };
+        return { ok: false, kind: await kindOf(res) };
       } catch (e) {
         return { ok: false, kind: e.kind || 'http' };
       }
