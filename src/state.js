@@ -45,7 +45,34 @@ export function studyQueue(state, now) {
   });
 }
 
-const notImplemented = () => { throw new Error('not implemented'); };
+const STEP_RE = /^\d+[mhd]$/;
+const isInt = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+const stepsOk = (v) => Array.isArray(v) && v.length > 0
+  && v.every((t) => typeof t === 'string' && STEP_RE.test(t) && parseInt(t, 10) >= 1);
+
+// Per-language study settings, then the shared ones. Each checker returns an error or null.
+const STUDY_CHECKS = {
+  newPerDay: (v) => (isInt(v, 0, 100) ? null : 'Enter a whole number from 0 to 100.'),
+  maxReviews: (v) => (isInt(v, 0, 9999) ? null : 'Enter a whole number from 0 to 9999.'),
+  retention: (v) => (typeof v === 'number' && v >= 0.8 && v <= 0.95 ? null : 'Enter a value from 0.80 to 0.95.'),
+  learningSteps: (v) => (stepsOk(v) ? null : 'Use steps like 1m 10m (m, h or d, at least 1m).'),
+  relearningSteps: (v) => (stepsOk(v) ? null : 'Use steps like 10m (m, h or d, at least 1m).'),
+};
+const SHARED_CHECKS = {
+  dayStartHour: (v) => (isInt(v, 0, 23) ? null : 'Enter a whole hour from 0 to 23.'),
+  appearance: (v) => (['auto', 'light', 'dark'].includes(v) ? null : 'Choose Auto, Light or Dark.'),
+};
+
+/** The error for setting `path` to `value`, or null when it is allowed. */
+function settingError(path, value) {
+  const parts = String(path).split('.');
+  if (parts.length === 1 && SHARED_CHECKS[parts[0]]) return SHARED_CHECKS[parts[0]](value);
+  if (parts.length === 2 && LANGS.includes(parts[0]) && STUDY_CHECKS[parts[1]]) return STUDY_CHECKS[parts[1]](value);
+  return `Unknown setting: ${path}`;
+}
+
+const SETTINGS_ERROR = 'Could not save the setting on this device. Try again.';
+const RESET_ERROR = 'Could not reset on this device. Try again.';
 
 export function createStore({ db, now = () => new Date(), data = { ja: null, ko: null } }) {
   let state = {
@@ -243,6 +270,59 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     if (state.canUndo) set({ canUndo: false });
   }
 
+  /** Sets one setting, stamps it for sync, stores the profile, then replays with the new values. */
+  async function updateSettings(path, value) {
+    const error = settingError(path, value);
+    if (error) return { ok: false, error };
+    return serial(async () => {
+      const profile = state.profile;
+      if (!profile) return { ok: false, error: SETTINGS_ERROR };
+      const parts = path.split('.');
+      const settings = { ...profile.settings };
+      if (parts.length === 2) settings[parts[0]] = { ...settings[parts[0]], [parts[1]]: value };
+      else settings[parts[0]] = value;
+      const next = {
+        ...profile,
+        settings,
+        settingsUpdatedAt: { ...profile.settingsUpdatedAt, [path]: now().toISOString() },
+      };
+      try {
+        await db.putProfile(next);
+      } catch {
+        return { ok: false, error: SETTINGS_ERROR };
+      }
+      if (state.profile?.key !== profile.key) return { ok: true, error: null };
+      set({
+        profile: next,
+        profiles: withProfile(state.profiles, next),
+        ...replay(state.entries, (lang) => next.settings[lang]),
+      });
+      return { ok: true, error: null };
+    });
+  }
+
+  /** Logs a reset of one language, then replays: that language starts over, the other is kept. */
+  function resetLang(lang) {
+    if (!LANGS.includes(lang)) return Promise.resolve({ ok: false, error: `Unknown language: ${lang}` });
+    return serial(async () => {
+      const profile = state.profile;
+      if (!profile) return { ok: false, error: RESET_ERROR };
+      let entry;
+      try {
+        const d = await getDevice();
+        entry = { id: entryId(d), type: 'reset', lang, at: now().toISOString(), dev: d };
+        await db.addEntries(profile.key, [entry]);
+      } catch {
+        return { ok: false, error: RESET_ERROR };
+      }
+      if (state.profile?.key !== profile.key) return { ok: true, error: null };
+      undoStack = undoStack.filter((u) => langOf(u.card) !== lang);
+      const entries = [...state.entries, entry];
+      set({ entries, ...replay(entries, (l) => profile.settings[l]), canUndo: undoStack.length > 0 });
+      return { ok: true, error: null };
+    });
+  }
+
   async function init() {
     const ticket = langTicket;
     const [profiles, lang, active] = await Promise.all([
@@ -274,8 +354,8 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
       answer,
       undo,
       startSession,
-      updateSettings: notImplemented, // Task 14
-      resetLang: notImplemented, // Task 14
+      updateSettings,
+      resetLang,
     },
   };
 }

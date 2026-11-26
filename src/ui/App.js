@@ -7,6 +7,8 @@ import { Home } from './Home.js';
 import { Session } from './Session.js';
 import { Characters } from './Characters.js';
 import { Practice } from './Practice.js';
+import { Stats } from './Stats.js';
+import { Settings } from './Settings.js';
 
 const TABS = [
   ['study', 'Study'],
@@ -69,14 +71,9 @@ function screenFor(route, s, store, levelOk) {
     case 'characters':
       return levelOk ? html`<${Characters} s=${s} level=${route.level} sheetId=${route.char ?? null} />` : null;
     case 'stats':
-      return html`
-        <h1 class="screen-title">Stats</h1>
-        <p class="card note">Stats come in a later step.</p>`;
+      return html`<${Stats} store=${store} s=${s} />`;
     case 'settings':
-      return html`
-        <h1 class="screen-title">Settings</h1>
-        <p class="card note">Settings come in a later step.</p>
-        <button type="button" class="btn btn-quiet" onClick=${() => store.actions.selectProfile(null)}>Switch profile</button>`;
+      return html`<${Settings} store=${store} s=${s} />`;
     default:
       return html`<${Home} store=${store} s=${s} />`;
   }

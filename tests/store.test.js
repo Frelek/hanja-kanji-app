@@ -139,14 +139,6 @@ test('subscribe gets each new state until unsubscribed', async () => {
   assert.deepEqual(seen, ['ko']);
 });
 
-test('later-task actions are declared and not implemented yet', async () => {
-  const store = createStore({ db: await fresh(), now });
-  for (const name of ['updateSettings', 'resetLang']) {
-    assert.equal(typeof store.actions[name], 'function');
-    assert.throws(() => store.actions[name](), /not implemented/);
-  }
-});
-
 // db wrapper whose 'lang' writes and reads can be delayed or made to fail
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const wrap = (db, { langWrite, langRead } = {}) => ({

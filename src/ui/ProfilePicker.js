@@ -51,7 +51,7 @@ export function ProfilePicker({ store, profiles }) {
     </main>`;
 }
 
-function AddProfileForm({ store, onCancel }) {
+export function AddProfileForm({ store, onCancel }) {
   const [name, setName] = useState('');
   const [tag, setTag] = useState('');
   const [errors, setErrors] = useState({ name: null, tag: null, form: null });
