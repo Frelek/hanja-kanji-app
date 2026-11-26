@@ -362,7 +362,8 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
       const client = await getClient();
       if (!client) status = 'off';
       else {
-        report({ status: 'syncing' });
+        // Connected or disconnected meanwhile: the newer status stands.
+        if (gen === generation) report({ status: 'syncing' });
         const active = store.get().profile?.key ?? null;
         const keys = (await db.listProfiles()).map((p) => p.key)
           .sort((a, b) => (b === active) - (a === active));

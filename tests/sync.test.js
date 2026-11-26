@@ -650,6 +650,22 @@ test('connect trims and checks the token, keeps it out of the state, and disconn
   assert.equal(await clientFromMeta(db, makeClient), null);
 });
 
+test('disconnecting while a sync is starting leaves the status on Sync off', async () => {
+  const gh = fakeGitHub();
+  const { db, store } = await studying();
+  await db.setMeta('token', 'github_pat_X');
+  let open;
+  const gate = new Promise((r) => { open = r; });
+  const sync = createSyncManager({ store, db, getClient: async () => { await gate; return gh.client(); }, now });
+  store.setSync({ status: 'idle' });
+  const run = sync.trigger('manual');
+  await sync.disconnect();
+  open();
+  await run;
+  assert.equal(store.get().sync.status, 'off');
+  assert.equal(label(store), 'Sync off');
+});
+
 test('connect does not save a token that is rejected or cannot see the repo', async () => {
   const { db, store } = await studying();
   let kind = 'auth';
