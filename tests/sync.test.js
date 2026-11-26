@@ -610,6 +610,32 @@ test('any other exception counts as an http problem, never offline, and never re
   assert.equal(store.get().sync.error, 'http');
 });
 
+test('a reply whose body stalls ends the run at the time limit, as an http problem', async () => {
+  const { db, store } = await studying();
+  let aborted = 0;
+  // The headers arrive; the body never does, until the request is aborted (as fetch does).
+  const stalled = async (url, init) => ({
+    status: 200, ok: true, headers: new Headers(),
+    json: () => new Promise((resolve, reject) => {
+      init.signal.addEventListener('abort', () => {
+        aborted++;
+        reject(new DOMException('The operation was aborted.', 'AbortError'));
+      });
+    }),
+  });
+  const client = githubClient({ token: 'github_pat_X', repo: DEFAULT_REPO, fetch: stalled, timeoutMs: 40 });
+  const sync = createSyncManager({ store, db, getClient: async () => client, now });
+  let timer;
+  const hung = new Promise((r) => { timer = setTimeout(() => r('hung'), 2000); });
+  const outcome = await Promise.race([sync.trigger('manual').then(() => 'settled'), hung]);
+  clearTimeout(timer);
+  assert.equal(outcome, 'settled', 'the run ends instead of hanging');
+  assert.equal(aborted, 1);
+  assert.equal(store.get().sync.error, 'http');
+  assert.notEqual(store.get().sync.status, 'syncing', 'Sync now is enabled again');
+  assert.equal(label(store), 'Sync problem: try again later');
+});
+
 test('the manager runs one sync at a time: 3 rapid triggers make at most 2 runs', async () => {
   const gh = fakeGitHub();
   const { db, store } = await studying();

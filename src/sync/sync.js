@@ -315,18 +315,24 @@ export async function syncProfile({
 
 // --- clients ---------------------------------------------------------------------------------
 
-/** fetch with a time limit: a hung connection ends as an error instead of a stuck sync. */
+/**
+ * fetch with a time limit: a hung connection ends as an error instead of a stuck sync.
+ * The limit covers reading the body as well as the headers, so the timer is never cleared:
+ * aborting a request whose body has been read is a no-op. A body cut off by the abort
+ * fails to parse, which the client reports as an http problem.
+ */
 function withTimeout(fetch, ms) {
   return (url, init = {}) => {
     const ctrl = new AbortController();
-    const id = setTimeout(() => ctrl.abort(), ms);
-    return Promise.resolve(fetch(url, { ...init, signal: ctrl.signal })).finally(() => clearTimeout(id));
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    timer?.unref?.(); // Node only (the tests): a pending limit does not keep the process alive
+    return Promise.resolve(fetch(url, { ...init, signal: ctrl.signal }));
   };
 }
 
-/** A GitHub client whose requests time out. */
-export function githubClient({ token, repo, fetch = globalThis.fetch }) {
-  return createGitHubClient({ token, repo, fetch: withTimeout(fetch, TIMEOUT_MS) });
+/** A GitHub client whose requests, bodies included, time out after `timeoutMs`. */
+export function githubClient({ token, repo, fetch = globalThis.fetch, timeoutMs = TIMEOUT_MS }) {
+  return createGitHubClient({ token, repo, fetch: withTimeout(fetch, timeoutMs) });
 }
 
 /** The client for the token and repo saved on this device, or null when no token is saved. */

@@ -1,7 +1,7 @@
 // Offline service worker. Every app file is precached (see precache.json, made by
 // tools/gen_precache.mjs) into a cache named for the content version, so the app,
 // the stroke animations and the fonts all work with no network.
-// precache-version: 4df723f10418
+// precache-version: f01dc2599de6
 // (stamped by tools/gen_precache.mjs so this file changes with every release)
 const PREFIX = 'hk-';
 const LEGACY = 'hanja-kanji-learner-v3';
