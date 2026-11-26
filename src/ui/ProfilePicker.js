@@ -14,12 +14,13 @@ export function ProfilePicker({ store, profiles }) {
 
   async function choose(key) {
     setError(null);
-    go('#/study');
     try {
       await store.actions.selectProfile(key);
     } catch {
       setError(OPEN_ERROR);
+      return;
     }
+    go('#/study');
   }
 
   return html`
@@ -72,12 +73,13 @@ function AddProfileForm({ store, onCancel }) {
     }
     setBusy(true);
     try {
-      go('#/study');
       const r = await store.actions.addProfile(name, tag);
-      if (!r.ok) {
-        setErrors({ name: null, tag: null, form: r.error });
-        setBusy(false);
+      if (r.ok) {
+        go('#/study');
+        return;
       }
+      setErrors({ name: null, tag: null, form: r.error });
+      setBusy(false);
     } catch {
       setErrors({ name: null, tag: null, form: SAVE_ERROR });
       setBusy(false);

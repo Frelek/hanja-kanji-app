@@ -9,6 +9,11 @@ export const LANGS = ['ja', 'ko'];
 const byName = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
   || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
 
+/** The list with `p` in it once (replacing any profile with the same key), sorted by name. */
+const withProfile = (list, p) => [...list.filter((x) => x.key !== p.key), p].sort(byName);
+
+const LANG_ERROR = 'Could not save the language on this device.';
+
 const notImplemented = () => { throw new Error('not implemented'); };
 
 export function createStore({ db, now = () => new Date(), data = { ja: null, ko: null } }) {
@@ -46,39 +51,82 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     if (ticket === selecting) set({ profile, entries, states, prevState });
   }
 
+  // Profiles being created, by key: a second add of the same key waits for the first
+  // instead of racing it through getProfile/putProfile.
+  const creating = new Map();
+
+  async function createIfMissing(v) {
+    if (await db.getProfile(v.key)) return true;
+    const profile = {
+      key: v.key,
+      name: v.name,
+      tag: v.tag,
+      createdAt: now().toISOString(),
+      settings: defaultSettings(),
+      settingsUpdatedAt: {},
+    };
+    await db.putProfile(profile);
+    set({ profiles: withProfile(state.profiles, profile) });
+    return false;
+  }
+
   async function addProfile(name, tag) {
     const v = validateProfileInput(name, tag);
     if (!v.ok) return { ok: false, error: v.error };
-    const existing = await db.getProfile(v.key);
-    if (!existing) {
-      const profile = {
-        key: v.key,
-        name: v.name,
-        tag: v.tag,
-        createdAt: now().toISOString(),
-        settings: defaultSettings(),
-        settingsUpdatedAt: {},
-      };
-      await db.putProfile(profile);
-      set({ profiles: [...state.profiles, profile].sort(byName) });
+    let existed;
+    const pending = creating.get(v.key);
+    if (pending) {
+      await pending;
+      existed = true;
+    } else {
+      const job = createIfMissing(v);
+      creating.set(v.key, job);
+      try {
+        existed = await job;
+      } finally {
+        creating.delete(v.key);
+      }
     }
     await selectProfile(v.key);
-    return { ok: true, error: null, key: v.key, existed: Boolean(existing) };
+    return { ok: true, error: null, key: v.key, existed };
   }
+
+  // Language writes run one after another, and the state shows what was stored,
+  // so a failed write or two quick taps cannot leave the screen and the db disagreeing.
+  let langTicket = 0;
+  let langWrites = Promise.resolve();
+  let storedLang = state.lang;
 
   async function setLang(lang) {
     if (!LANGS.includes(lang)) throw new Error(`Unknown language: ${lang}`);
-    set({ lang });
-    await db.setMeta('lang', lang);
+    const ticket = ++langTicket;
+    const write = langWrites.then(() => db.setMeta('lang', lang));
+    langWrites = write.catch(() => {});
+    let ok = true;
+    try {
+      await write;
+      storedLang = lang;
+    } catch {
+      ok = false;
+    }
+    if (ticket === langTicket && state.lang !== storedLang) set({ lang: storedLang });
+    return ok ? { ok: true, error: null } : { ok: false, error: LANG_ERROR };
   }
 
   async function init() {
+    const ticket = langTicket;
     const [profiles, lang, active] = await Promise.all([
       db.listProfiles(),
       db.getMeta('lang'),
       db.getMeta('activeProfile'),
     ]);
-    set({ profiles: [...profiles].sort(byName), lang: LANGS.includes(lang) ? lang : 'ja' });
+    const patch = { profiles: profiles.reduce(withProfile, state.profiles) };
+    // A language chosen while init was reading wins over the value it read.
+    if (ticket === langTicket) {
+      storedLang = LANGS.includes(lang) ? lang : 'ja';
+      patch.lang = storedLang;
+    }
+    set(patch);
     if (active && profiles.some((p) => p.key === active)) await selectProfile(active);
   }
 

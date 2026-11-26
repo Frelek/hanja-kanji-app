@@ -1,5 +1,5 @@
 // Hash routes: #/study, #/session, #/characters/<levelId>, #/stats, #/settings.
-import { useState, useEffect } from '../../vendor/htm-preact.mjs';
+import { useState, useEffect, useMemo } from '../../vendor/htm-preact.mjs';
 
 const PLAIN = new Set(['study', 'session', 'stats', 'settings']);
 
@@ -17,19 +17,28 @@ export function parseRoute(hash) {
 export const routeHref = (name, level) =>
   (name === 'characters' && level ? `#/characters/${encodeURIComponent(level)}` : `#/${name}`);
 
+// useRoute listeners, told synchronously by go(): 'hashchange' fires a task later, which
+// would let one frame of the old route paint after a store change.
+const listeners = new Set();
+
 /** Navigates to a hash; `replace` swaps the history entry instead of adding one. */
 export function go(hash, { replace = false } = {}) {
   if (location.hash === hash) return;
   if (replace) location.replace(hash);
   else location.hash = hash;
+  for (const fn of listeners) fn();
 }
 
 export function useRoute() {
-  const [route, setRoute] = useState(() => parseRoute(location.hash));
+  const [hash, setHash] = useState(() => location.hash);
   useEffect(() => {
-    const onChange = () => setRoute(parseRoute(location.hash));
-    addEventListener('hashchange', onChange);
-    return () => removeEventListener('hashchange', onChange);
+    const sync = () => setHash(location.hash);
+    addEventListener('hashchange', sync);
+    listeners.add(sync);
+    return () => {
+      removeEventListener('hashchange', sync);
+      listeners.delete(sync);
+    };
   }, []);
-  return route;
+  return useMemo(() => parseRoute(hash), [hash]);
 }

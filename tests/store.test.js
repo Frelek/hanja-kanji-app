@@ -146,3 +146,88 @@ test('later-task actions are declared and not implemented yet', async () => {
     assert.throws(() => store.actions[name](), /not implemented/);
   }
 });
+
+// db wrapper whose 'lang' writes and reads can be delayed or made to fail
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const wrap = (db, { langWrite, langRead } = {}) => ({
+  ...db,
+  async setMeta(k, v) {
+    if (k === 'lang' && langWrite) await langWrite(v);
+    return db.setMeta(k, v);
+  },
+  async getMeta(k) {
+    const v = await db.getMeta(k);
+    if (k === 'lang' && langRead) await langRead(); // returns the value read before the delay
+    return v;
+  },
+});
+
+test('setLang with a failing write keeps state and storage consistent and does not reject', async () => {
+  const db = await fresh();
+  const store = createStore({ db: wrap(db, { langWrite: async () => { throw new Error('disk full'); } }), now });
+  await store.init();
+  const unhandled = [];
+  const onUnhandled = (e) => unhandled.push(e);
+  process.on('unhandledRejection', onUnhandled);
+  try {
+    store.actions.setLang('ko'); // as the click handler calls it: not awaited, not caught
+    await sleep(20);
+    const r = await store.actions.setLang('ko');
+    assert.equal(r.ok, false);
+    assert.equal(store.get().lang, 'ja');
+    assert.equal(await db.getMeta('lang'), undefined);
+    assert.deepEqual(unhandled, []);
+  } finally {
+    process.off('unhandledRejection', onUnhandled);
+  }
+});
+
+test('two rapid setLang calls persist the last one', async () => {
+  const db = await fresh();
+  // the first write is slow, the second fast: an unserialised store would end with 'ko' stored
+  const store = createStore({ db: wrap(db, { langWrite: (v) => sleep(v === 'ko' ? 30 : 0) }), now });
+  await store.init();
+  await Promise.all([store.actions.setLang('ko'), store.actions.setLang('ja')]);
+  assert.equal(store.get().lang, 'ja');
+  assert.equal(await db.getMeta('lang'), 'ja');
+});
+
+test('a later write failing leaves the state on the value actually stored', async () => {
+  const db = await fresh();
+  const store = createStore({
+    db: wrap(db, { langWrite: async (v) => { if (v === 'ja') throw new Error('disk full'); } }),
+    now,
+  });
+  await store.init();
+  await Promise.all([store.actions.setLang('ko'), store.actions.setLang('ja')]);
+  assert.equal(await db.getMeta('lang'), 'ko');
+  assert.equal(store.get().lang, 'ko');
+});
+
+test('setLang during init is not overwritten by the stored language', async () => {
+  const db = await fresh();
+  await db.setMeta('lang', 'ko');
+  const store = createStore({ db: wrap(db, { langRead: () => sleep(30) }), now });
+  const booting = store.init();
+  await store.actions.setLang('ja');
+  await booting;
+  assert.equal(store.get().lang, 'ja');
+  assert.equal(await db.getMeta('lang'), 'ja');
+});
+
+test('two concurrent addProfile calls with the same key leave exactly one profile', async () => {
+  const db = await fresh();
+  const store = createStore({ db, now });
+  await store.init();
+  const [a, b] = await Promise.all([
+    store.actions.addProfile('Kacper', '1234'),
+    store.actions.addProfile('kacper', '1234'),
+  ]);
+  assert.equal(a.ok && b.ok, true);
+  assert.deepEqual([a.existed, b.existed], [false, true]);
+  const stored = await db.listProfiles();
+  assert.equal(stored.length, 1);
+  assert.equal(stored[0].name, 'Kacper');
+  assert.deepEqual(store.get().profiles.map((p) => p.key), ['kacper-1234']);
+  assert.equal(store.get().profile.name, 'Kacper');
+});
