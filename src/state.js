@@ -262,7 +262,6 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
 
   return {
     get: () => state,
-    now,
     subscribe(fn) {
       subscribers.add(fn);
       return () => subscribers.delete(fn);
