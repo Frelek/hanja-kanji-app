@@ -1,5 +1,5 @@
 {
- "version": "709c838b0e97",
+ "version": "5cd6d92f6a60",
  "files": [
   "./",
   "assets/fonts/coverage.json",
@@ -1246,6 +1246,7 @@
   "src/main.js",
   "src/state.js",
   "src/store/db.js",
+  "src/sync/github.js",
   "src/sync/merge.js",
   "src/ui/About.js",
   "src/ui/App.js",
