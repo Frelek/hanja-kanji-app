@@ -1,8 +1,9 @@
-// Bootstrap: clear the old app's storage, open the db, load both datasets, render.
+// Bootstrap: clear the old app's storage, open the db, load both datasets, render, sync.
 import { html, render } from '../vendor/htm-preact.mjs';
 import { openDb, cleanupLegacyStorage } from './store/db.js';
 import { loadData } from './data/load.js';
 import { createStore } from './state.js';
+import { createSyncManager, clientFromMeta } from './sync/sync.js';
 import { App } from './ui/App.js';
 import { UpdateBanner, registerServiceWorker } from './ui/UpdateBanner.js';
 
@@ -33,8 +34,14 @@ async function boot() {
   const [db, ja, ko] = await Promise.all([openDb(), loadData('ja'), loadData('ko')]);
   const store = createStore({ db, data: { ja, ko } });
   await store.init();
+  const sync = createSyncManager({ store, db, getClient: () => clientFromMeta(db) });
   root.textContent = '';
   render(html`<${App} store=${store} />`, root);
+  // Sync runs in the background on open and on every return to the foreground.
+  sync.trigger('open');
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') sync.trigger('visible');
+  });
 }
 
 boot().catch((error) => {

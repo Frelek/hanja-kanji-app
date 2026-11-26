@@ -120,10 +120,14 @@ export function Session({ store, s }) {
   }
 
   // Start: earlier answers leave the undo history, and the first card is chosen before paint.
+  // Leaving the session, finished or not, sends its answers to the sync repo.
   useLayoutEffect(() => {
     store.actions.startSession();
     pick();
-    return () => { mounted.current = false; };
+    return () => {
+      mounted.current = false;
+      store.actions.endSession();
+    };
   }, []);
 
   // Waiting on a learning card: look again when it is due (and every 15 s for the minutes shown).

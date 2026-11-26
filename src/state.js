@@ -64,7 +64,7 @@ const SHARED_CHECKS = {
 };
 
 /** The error for setting `path` to `value`, or null when it is allowed. */
-function settingError(path, value) {
+export function settingError(path, value) {
   const parts = String(path).split('.');
   if (parts.length === 1 && SHARED_CHECKS[parts[0]]) return SHARED_CHECKS[parts[0]](value);
   if (parts.length === 2 && LANGS.includes(parts[0]) && STUDY_CHECKS[parts[1]]) return STUDY_CHECKS[parts[1]](value);
@@ -73,6 +73,9 @@ function settingError(path, value) {
 
 const SETTINGS_ERROR = 'Could not save the setting on this device. Try again.';
 const RESET_ERROR = 'Could not reset on this device. Try again.';
+
+/** A sync runs after this many answers. */
+export const ANSWERS_PER_SYNC = 20;
 
 export function createStore({ db, now = () => new Date(), data = { ja: null, ko: null } }) {
   let state = {
@@ -84,13 +87,25 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     states: new Map(),
     prevState: new Map(),
     canUndo: false,
-    sync: { status: 'off', waiting: 0, lastSync: null, error: null },
+    // status: 'off' (no token) | 'idle' | 'syncing'. error: the last sync's problem
+    // (a SyncError kind) or null. waiting: unsynced entries of the active profile.
+    // lastSync: when the active profile last synced. repo: the saved repo, or null.
+    sync: { status: 'off', waiting: 0, lastSync: null, error: null, repo: null },
+    // The name to greet with "Welcome back" after a profile came down from the repo.
+    welcome: null,
   };
   const subscribers = new Set();
   const set = (patch) => {
     state = { ...state, ...patch };
     for (const fn of subscribers) fn(state);
   };
+  const setSync = (patch) => set({ sync: { ...state.sync, ...patch } });
+  // One more unsynced entry for the active profile, merged into a set() patch.
+  const oneMoreWaiting = () => ({ sync: { ...state.sync, waiting: state.sync.waiting + 1 } });
+
+  // The sync manager (src/sync/sync.js) attaches itself; without one, sync is off.
+  let syncer = null;
+  let answersSinceSync = 0;
 
   // Answers of the current study session, newest last: what undo can reach.
   let undoStack = [];
@@ -104,7 +119,10 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
       await db.setMeta('activeProfile', null);
       if (ticket === selecting) {
         undoStack = [];
-        set({ profile: null, entries: [], states: new Map(), prevState: new Map(), canUndo: false });
+        set({
+          profile: null, entries: [], states: new Map(), prevState: new Map(), canUndo: false,
+          welcome: null, sync: { ...state.sync, waiting: 0, lastSync: null },
+        });
       }
       return;
     }
@@ -115,7 +133,8 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     await db.setMeta('activeProfile', key);
     if (ticket === selecting) {
       undoStack = [];
-      set({ profile, entries, states, prevState, canUndo: false });
+      set({ profile, entries, states, prevState, canUndo: false, welcome: null });
+      await refreshSyncInfo();
     }
   }
 
@@ -138,6 +157,10 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     return false;
   }
 
+  /**
+   * Adds a profile on this device and selects it. A profile new to this device that the
+   * sync repo already has is synced first and greeted: `welcome` is its name, else null.
+   */
   async function addProfile(name, tag) {
     const v = validateProfileInput(name, tag);
     if (!v.ok) return { ok: false, error: v.error };
@@ -155,8 +178,17 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
         creating.delete(v.key);
       }
     }
+    let welcome = null;
+    if (!existed && syncer) {
+      try {
+        welcome = (await syncer.welcome(v.key)) ?? null;
+      } catch {
+        welcome = null; // offline or a sync problem: the next sync merges it
+      }
+    }
     await selectProfile(v.key);
-    return { ok: true, error: null, key: v.key, existed };
+    if (welcome && state.profile?.key === v.key) set({ welcome });
+    return { ok: true, error: null, key: v.key, existed, welcome };
   }
 
   // Language writes run one after another, and the state shows what was stored,
@@ -237,8 +269,14 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
         derived = { states, prevState };
       }
       undoStack = [...undoStack, { id: entry.id, card: cardId }];
-      set({ entries, ...derived, canUndo: true });
+      set({ entries, ...derived, canUndo: true, ...oneMoreWaiting() });
       return { ok: true, error: null, id: entry.id };
+    }).then((r) => {
+      if (r.ok && ++answersSinceSync >= ANSWERS_PER_SYNC) {
+        answersSinceSync = 0;
+        syncer?.trigger('answers');
+      }
+      return r;
     });
   }
 
@@ -259,7 +297,10 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
       if (state.profile?.key !== profile.key) return { ok: true, error: null, card: last.card };
       undoStack = undoStack.slice(0, -1);
       const entries = [...state.entries, entry];
-      set({ entries, ...replay(entries, (lang) => profile.settings[lang]), canUndo: undoStack.length > 0 });
+      set({
+        entries, ...replay(entries, (lang) => profile.settings[lang]), canUndo: undoStack.length > 0,
+        ...oneMoreWaiting(),
+      });
       return { ok: true, error: null, card: last.card };
     });
   }
@@ -268,6 +309,20 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
   function startSession() {
     undoStack = [];
     if (state.canUndo) set({ canUndo: false });
+  }
+
+  /** A study session finished or was left: its answers go to the repo. */
+  function endSession() {
+    syncer?.trigger('session-end');
+  }
+
+  /** The Sync now button. Resolves when the sync is done; never rejects. */
+  function syncNow() {
+    return syncer ? syncer.trigger('manual') : Promise.resolve();
+  }
+
+  function clearWelcome() {
+    if (state.welcome) set({ welcome: null });
   }
 
   /** Sets one setting, stamps it for sync, stores the profile, then replays with the new values. */
@@ -318,19 +373,70 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
       if (state.profile?.key !== profile.key) return { ok: true, error: null };
       undoStack = undoStack.filter((u) => langOf(u.card) !== lang);
       const entries = [...state.entries, entry];
-      set({ entries, ...replay(entries, (l) => profile.settings[l]), canUndo: undoStack.length > 0 });
+      set({
+        entries, ...replay(entries, (l) => profile.settings[l]), canUndo: undoStack.length > 0,
+        ...oneMoreWaiting(),
+      });
       return { ok: true, error: null };
     });
   }
 
+  /**
+   * After a sync changed a profile's entries or settings in the db: the profile list shows
+   * the stored name, and the active profile is loaded and replayed again. It runs in the
+   * write chain, so it never lands between an answer's write and its state update.
+   * Resolves to true when the active state was reloaded.
+   */
+  function reloadProfile(key) {
+    return serial(async () => {
+      const profile = await db.getProfile(key);
+      if (!profile) return false;
+      const listed = state.profiles.find((p) => p.key === key);
+      if (state.profile?.key !== key) {
+        if (listed && listed.name !== profile.name) set({ profiles: withProfile(state.profiles, profile) });
+        return false;
+      }
+      const entries = await db.getEntries(key);
+      if (state.profile?.key !== key) return false;
+      set({
+        profile,
+        profiles: withProfile(state.profiles, profile),
+        entries,
+        ...replay(entries, (lang) => profile.settings[lang]),
+      });
+      return true;
+    });
+  }
+
+  /** Reads the active profile's unsynced count and last sync time into `sync`. Never rejects. */
+  function refreshSyncInfo() {
+    return serial(async () => {
+      const key = state.profile?.key ?? null;
+      let waiting = 0;
+      let lastSync = null;
+      if (key) {
+        const [pending, meta] = await Promise.all([db.unsynced(key), db.getMeta(`sync:${key}`)]);
+        waiting = pending.length;
+        lastSync = meta?.lastSync ?? null;
+      }
+      if ((state.profile?.key ?? null) === key) setSync({ waiting, lastSync });
+    }).catch(() => {});
+  }
+
   async function init() {
     const ticket = langTicket;
-    const [profiles, lang, active] = await Promise.all([
+    const [profiles, lang, active, token, repo] = await Promise.all([
       db.listProfiles(),
       db.getMeta('lang'),
       db.getMeta('activeProfile'),
+      db.getMeta('token'),
+      db.getMeta('repo'),
     ]);
-    const patch = { profiles: profiles.reduce(withProfile, state.profiles) };
+    // Only whether a token is saved: the token itself never enters the state.
+    const patch = {
+      profiles: profiles.reduce(withProfile, state.profiles),
+      sync: { ...state.sync, status: token ? 'idle' : 'off', repo: typeof repo === 'string' && repo ? repo : null },
+    };
     // A language chosen while init was reading wins over the value it read.
     if (ticket === langTicket) {
       storedLang = LANGS.includes(lang) ? lang : 'ja';
@@ -354,9 +460,19 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
       answer,
       undo,
       startSession,
+      endSession,
+      syncNow,
+      clearWelcome,
       updateSettings,
       resetLang,
     },
+    // For the sync manager.
+    attachSync(manager) { syncer = manager; },
+    get syncer() { return syncer; },
+    setSync,
+    exclusive: serial,
+    reloadProfile,
+    refreshSyncInfo,
   };
 }
 

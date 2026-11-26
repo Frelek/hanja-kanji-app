@@ -3,6 +3,7 @@ import { html, useState, useEffect, useRef } from '../../vendor/htm-preact.mjs';
 import { LangSwitch } from './Header.js';
 import { AddProfileForm } from './ProfilePicker.js';
 import { About } from './About.js';
+import { SyncSettings } from './SyncSettings.js';
 
 const LANG_NAME = { ja: 'Japanese', ko: 'Korean' };
 const APPEARANCE = [['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']];
@@ -52,15 +53,6 @@ function ProfileSection({ store, profile }) {
         ${!adding && html`<button type="button" class="btn btn-quiet" onClick=${() => setAdding(true)}>Add profile</button>`}
       </div>
       ${adding && html`<${AddProfileForm} store=${store} onCancel=${() => setAdding(false)} />`}
-    </section>`;
-}
-
-function SyncSection() {
-  return html`
-    <section class="card set-section" aria-labelledby="sync-title">
-      <h2 id="sync-title" class="set-title">Sync</h2>
-      <p class="set-status">Not connected</p>
-      <p class="note set-note">Sync settings arrive in the next update</p>
     </section>`;
 }
 
@@ -177,7 +169,7 @@ export function Settings({ store, s }) {
   return html`
     <h1 class="screen-title">Settings</h1>
     <${ProfileSection} store=${store} profile=${s.profile} />
-    <${SyncSection} />
+    <${SyncSettings} store=${store} s=${s} />
     <${StudySection} store=${store} s=${s} />
     <${AppearanceSection} store=${store} profile=${s.profile} />
     <${About} />

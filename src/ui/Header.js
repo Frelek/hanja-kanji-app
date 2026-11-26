@@ -1,5 +1,7 @@
 // Pieces shared by the picker and the Study screen: avatar, profile chip, language switch.
 import { html } from '../../vendor/htm-preact.mjs';
+import { syncLabel } from '../sync/sync.js';
+import { routeHref } from './route.js';
 
 // Names are NFC letters and digits only, so the first code point is the first letter.
 export const initial = (name) => ([...String(name ?? '')][0] ?? '').toLocaleUpperCase();
@@ -8,9 +10,16 @@ export function Avatar({ name }) {
   return html`<span class="avatar" aria-hidden="true">${initial(name)}</span>`;
 }
 
-const SYNC_LABEL = { off: 'Sync off' };
+/** The live sync status. A token problem links to Settings, where it is fixed. */
+export function SyncStatus({ sync, now }) {
+  const text = syncLabel(sync, now);
+  if (sync.status !== 'off' && sync.error === 'auth') {
+    return html`<a class="sync-status sync-fix" href=${routeHref('settings')}>${text}</a>`;
+  }
+  return html`<p class="sync-status">${text}</p>`;
+}
 
-export function ProfileBar({ profile, sync }) {
+export function ProfileBar({ profile, sync, now }) {
   return html`
     <header class="topbar">
       <p class="who">
@@ -18,7 +27,7 @@ export function ProfileBar({ profile, sync }) {
         <span class="who-name">${profile.name}</span>
         <span class="who-tag">#${profile.tag}</span>
       </p>
-      <p class="sync-status">${SYNC_LABEL[sync.status] ?? ''}</p>
+      <${SyncStatus} sync=${sync} now=${now} />
     </header>`;
 }
 

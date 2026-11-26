@@ -73,6 +73,8 @@ export function AddProfileForm({ store, onCancel }) {
     }
     setBusy(true);
     try {
+      // With sync on, a profile the repo already has comes down first; Study then says
+      // "Welcome back" (state.welcome).
       const r = await store.actions.addProfile(name, tag);
       if (r.ok) {
         go('#/study');
@@ -132,5 +134,7 @@ export function AddProfileForm({ store, onCancel }) {
         <button type="submit" class="btn btn-primary" disabled=${busy}>Add profile</button>
         ${onCancel && html`<button type="button" class="btn btn-text" onClick=${onCancel}>Cancel</button>`}
       </div>
+      <p class="add-busy" aria-live="polite">${busy && store.get().sync.status !== 'off'
+        ? 'Looking for this profile in the sync repo' : ''}</p>
     </form>`;
 }

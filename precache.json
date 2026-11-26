@@ -1,5 +1,5 @@
 {
- "version": "5cd6d92f6a60",
+ "version": "d23bef4c85ea",
  "files": [
   "./",
   "assets/fonts/coverage.json",
@@ -1248,6 +1248,7 @@
   "src/store/db.js",
   "src/sync/github.js",
   "src/sync/merge.js",
+  "src/sync/sync.js",
   "src/ui/About.js",
   "src/ui/App.js",
   "src/ui/CardFace.js",
@@ -1260,6 +1261,7 @@
   "src/ui/Session.js",
   "src/ui/Settings.js",
   "src/ui/Stats.js",
+  "src/ui/SyncSettings.js",
   "src/ui/UpdateBanner.js",
   "src/ui/format.js",
   "src/ui/profile-input.js",

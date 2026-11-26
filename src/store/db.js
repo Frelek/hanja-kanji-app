@@ -72,8 +72,9 @@ export async function openDb(name = 'hk') {
       return rows.map(strip);
     },
     async unsynced(profileKey) {
-      const rows = await req(d.transaction('log').objectStore('log').index('profile').getAll(profileKey));
-      return rows.filter((r) => r.synced === 0).map(strip);
+      // Only the unsynced rows are read (of every profile), not the whole log.
+      const rows = await req(d.transaction('log').objectStore('log').index('synced').getAll(0));
+      return rows.filter((r) => r.profile === profileKey).map(strip);
     },
     async markSynced(ids) {
       const tx = d.transaction('log', 'readwrite');

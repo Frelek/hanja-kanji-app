@@ -75,9 +75,12 @@ export function Home({ store, s }) {
   const queue = useMemo(() => studyQueue(s, now),
     [s.profile, s.lang, s.data, s.states, s.prevState, s.entries, now]);
   const introduced = useMemo(() => introducedSet(s.states), [s.states]);
+  // "Welcome back" shows until Study is left.
+  useEffect(() => () => store.actions.clearWelcome(), [store]);
 
   return html`
-    <${ProfileBar} profile=${s.profile} sync=${s.sync} />
+    <${ProfileBar} profile=${s.profile} sync=${s.sync} now=${now} />
+    ${s.welcome && html`<p class="welcome" role="status">Welcome back, ${s.welcome}</p>`}
     <${LangSwitch} lang=${s.lang} onChange=${store.actions.setLang} />
     <h1 class="visually-hidden">Study</h1>
     <${Today} counts=${queue.counts} />
