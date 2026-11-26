@@ -390,6 +390,69 @@ test('pulled entries change the active profile\'s states', async () => {
   assert.deepEqual(gh.entriesOf(`${DIR}/log-2026-11.json`).length, 2);
 });
 
+test('a pull followed by a failed upload still shows the pulled entries', async () => {
+  const gh = fakeGitHub();
+  const phone = await device({ entries: [entry('p-1', '2026-11-25T09:00:00.000Z')] });
+  await syncProfile({ db: phone, client: gh.client(), profileKey: KEY, now });
+
+  const { db, store } = await studying();
+  await store.actions.answer('ja:一', RATING.good, 800);
+  // the connection drops after the download, at the first upload
+  let online = false;
+  const flaky = {
+    ...gh.client(),
+    async putJson(...args) {
+      if (!online) throw new SyncError('offline');
+      return gh.client().putJson(...args);
+    },
+  };
+  const sync = createSyncManager({ store, db, getClient: async () => flaky, now });
+  await sync.trigger('visible');
+  assert.equal(store.get().sync.error, 'offline');
+  assert.deepEqual(ids(store.get().entries), ids(await db.getEntries(KEY)), 'the state matches the db');
+  assert.ok(store.get().entries.some((e) => e.id === 'p-1'), 'the pulled entry is in the state');
+  assert.equal(store.get().states.get('ja:日').reps, 1);
+  assert.equal(label(store), 'Offline: 1 answer waiting');
+
+  online = true;
+  await sync.trigger('visible');
+  assert.ok(store.get().entries.some((e) => e.id === 'p-1'));
+  assert.equal(label(store), 'Synced just now');
+});
+
+test('a settings change during a sync keeps both it and the pulled remote value', async () => {
+  const gh = fakeGitHub();
+  const s = defaultSettings();
+  const phone = await device({
+    settings: { ...s, ja: { ...s.ja, newPerDay: 25 } },
+    settingsUpdatedAt: { 'ja.newPerDay': '2026-11-22T00:00:00.000Z' },
+  });
+  await syncProfile({ db: phone, client: gh.client(), profileKey: KEY, now });
+
+  const { db, store } = await studying();
+  await store.actions.answer('ja:日', RATING.good, 800);
+  // After the profile merge (step 5) and before the run ends, the user changes a setting.
+  let changed = null;
+  const client = gh.client({
+    async beforePut() {
+      if (!changed) changed = await store.actions.updateSettings('ko.maxReviews', 150);
+    },
+  });
+  const sync = createSyncManager({ store, db, getClient: async () => client, now });
+  await sync.trigger('manual');
+  assert.deepEqual(changed, { ok: true, error: null });
+
+  for (const p of [store.get().profile, await db.getProfile(KEY)]) {
+    assert.equal(p.settings.ja.newPerDay, 25, 'the pulled value is kept');
+    assert.equal(p.settings.ko.maxReviews, 150, 'the change made meanwhile is kept');
+  }
+  // and the next sync takes the change to the repo
+  await sync.trigger('manual');
+  const remote = gh.files.get(`${DIR}/profile.json`).json;
+  assert.equal(remote.settings.ja.newPerDay, 25);
+  assert.equal(remote.settings.ko.maxReviews, 150);
+});
+
 test('a sync for a profile that is not active leaves the active state alone', async () => {
   const gh = fakeGitHub();
   const olaDir = 'profiles/ola-0001';

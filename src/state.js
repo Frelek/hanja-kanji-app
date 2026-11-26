@@ -325,28 +325,34 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     if (state.welcome) set({ welcome: null });
   }
 
-  /** Sets one setting, stamps it for sync, stores the profile, then replays with the new values. */
+  /**
+   * Sets one setting, stamps it for sync, stores the profile, then replays with the new values.
+   * It starts from the stored profile, not state.profile: a sync may have merged newer remote
+   * settings into the db that the state does not show yet, and they must not be reverted.
+   */
   async function updateSettings(path, value) {
     const error = settingError(path, value);
     if (error) return { ok: false, error };
     return serial(async () => {
-      const profile = state.profile;
-      if (!profile) return { ok: false, error: SETTINGS_ERROR };
-      const parts = path.split('.');
-      const settings = { ...profile.settings };
-      if (parts.length === 2) settings[parts[0]] = { ...settings[parts[0]], [parts[1]]: value };
-      else settings[parts[0]] = value;
-      const next = {
-        ...profile,
-        settings,
-        settingsUpdatedAt: { ...profile.settingsUpdatedAt, [path]: now().toISOString() },
-      };
+      const key = state.profile?.key;
+      if (!key) return { ok: false, error: SETTINGS_ERROR };
+      let next;
       try {
+        const profile = (await db.getProfile(key)) ?? state.profile;
+        const parts = path.split('.');
+        const settings = { ...profile.settings };
+        if (parts.length === 2) settings[parts[0]] = { ...settings[parts[0]], [parts[1]]: value };
+        else settings[parts[0]] = value;
+        next = {
+          ...profile,
+          settings,
+          settingsUpdatedAt: { ...profile.settingsUpdatedAt, [path]: now().toISOString() },
+        };
         await db.putProfile(next);
       } catch {
         return { ok: false, error: SETTINGS_ERROR };
       }
-      if (state.profile?.key !== profile.key) return { ok: true, error: null };
+      if (state.profile?.key !== key) return { ok: true, error: null };
       set({
         profile: next,
         profiles: withProfile(state.profiles, next),

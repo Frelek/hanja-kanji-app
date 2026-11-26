@@ -175,10 +175,16 @@ const profileDoc = (p) => {
  * and whether profile.json was created now or was already there.
  *
  * `exclusive(fn)` runs the local writes that must not interleave with the study screens
- * (the store passes its write chain). Throws SyncError when the repo cannot be read or
- * written, or SyncError('conflict') when a file kept changing after MAX_RETRIES retries.
+ * (the store passes its write chain). `stats` is filled as the run goes, so it still tells
+ * what changed on this device when the run throws: { pulled, profileChanged }.
+ * Throws SyncError when the repo cannot be read or written, or SyncError('conflict') when
+ * a file kept changing after MAX_RETRIES retries.
  */
-export async function syncProfile({ db, client, profileKey, now = () => new Date(), exclusive = (fn) => fn() }) {
+export async function syncProfile({
+  db, client, profileKey, now = () => new Date(), exclusive = (fn) => fn(), stats = {},
+}) {
+  stats.pulled = 0;
+  stats.profileChanged = false;
   const at = () => (typeof now === 'function' ? now() : now ?? new Date());
   const folder = `profiles/${profileKey}`;
   const pathOf = (name) => `${folder}/${name}`;
@@ -198,13 +204,12 @@ export async function syncProfile({ db, client, profileKey, now = () => new Date
 
   const local = await db.getEntries(profileKey);
   const localIds = new Set(local.map((e) => e.id));
-  let pulled = 0;
 
   // 4. Entries of a server file that this device lacks are stored here, already synced.
   async function absorb(json) {
     const fresh = mergeEntries([], rawEntries(json).filter(usable)).filter((e) => !localIds.has(e.id));
     if (!fresh.length) return;
-    pulled += await exclusive(() => db.addEntries(profileKey, fresh));
+    stats.pulled += await exclusive(() => db.addEntries(profileKey, fresh));
     await db.markSynced(fresh.map((e) => e.id));
     for (const e of fresh) {
       localIds.add(e.id);
@@ -261,7 +266,10 @@ export async function syncProfile({ db, client, profileKey, now = () => new Date
     const mine = await db.getProfile(profileKey);
     if (!current) return mine;
     const merged = mergeRemoteProfile(mine, current.json);
-    if (stable(merged) !== stable(mine)) await db.putProfile(merged);
+    if (stable(merged) !== stable(mine)) {
+      await db.putProfile(merged);
+      stats.profileChanged = true;
+    }
     return merged;
   });
   const firstProfile = remote.get(PROFILE_FILE) ?? null;
@@ -301,7 +309,7 @@ export async function syncProfile({ db, client, profileKey, now = () => new Date
 
   // 8. Remember what the server holds now.
   await db.setMeta(metaKey, { shas: Object.fromEntries(shas), lastSync: at().toISOString() });
-  return { pulled, pushed, created: wrote && !existed, existed };
+  return { pulled: stats.pulled, pushed, created: wrote && !existed, existed };
 }
 
 // --- clients ---------------------------------------------------------------------------------
@@ -346,12 +354,18 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
     if (!stopped) store.setSync(patch);
   };
 
+  // Whenever the run changed this profile on the device, even if it then failed (say the
+  // connection dropped at an upload), the store loads it again: through the write chain,
+  // and only when it is the active profile.
   async function syncOne(client, key) {
-    const before = await db.getProfile(key);
-    const r = await syncProfile({ db, client, profileKey: key, now, exclusive: store.exclusive });
-    const after = await db.getProfile(key);
-    if (r.pulled > 0 || stable(before) !== stable(after)) await store.reloadProfile(key);
-    return r;
+    const stats = {};
+    try {
+      return await syncProfile({ db, client, profileKey: key, now, exclusive: store.exclusive, stats });
+    } finally {
+      if (stats.pulled > 0 || stats.profileChanged) {
+        await store.reloadProfile(key).catch(() => {}); // the sync's own error, if any, is the one to report
+      }
+    }
   }
 
   async function runOnce() {
