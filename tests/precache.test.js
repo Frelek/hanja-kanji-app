@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { precacheVersion } from '../tools/gen_precache.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FOLDERS = ['src', 'vendor', 'assets', 'data'];
@@ -51,14 +52,31 @@ test('files are sorted', () => {
   assert.deepEqual(pre.files, sorted);
 });
 
-test('version equals a fresh hash of the listed files', () => {
+// sw.js counts too, with its stamp line blanked so the version does not hash itself.
+const blankStamp = (text) => text.replace(/^\/\/ precache-version: .*$/m, '');
+
+test('version equals a fresh hash of the listed files and of sw.js (stamp blanked)', () => {
   const h = createHash('sha256');
   for (const f of [...pre.files].filter((x) => x !== './').sort()) {
     h.update(f);
     h.update('\0');
     h.update(readFileSync(join(root, f)));
   }
+  h.update('sw.js');
+  h.update('\0');
+  h.update(blankStamp(readFileSync(join(root, 'sw.js'), 'utf8')));
   assert.equal(pre.version, h.digest('hex').slice(0, 12), 'precache.json is stale; run node tools/gen_precache.mjs');
+});
+
+test('a change to sw.js alone changes the version; its stamp does not', () => {
+  const files = pre.files.filter((x) => x !== './');
+  const sw = readFileSync(join(root, 'sw.js'), 'utf8');
+  const reader = (swText) => (f) => (f === 'sw.js' ? swText : readFileSync(join(root, f)));
+  const base = precacheVersion(files, reader(sw));
+  assert.equal(base, pre.version);
+  assert.notEqual(precacheVersion(files, reader(sw.replace('const BATCH = 50;', 'const BATCH = 40;'))), base);
+  assert.notEqual(precacheVersion(files, reader(`${sw}\n// one more line\n`)), base);
+  assert.equal(precacheVersion(files, reader(sw.replace(/^(\/\/ precache-version: ).*$/m, '$1000000000000'))), base);
 });
 
 test('the service worker file is not listed and legacy manifest is gone', () => {
