@@ -1153,3 +1153,35 @@ html:has(.sheet[open]) { overflow: hidden; }
 .leech-char { font-size: 2rem; line-height: 1; }
 .leech-lapses { margin-left: auto; color: var(--sub); font-variant-numeric: tabular-nums; }
 .leech-empty { margin: 0; }
+
+/* Update bar: a small fixed bar above the tab bar */
+
+.update-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom) + 10px);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--gutter);
+  pointer-events: none;
+}
+.update-btn {
+  appearance: none;
+  pointer-events: auto;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  box-shadow: var(--sheet-lift);
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .update-btn:hover { background: var(--ink-hover); }
+}

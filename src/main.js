@@ -4,8 +4,15 @@ import { openDb, cleanupLegacyStorage } from './store/db.js';
 import { loadData } from './data/load.js';
 import { createStore } from './state.js';
 import { App } from './ui/App.js';
+import { UpdateBanner, registerServiceWorker } from './ui/UpdateBanner.js';
 
 const root = document.getElementById('app');
+
+// The update bar lives outside the app tree so it survives a boot error and every screen change.
+const bannerRoot = document.createElement('div');
+document.body.append(bannerRoot);
+render(html`<${UpdateBanner} />`, bannerRoot);
+registerServiceWorker();
 
 function BootError({ error }) {
   return html`

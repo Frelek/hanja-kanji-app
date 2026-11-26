@@ -1,68 +1,90 @@
-const CACHE_NAME = 'hanja-kanji-learner-v3';
-const ASSETS = [
-  './',
-  './index.html',
-  './css/styles.css',
-  './js/hanzi-writer.min.js',
-  './js/storage.js',
-  './js/detail-modal.js',
-  './js/tree-view.js',
-  './js/test-mode.js',
-  './js/app.js',
-  './data/hanja.json',
-  './data/kanji.json',
-  './manifest.json',
-  './apple-touch-icon.png',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
-];
+// Offline service worker. Every app file is precached (see precache.json, made by
+// tools/gen_precache.mjs) into a cache named for the content version, so the app,
+// the stroke animations and the fonts all work with no network.
+// precache-version: 709c838b0e97
+// (stamped by tools/gen_precache.mjs so this file changes with every release)
+const PREFIX = 'hk-';
+const BATCH = 50;
+const MARKER = new URL('./__hk_complete', self.registration.scope).href;
+const ROOT = new URL('./', self.registration.scope).href;
+const INDEX = new URL('./index.html', self.registration.scope).href;
 
-// Install — pre-cache all critical assets
+let ownCache = null; // set when this worker instance installed; lost if the worker is restarted
+
+async function precache() {
+  const res = await fetch('./precache.json', { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`precache.json: ${res.status}`);
+  const { version, files } = await res.json();
+  const name = `${PREFIX}${version}`;
+  const cache = await caches.open(name);
+  try {
+    for (let i = 0; i < files.length; i += BATCH) {
+      // 'reload' skips the HTTP cache, so a stale copy can never land under a new version.
+      await cache.addAll(files.slice(i, i + BATCH).map((f) => new Request(f, { cache: 'reload' })));
+    }
+    // Written last: a cache without it is a half-filled one and is never used or kept.
+    await cache.put(MARKER, new Response(String(Date.now())));
+  } catch (err) {
+    await caches.delete(name);
+    throw err; // fail the install; the browser retries later
+  }
+  ownCache = name;
+}
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
-  self.skipWaiting();
+  event.waitUntil(precache());
 });
 
-// Activate — clean up old caches
+// The completed cache with the newest marker is this worker's own, even after a restart.
+async function newestComplete() {
+  let best = null;
+  let bestTime = -1;
+  for (const name of await caches.keys()) {
+    if (!name.startsWith(PREFIX)) continue;
+    const marker = await (await caches.open(name)).match(MARKER);
+    const t = marker ? Number(await marker.text()) : NaN;
+    if (Number.isFinite(t) && t > bestTime) { best = name; bestTime = t; }
+  }
+  return best;
+}
+
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    })
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keep = ownCache ?? (await newestComplete());
+    for (const name of await caches.keys()) {
+      if (name !== keep) await caches.delete(name); // includes hanja-kanji-learner-v3
+    }
+    await self.clients.claim();
+  })());
 });
 
-// Fetch — cache-first, fallback to network
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        // Cache successful GET responses for future offline use
-        if (event.request.method === 'GET' && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // Offline fallback — return the cached index for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
-  );
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // api.github.com and anything cross-origin
+  event.respondWith(respond(req));
+});
+
+async function respond(req) {
+  if (req.mode === 'navigate') {
+    // The home-screen app opens the directory URL, often with a query string; serve the shell.
+    const shell = (await caches.match(ROOT, { ignoreSearch: true })) ?? (await caches.match(INDEX, { ignoreSearch: true }));
+    if (shell) return shell;
+    return fetch(req);
+  }
+  // With several caches (an update is waiting) match() searches the oldest first, which is
+  // the cache the still-active worker was installed with.
+  const hit = await caches.match(req);
+  if (hit) return hit;
+  const res = await fetch(req);
+  if (res.status === 200 && res.type === 'basic' && ownCache) {
+    const copy = res.clone();
+    caches.open(ownCache).then((c) => c.put(req, copy)).catch(() => {});
+  }
+  return res;
+}
