@@ -1,6 +1,7 @@
 // Pieces shared by the picker and the Study screen: avatar, profile chip, language switch.
 import { html } from '../../vendor/htm-preact.mjs';
-import { syncLabel } from '../sync/sync.js';
+import { syncLabel, isSynced } from '../sync/sync.js';
+import { Capybara } from './Mascot.js';
 import { routeHref } from './route.js';
 
 // Names are NFC letters and digits only, so the first code point is the first letter.
@@ -11,7 +12,8 @@ export function Avatar({ name }) {
 }
 
 /** The live sync status. A token problem links to Settings, where it is fixed. */
-export function SyncStatus({ sync, now }) {
+export function SyncStatus({ sync, now, profileKey }) {
+  if (!isSynced(profileKey)) return html`<p class="sync-status">On this device only</p>`;
   const text = syncLabel(sync, now);
   if (sync.status !== 'off' && sync.error === 'auth') {
     return html`<a class="sync-status sync-fix" href=${routeHref('settings')}>${text}</a>`;
@@ -27,7 +29,8 @@ export function ProfileBar({ profile, sync, now }) {
         <span class="who-name">${profile.name}</span>
         <span class="who-tag">#${profile.tag}</span>
       </p>
-      <${SyncStatus} sync=${sync} now=${now} />
+      <${SyncStatus} sync=${sync} now=${now} profileKey=${profile.key} />
+      <span class="mascot-corner"><${Capybara} size=${44} label="CapyCards capybara" /></span>
     </header>`;
 }
 

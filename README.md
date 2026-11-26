@@ -1,4 +1,6 @@
-# Hanja & Kanji
+# CapyCards
+
+A capybara-guided kanji and hanja study app (formerly "Hanja & Kanji").
 
 A small study app for two people. It teaches the 612 JLPT N5-N3 kanji and 610 Korean hanja: all of 한국어문회 levels 8급 to 5급 (500) plus 110 characters of 4급Ⅱ. Each character comes with its readings, meanings, the parts it is built from, example words and an animated stroke order.
 

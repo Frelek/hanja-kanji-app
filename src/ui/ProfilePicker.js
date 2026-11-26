@@ -1,5 +1,6 @@
 // "Who's studying?": profiles on this device, plus an inline Add profile form.
 import { html, useState, useRef, useEffect } from '../../vendor/htm-preact.mjs';
+import { Capybara } from './Mascot.js';
 import { nameError, tagError } from './profile-input.js';
 import { Avatar } from './Header.js';
 import { go } from './route.js';
@@ -25,6 +26,7 @@ export function ProfilePicker({ store, profiles }) {
 
   return html`
     <main class="picker">
+      <p class="brand"><${Capybara} size=${56} /> <span>CapyCards</span></p>
       <h1 class="picker-title">Who's studying?</h1>
       ${hasProfiles
         ? html`

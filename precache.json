@@ -1,5 +1,5 @@
 {
- "version": "1b0df3e7945c",
+ "version": "37d704269aec",
  "files": [
   "./",
   "assets/fonts/coverage.json",
@@ -1256,6 +1256,7 @@
   "src/ui/DetailSheet.js",
   "src/ui/Header.js",
   "src/ui/Home.js",
+  "src/ui/Mascot.js",
   "src/ui/Practice.js",
   "src/ui/ProfilePicker.js",
   "src/ui/Session.js",

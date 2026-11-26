@@ -366,7 +366,11 @@ export async function clientFromMeta(db, makeClient = githubClient) {
  * Reasons: 'open', 'visible', 'hidden', 'online', 'session-end', 'answers' (every 20)
  * and 'manual'.
  */
-export function createSyncManager({ store, db, getClient, makeClient = githubClient, now = () => new Date() }) {
+/** Only these profiles sync to GitHub; every other profile stays on its device. */
+export const SYNC_PROFILES = ['ewa-0809'];
+export const isSynced = (key, allow = SYNC_PROFILES) => !allow || allow.includes(key);
+
+export function createSyncManager({ store, db, getClient, makeClient = githubClient, now = () => new Date(), syncKeys = null }) {
   let running = null;
   let again = false;
   let stopped = false;
@@ -408,7 +412,7 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
         // Connected or disconnected meanwhile: the newer status stands.
         if (gen === generation) report({ status: 'syncing' });
         const active = store.get().profile?.key ?? null;
-        const keys = (await db.listProfiles()).map((p) => p.key)
+        const keys = (await db.listProfiles()).map((p) => p.key).filter((k) => isSynced(k, syncKeys))
           .sort((a, b) => (b === active) - (a === active));
         // Active first, so the first problem is the active profile's own when it has one.
         for (const key of keys) {
@@ -518,6 +522,7 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
    * on any problem (the next sync merges), or when the repo takes too long to answer.
    */
   async function welcome(key) {
+    if (!isSynced(key, syncKeys)) return null;
     const work = (async () => {
       const client = await getClient();
       if (!client) return null;

@@ -1,6 +1,6 @@
 {
-  "name": "Hanja & Kanji",
-  "short_name": "Hanja Kanji",
+  "name": "CapyCards",
+  "short_name": "CapyCards",
   "lang": "en",
   "start_url": "./",
   "scope": "./",

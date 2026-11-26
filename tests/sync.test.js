@@ -991,3 +991,12 @@ test('connecting a device whose profile is already in the repo says Welcome back
   assert.ok(gh.files.has('profiles/ola-0001/profile.json'));
   assert.equal(store.get().welcome, null);
 });
+
+test('only Ewa#0809 syncs to GitHub by default; a null allow-list syncs everyone', async () => {
+  const { isSynced, SYNC_PROFILES } = await import('../src/sync/sync.js');
+  assert.deepEqual(SYNC_PROFILES, ['ewa-0809']);
+  assert.equal(isSynced('ewa-0809'), true);
+  assert.equal(isSynced('kacper-1234'), false);
+  assert.equal(isSynced(undefined), false);
+  assert.equal(isSynced('kacper-1234', null), true);
+});

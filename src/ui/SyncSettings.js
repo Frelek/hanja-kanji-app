@@ -2,7 +2,7 @@
 // sync now, see the last sync, disconnect. A saved token is never shown again.
 import { html, useState, useRef } from '../../vendor/htm-preact.mjs';
 import {
-  syncLabel, checkToken, checkRepo, testText, DEFAULT_REPO, TOKEN_ERROR, REPO_ERROR,
+  syncLabel, isSynced, checkToken, checkRepo, testText, DEFAULT_REPO, TOKEN_ERROR, REPO_ERROR,
 } from '../sync/sync.js';
 import { useMinuteClock } from './Home.js';
 
@@ -110,6 +110,14 @@ export function SyncSettings({ store, s }) {
     } catch {
       setResult({ text: SAVE_ERROR, ok: false });
     }
+  }
+
+  if (!isSynced(s.profile?.key)) {
+    return html`
+      <section class="card set-section" aria-labelledby="sync-title">
+        <h2 id="sync-title" class="set-title">Sync</h2>
+        <p class="set-hint">Only Ewa#0809 syncs to GitHub. This profile stays on this device.</p>
+      </section>`;
   }
 
   return html`

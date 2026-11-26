@@ -3,7 +3,7 @@ import { html, render } from '../vendor/htm-preact.mjs';
 import { openDb, cleanupLegacyStorage } from './store/db.js';
 import { loadData } from './data/load.js';
 import { createStore } from './state.js';
-import { createSyncManager, clientFromMeta, watchSyncTriggers } from './sync/sync.js';
+import { createSyncManager, clientFromMeta, watchSyncTriggers, SYNC_PROFILES } from './sync/sync.js';
 import { App } from './ui/App.js';
 import { UpdateBanner, registerServiceWorker } from './ui/UpdateBanner.js';
 
@@ -34,7 +34,7 @@ async function boot() {
   const [db, ja, ko] = await Promise.all([openDb(), loadData('ja'), loadData('ko')]);
   const store = createStore({ db, data: { ja, ko } });
   await store.init();
-  const sync = createSyncManager({ store, db, getClient: () => clientFromMeta(db) });
+  const sync = createSyncManager({ store, db, getClient: () => clientFromMeta(db), syncKeys: SYNC_PROFILES });
   root.textContent = '';
   render(html`<${App} store=${store} />`, root);
   // Sync runs in the background on open, on every return to the foreground, on leaving

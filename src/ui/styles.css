@@ -31,6 +31,7 @@
 
 :root {
   --paper: #f6f1e7;
+  --capy-fur: #a9784a; --capy-ear: #8a5e37; --capy-snout: #7d5534; --capy-yuzu: #e8a13a; --capy-leaf: #5f8a4e; --capy-line: #1f1b17;
   --ink: #1f1b17;
   --sub: #776c60;        /* 4.55:1 on paper, 5.0:1 on card */
   --line: #e2d8c8;       /* hairlines and card borders */
@@ -72,6 +73,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --paper: #171512;
+    --capy-fur: #a9784a; --capy-ear: #8a5e37; --capy-snout: #7d5534; --capy-yuzu: #e8a13a; --capy-leaf: #6f9a5e; --capy-line: #120f0c;
     --ink: #ece6da;
     --sub: #a39a8c;
     --line: #2e2a24;
@@ -101,6 +103,7 @@
 }
 :root[data-theme='dark'] {
   --paper: #171512;
+  --capy-fur: #a9784a; --capy-ear: #8a5e37; --capy-snout: #7d5534; --capy-yuzu: #e8a13a; --capy-leaf: #6f9a5e; --capy-line: #120f0c;
   --ink: #ece6da;
   --sub: #a39a8c;
   --line: #2e2a24;
@@ -1228,3 +1231,8 @@ html:has(.sheet[open]) { overflow: hidden; }
 @media (hover: hover) {
   .update-btn:hover { background: var(--ink-hover); }
 }
+
+/* CapyCards mascot: top-right corner of the Study screen, and on the profile picker. */
+.mascot-corner { flex: none; display: flex; margin-right: -4px; }
+.capybara { display: block; }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-weight: 700; font-size: 1.25rem; }
