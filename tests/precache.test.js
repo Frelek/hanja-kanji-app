@@ -1,30 +1,23 @@
 // precache.json must list every covered file and carry a version that matches their bytes.
 // If this fails after editing a covered file, run: node tools/gen_precache.mjs
+// Covered files are the ones git tracks: `git add` a new file before regenerating.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync, rmSync, existsSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { precacheVersion } from '../tools/gen_precache.mjs';
+import { precacheVersion, buildPrecache } from '../tools/gen_precache.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FOLDERS = ['src', 'vendor', 'assets', 'data'];
 const TOP = ['index.html', 'manifest.webmanifest'];
 
-function walk(dir, out = []) {
-  for (const e of readdirSync(join(root, dir), { withFileTypes: true })) {
-    const rel = `${dir}/${e.name}`;
-    if (e.isDirectory()) walk(rel, out);
-    else out.push(rel);
-  }
-  return out;
-}
-
+/** The covered files git tracks (and that are on disk), sorted. */
 function expectedFiles() {
-  const files = [...TOP];
-  for (const f of FOLDERS) walk(f, files);
-  return files.sort();
+  const out = execFileSync('git', ['ls-files', '-z', '--', ...TOP, ...FOLDERS], { cwd: root, encoding: 'utf8' });
+  return out.split('\0').filter((f) => f && existsSync(join(root, f))).sort();
 }
 
 const pre = JSON.parse(readFileSync(join(root, 'precache.json'), 'utf8'));
@@ -77,6 +70,26 @@ test('a change to sw.js alone changes the version; its stamp does not', () => {
   assert.notEqual(precacheVersion(files, reader(sw.replace('const BATCH = 50;', 'const BATCH = 40;'))), base);
   assert.notEqual(precacheVersion(files, reader(`${sw}\n// one more line\n`)), base);
   assert.equal(precacheVersion(files, reader(sw.replace(/^(\/\/ precache-version: ).*$/m, '$1000000000000'))), base);
+});
+
+test('only files git tracks are listed: an untracked file under src/ is left out', () => {
+  const probe = join(root, 'src', 'untracked-probe.tmp.js');
+  writeFileSync(probe, '// not part of the app\n');
+  try {
+    const { precache } = buildPrecache();
+    assert.ok(!precache.files.includes('src/untracked-probe.tmp.js'));
+    assert.deepEqual(precache.files, ['./', ...expectedFiles()]);
+  } finally {
+    rmSync(probe, { force: true });
+  }
+});
+
+test('.nojekyll is an empty tracked file at the root, and is not precached', () => {
+  assert.ok(existsSync(join(root, '.nojekyll')), 'GitHub Pages must serve every file as is');
+  assert.equal(statSync(join(root, '.nojekyll')).size, 0);
+  const tracked = execFileSync('git', ['ls-files', '--', '.nojekyll'], { cwd: root, encoding: 'utf8' });
+  assert.equal(tracked.trim(), '.nojekyll', 'git add .nojekyll');
+  assert.ok(!pre.files.includes('.nojekyll'));
 });
 
 test('the service worker file is not listed and legacy manifest is gone', () => {

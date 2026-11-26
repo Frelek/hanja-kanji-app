@@ -3,13 +3,15 @@
 //   node tools/gen_precache.mjs
 // Re-run it after changing any covered file (index.html, manifest.webmanifest,
 // src/, vendor/, assets/, data/) or sw.js. tests/precache.test.js fails when it is stale.
+// Only files git tracks are covered, so `git add` a new file first.
 //
 // It also stamps the version into sw.js. Browsers only look for a new service worker
 // when sw.js itself changes byte for byte, so without the stamp an update to the app
 // files would never be noticed by phones that already have the app installed. The
 // version hashes sw.js with that stamp line blanked, so it never depends on itself.
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,18 +43,18 @@ export function precacheVersion(files, read = readFile) {
   return h.digest('hex').slice(0, 12);
 }
 
-function walk(dir, out) {
-  for (const e of readdirSync(join(root, dir), { withFileTypes: true })) {
-    const rel = `${dir}/${e.name}`;
-    if (e.isDirectory()) walk(rel, out);
-    else out.push(rel);
-  }
+/**
+ * The covered files git tracks and that are on disk, sorted: what GitHub Pages serves.
+ * An untracked file (a scratch file, a build leftover) is never precached; `git add` a
+ * new app file before running this.
+ */
+export function trackedFiles() {
+  const out = execFileSync('git', ['ls-files', '-z', '--', ...TOP, ...FOLDERS], { cwd: root, encoding: 'utf8' });
+  return out.split('\0').filter((f) => f && existsSync(join(root, f))).sort();
 }
 
 export function buildPrecache() {
-  const files = [...TOP];
-  for (const f of FOLDERS) walk(f, files);
-  files.sort();
+  const files = trackedFiles();
   let bytes = 0;
   for (const f of files) bytes += readFile(f).length;
   // "./" is the directory URL the home-screen app opens; it holds the same bytes as index.html.
