@@ -5,6 +5,8 @@ import { useRoute, routeHref, go } from './route.js';
 import { ProfilePicker } from './ProfilePicker.js';
 import { Home } from './Home.js';
 import { Session } from './Session.js';
+import { Characters } from './Characters.js';
+import { Practice } from './Practice.js';
 
 const TABS = [
   ['study', 'Study'],
@@ -29,12 +31,14 @@ export function App({ store }) {
 
   const levels = s.data[s.lang]?.levels ?? [];
   const firstLevel = levels[0]?.id ?? null;
-  const levelOk = route.name === 'characters' && levels.some((l) => l.id === route.level);
+  const levelOk = (route.name === 'characters' || route.name === 'practice') && levels.some((l) => l.id === route.level);
 
   useEffect(() => {
     if (!s.profile) return;
     if (route.redirect) go(routeHref('study'), { replace: true });
-    else if (route.name === 'characters' && !levelOk && firstLevel) go(routeHref('characters', firstLevel), { replace: true });
+    else if ((route.name === 'characters' || route.name === 'practice') && !levelOk && firstLevel) {
+      go(routeHref('characters', firstLevel), { replace: true });
+    }
   }, [s.profile, route, levelOk, firstLevel]);
 
   useEffect(() => { scrollTo(0, 0); }, [route.name, route.level]);
@@ -43,6 +47,8 @@ export function App({ store }) {
 
   // A study session takes the whole screen; Exit goes back to the tabs.
   if (route.name === 'session') return html`<${Session} store=${store} s=${s} />`;
+  // Practice too; it never writes an answer.
+  if (route.name === 'practice') return levelOk ? html`<${Practice} key=${`${s.lang}/${route.level}`} s=${s} level=${route.level} />` : null;
 
   const active = route.name;
   return html`
@@ -61,9 +67,7 @@ export function App({ store }) {
 function screenFor(route, s, store, levelOk) {
   switch (route.name) {
     case 'characters':
-      return html`
-        <h1 class="screen-title">Characters${levelOk ? html` <span class="screen-title-sub">${route.level}</span>` : ''}</h1>
-        <p class="card note">The characters screen comes in a later step.</p>`;
+      return levelOk ? html`<${Characters} s=${s} level=${route.level} sheetId=${route.char ?? null} />` : null;
     case 'stats':
       return html`
         <h1 class="screen-title">Stats</h1>

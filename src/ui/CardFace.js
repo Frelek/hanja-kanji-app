@@ -47,21 +47,39 @@ function KoReadings({ char }) {
     </div>`;
 }
 
-function Parts({ parts, lang }) {
+/** The readings block for either language, laid out as on the card back. */
+export function Readings({ char, lang }) {
+  return lang === 'ja' ? html`<${JaReadings} char=${char} />` : html`<${KoReadings} char=${char} />`;
+}
+
+/**
+ * The parts a character is drawn from. `linkFor(part)` may return `{ onOpen, note }` to make
+ * a part a button that opens that character (the detail sheet uses it); `note` is shown
+ * after it, e.g. "comes in N4".
+ */
+export function Parts({ parts, lang, label = 'Parts', joined = true, linkFor }) {
   if (!parts?.length) return null;
   return html`
     <p class="parts">
-      <span class="parts-label">Parts</span>
-      ${parts.map((p, i) => html`
-        ${i > 0 && html`<span class="parts-plus" aria-hidden="true">+</span>`}
-        <span class="part">
+      <span class="parts-label">${label}</span>
+      ${parts.map((p, i) => {
+        const link = linkFor?.(p) ?? null;
+        const body = html`
           <span class="part-char cjk" lang=${lang}>${p.char}</span>
-          ${p.meaning && html` <span class="part-meaning">${p.meaning}</span>`}
-        </span>`)}
+          ${p.meaning && html` <span class="part-meaning">${p.meaning}</span>`}`;
+        // The "+" travels with the part after it, so a wrapped line never ends on one.
+        const plus = joined && i > 0 && html`<span class="parts-plus" aria-hidden="true">+</span>`;
+        return link
+          ? html`<span class="part">
+              ${plus}<button type="button" class="part-link" onClick=${link.onOpen}>${body}</button>
+              ${link.note && html`<span class="part-note">${link.note}</span>`}
+            </span>`
+          : html`<span class="part">${plus}${body}</span>`;
+      })}
     </p>`;
 }
 
-function Words({ words, lang }) {
+export function Words({ words, lang }) {
   const list = (words ?? []).slice(0, 3);
   if (list.length === 0) return null;
   return html`
@@ -77,15 +95,18 @@ function Words({ words, lang }) {
     </ul>`;
 }
 
+/** Up to three meanings, as the card back shows them. */
+export const meaningText = (char) => (char.meanings ?? []).slice(0, 3).join(', ');
+
 export function CardBack({ char, lang }) {
-  const meanings = (char.meanings ?? []).slice(0, 3);
+  const meanings = meaningText(char);
   return html`
     <div class="face face-back">
       <div class="face-head">
         <${GridBox} char=${char.char} lang=${lang} size="md" />
-        ${lang === 'ja' ? html`<${JaReadings} char=${char} />` : html`<${KoReadings} char=${char} />`}
+        <${Readings} char=${char} lang=${lang} />
       </div>
-      ${meanings.length > 0 && html`<p class="meanings">${meanings.join(', ')}</p>`}
+      ${meanings && html`<p class="meanings">${meanings}</p>`}
       <${Parts} parts=${char.parts} lang=${lang} />
       <${Words} words=${char.words} lang=${lang} />
     </div>`;

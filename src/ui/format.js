@@ -1,4 +1,5 @@
 // Small display formatters shared by the Study screens.
+import { dayStart } from '../engine/queue.js';
 
 /** KANJIDIC marks okurigana with '.'; learners read it as a middle dot: 'やす.む' -> 'やす・む'. */
 export const kunLabel = (kun) => String(kun).replaceAll('.', '・');
@@ -14,4 +15,14 @@ export function estimateMinutes(counts) {
     + (counts.learning ?? 0) * SECONDS.learning
     + (counts.review ?? 0) * SECONDS.review;
   return Math.ceil(s / 60);
+}
+
+const DAY_MS = 864e5;
+
+/** When a studied card comes back, in study days (a day starts at `dayStartHour`). */
+export function reviewLabel(due, now, dayStartHour = 4) {
+  const days = Math.round((dayStart(due, dayStartHour) - dayStart(now, dayStartHour)) / DAY_MS);
+  if (days <= 0) return 'Next review today';
+  if (days === 1) return 'Next review tomorrow';
+  return `Next review in ${days} days`;
 }
