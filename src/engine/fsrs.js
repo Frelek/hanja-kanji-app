@@ -42,9 +42,18 @@ export function makeScheduler(s) {
   };
 }
 
+/** The languages of card ids ("ja:<char>", "ko:<char>"). */
+export const LANGS = ['ja', 'ko'];
+const KNOWN = new Set(LANGS);
+
 const langOf = id => id.slice(0, id.indexOf(':'));
 
-const sortEntries = entries => [...entries].sort((a, b) =>
+// A review or reset of a language this version does not know (say, one a newer version
+// added on another device) is skipped, not scheduled: there are no settings for it.
+const known = e => (e.type === 'review' ? KNOWN.has(langOf(String(e.card)))
+  : e.type === 'reset' ? KNOWN.has(e.lang) : true);
+
+const sortEntries = entries => [...entries].filter(known).sort((a, b) =>
   a.at < b.at ? -1 : a.at > b.at ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 // Ids of review entries that count: not undone and not wiped by a later

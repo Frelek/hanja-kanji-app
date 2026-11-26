@@ -7,7 +7,7 @@ import { RATING } from '../src/engine/fsrs.js';
 import { SyncError, fileText } from '../src/sync/github.js';
 import {
   syncProfile, createSyncManager, syncLabel, clientFromMeta, githubClient, testText,
-  DEFAULT_REPO, TOKEN_ERROR,
+  watchSyncTriggers, DEFAULT_REPO, TOKEN_ERROR,
 } from '../src/sync/sync.js';
 
 const fresh = () => openDb('sync-' + Math.random().toString(36).slice(2));
@@ -385,9 +385,17 @@ test('the status line strings', () => {
   assert.equal(syncLabel({ ...base, lastSync: '2026-11-26T12:00:30.000Z' }, NOW), 'Synced just now');
   assert.equal(syncLabel({ ...base, lastSync: '2026-11-26T11:58:00.000Z' }, NOW), 'Synced 2 min ago');
   assert.equal(syncLabel({ ...base, status: 'syncing', lastSync: '2026-11-26T11:58:00.000Z' }, NOW), 'Synced 2 min ago');
+  // R35: hours from 60 min, days from 24 h
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-26T11:00:01.000Z' }, NOW), 'Synced 59 min ago');
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-26T11:00:00.000Z' }, NOW), 'Synced 1 h ago');
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-26T09:10:00.000Z' }, NOW), 'Synced 2 h ago');
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-25T12:00:01.000Z' }, NOW), 'Synced 23 h ago');
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-25T12:00:00.000Z' }, NOW), 'Synced 1 d ago');
+  assert.equal(syncLabel({ ...base, lastSync: '2026-11-19T08:00:00.000Z' }, NOW), 'Synced 7 d ago');
   assert.equal(syncLabel({ ...base, error: 'offline', waiting: 23 }, NOW), 'Offline: 23 answers waiting');
   assert.equal(syncLabel({ ...base, error: 'offline', waiting: 1 }, NOW), 'Offline: 1 answer waiting');
-  assert.equal(syncLabel({ ...base, error: 'auth' }, NOW), 'Sync problem: token expired, tap to fix');
+  // R34: a 403 can be a read-only token as well as an expired one
+  assert.equal(syncLabel({ ...base, error: 'auth' }, NOW), 'Sync problem: token refused, tap to fix');
   assert.equal(syncLabel({ ...base, error: 'notfound' }, NOW), 'Sync problem: repo not found');
   assert.equal(syncLabel({ ...base, error: 'http' }, NOW), 'Sync problem: try again later');
   assert.equal(syncLabel({ ...base, error: 'conflict' }, NOW), 'Sync problem: try again later');
@@ -395,7 +403,7 @@ test('the status line strings', () => {
 
 test('test results read in plain words', () => {
   assert.equal(testText('ok'), 'Connected — the repo is reachable');
-  assert.equal(testText('auth'), 'The token was rejected');
+  assert.equal(testText('auth'), 'The token was refused — check it hasn\'t expired and has Contents: Read and write on this repo');
   assert.equal(testText('notfound'), "Repo not found, or the token can't see it");
   assert.equal(testText('offline'), 'No internet connection');
   assert.equal(testText('http'), 'Sync problem: try again later');
@@ -523,7 +531,7 @@ test('a sync for a profile that is not active leaves the active state alone', as
   assert.equal(store.get().states.get('ja:日').reps, 1);
 });
 
-test('Review Focus 3: a 401 says the token expired, and studying goes on', async () => {
+test('Review Focus 3: a 401 says the token was refused, and studying goes on', async () => {
   const { db, store } = await studying();
   let open;
   const gate = new Promise((r) => { open = r; });
@@ -543,7 +551,7 @@ test('Review Focus 3: a 401 says the token expired, and studying goes on', async
   open();
   await run;
   assert.equal(store.get().sync.error, 'auth');
-  assert.equal(label(store), 'Sync problem: token expired, tap to fix');
+  assert.equal(label(store), 'Sync problem: token refused, tap to fix');
   const second = await store.actions.answer('ja:一', RATING.good, 900);
   assert.equal(second.ok, true);
   assert.equal(store.get().sync.waiting, 2);
@@ -847,4 +855,139 @@ test('the store starts with the saved connection, and the client keeps the token
   const other = await clientFromMeta(db, (o) => githubClient({ ...o, fetch }));
   await other.test();
   assert.equal(calls[1].url, 'https://api.github.com/repos/Frelek/other');
+});
+
+// --- final review fixes ----------------------------------------------------------------------
+
+test('remote entries of a language this version does not know stay on the server, and the app still loads', async () => {
+  const gh = fakeGitHub();
+  const week = `${DIR}/log-2026-W48.json`;
+  gh.files.set(week, { sha: 'z1', json: { entries: [
+    entry('ok-1', '2026-11-24T08:00:00.000Z'),
+    entry('zh-1', '2026-11-24T08:00:01.000Z', 'zh:日'),
+    entry('no-1', '2026-11-24T08:00:02.000Z', '日'),
+    { id: 'zh-r', type: 'reset', lang: 'zh', at: '2026-11-24T08:00:03.000Z', dev: 'zh' },
+    { id: 'n7-r', type: 'reset', lang: 7, at: '2026-11-24T08:00:04.000Z', dev: 'zh' },
+  ] } });
+  const { db, store } = await studying();
+  const sync = createSyncManager({ store, db, getClient: async () => gh.client(), now });
+  await sync.trigger('manual');
+  assert.equal(store.get().sync.error, null);
+  assert.deepEqual(ids(await db.getEntries(KEY)), ['ok-1']);
+  assert.equal(store.get().states.get('ja:日').reps, 1);
+  // the next start replays the stored log as usual
+  await store.actions.selectProfile(KEY);
+  assert.equal(store.get().states.get('ja:日').reps, 1);
+  assert.deepEqual(gh.entriesOf(week), ['ok-1', 'zh-1', 'no-1', 'zh-r', 'n7-r']);
+});
+
+test('one profile that fails does not stop the others; the active profile\'s error is shown', async () => {
+  const gh = fakeGitHub();
+  const OLA = 'profiles/ola-0001';
+  const { db, store } = await studying('Ola', '0001');
+  await store.actions.addProfile('Kacper', '1234'); // the active profile
+  await store.actions.answer('ja:日', RATING.good, 800);
+  await db.addEntries('ola-0001', [entry('o-1', '2026-11-25T09:00:00.000Z')]);
+  const failing = new Map(); // folder -> SyncError kind
+  const client = {
+    ...gh.client(),
+    async listDir(dir) {
+      if (failing.has(dir)) throw new SyncError(failing.get(dir));
+      return gh.client().listDir(dir);
+    },
+  };
+  const sync = createSyncManager({ store, db, getClient: async () => client, now });
+
+  // the active profile fails first: the other one still syncs
+  failing.set(DIR, 'http');
+  await sync.trigger('manual');
+  assert.deepEqual(gh.entriesOf(`${OLA}/log-2026-W48.json`), ['o-1']);
+  assert.equal(gh.files.has(`${DIR}/profile.json`), false);
+  assert.equal(store.get().sync.error, 'http');
+
+  // both fail: the active profile's own problem is the one shown
+  failing.set(DIR, 'auth');
+  failing.set(OLA, 'offline');
+  await sync.trigger('manual');
+  assert.equal(store.get().sync.error, 'auth');
+
+  // only the other one fails: the active profile syncs, and the problem still shows
+  failing.delete(DIR);
+  await sync.trigger('manual');
+  assert.equal(gh.entriesOf(`${DIR}/log-2026-W48.json`).length, 1);
+  assert.equal(store.get().sync.error, 'offline');
+
+  failing.clear();
+  await sync.trigger('manual');
+  assert.equal(store.get().sync.error, null);
+});
+
+test('leaving the app and coming back online trigger a sync, through the one flight', async () => {
+  const doc = new EventTarget();
+  const win = new EventTarget();
+  const show = (state) => {
+    doc.visibilityState = state;
+    doc.dispatchEvent(new Event('visibilitychange'));
+  };
+  const reasons = [];
+  const detach = watchSyncTriggers({ trigger: (r) => { reasons.push(r); return Promise.resolve(); } },
+    { document: doc, window: win });
+  show('hidden');
+  show('visible');
+  win.dispatchEvent(new Event('online'));
+  assert.deepEqual(reasons, ['hidden', 'visible', 'online']);
+  detach();
+  show('hidden');
+  win.dispatchEvent(new Event('online'));
+  assert.equal(reasons.length, 3, 'nothing after detaching');
+
+  // with the real manager, triggers during a run queue one more run, never a second flight
+  const { db, store } = await studying();
+  let runs = 0;
+  let active = 0;
+  let overlap = false;
+  const sync = createSyncManager({
+    store, db, now,
+    getClient: async () => {
+      runs++;
+      if (++active > 1) overlap = true;
+      await sleep(10);
+      active--;
+      return null;
+    },
+  });
+  const stop = watchSyncTriggers(sync, { document: doc, window: win });
+  show('hidden');
+  win.dispatchEvent(new Event('online'));
+  show('visible');
+  await sync.trigger('manual');
+  assert.equal(runs, 2);
+  assert.equal(overlap, false);
+  stop();
+});
+
+test('connecting a device whose profile is already in the repo says Welcome back, once', async () => {
+  const gh = fakeGitHub();
+  const phone = await device({ entries: [entry('p-1', '2026-11-25T09:00:00.000Z')] });
+  await syncProfile({ db: phone, client: gh.client(), profileKey: KEY, now });
+
+  // the laptop added the profile with sync off, then connects
+  const { db, store } = await studying('kacper', '1234');
+  assert.equal(store.get().welcome, null);
+  const makeClient = () => gh.client();
+  const sync = createSyncManager({ store, db, getClient: () => clientFromMeta(db, makeClient), makeClient, now });
+  assert.equal((await sync.connect({ token: 'github_pat_X', repo: '' })).saved, true);
+  await sync.trigger('manual'); // waits for the run connect started
+  assert.equal(store.get().welcome, 'Kacper');
+  assert.deepEqual(ids(store.get().entries), ['p-1']);
+
+  store.actions.clearWelcome();
+  await sync.trigger('manual');
+  assert.equal(store.get().welcome, null, 'only the first sync of the profile on this device');
+
+  // a profile the repo did not have is created there: no greeting
+  await store.actions.addProfile('Ola', '0001');
+  await sync.trigger('manual');
+  assert.ok(gh.files.has('profiles/ola-0001/profile.json'));
+  assert.equal(store.get().welcome, null);
 });

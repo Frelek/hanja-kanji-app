@@ -1,11 +1,11 @@
 // App state: one store, plain actions, and a Preact hook to read it.
 import { useState, useEffect } from '../vendor/htm-preact.mjs';
-import { replay, newCard, makeScheduler, RATING } from './engine/fsrs.js';
+import { replay, newCard, makeScheduler, RATING, LANGS } from './engine/fsrs.js';
 import { buildQueue } from './engine/queue.js';
 import { defaultSettings, deviceId } from './store/db.js';
 import { validateProfileInput } from './ui/profile-input.js';
 
-export const LANGS = ['ja', 'ko'];
+export { LANGS };
 
 const byName = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
   || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
@@ -325,6 +325,11 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     if (state.welcome) set({ welcome: null });
   }
 
+  /** "Welcome back, <name>" for the active profile, when a sync found it in the repo. */
+  function welcomeBack(key) {
+    if (state.profile && state.profile.key === key) set({ welcome: state.profile.name });
+  }
+
   /**
    * Sets one setting, stamps it for sync, stores the profile, then replays with the new values.
    * It starts from the stored profile, not state.profile: a sync may have merged newer remote
@@ -479,6 +484,7 @@ export function createStore({ db, now = () => new Date(), data = { ja: null, ko:
     exclusive: serial,
     reloadProfile,
     refreshSyncInfo,
+    welcomeBack,
   };
 }
 

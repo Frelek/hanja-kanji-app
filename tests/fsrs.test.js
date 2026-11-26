@@ -58,6 +58,21 @@ test('undo removes its target review', () => {
   assert.equal(r.prevState.has('e02'), false);
 });
 
+test('replay and countedIds skip entries of a language this version does not know', () => {
+  // as the store calls it: a profile has settings for ja and ko only
+  const profileSettings = (lang) => ({ ja: s, ko: s })[lang];
+  const zh = rev('z01', 'zh:日', 3, 2);
+  const zhReset = { id: 'z02', type: 'reset', lang: 'zh', at: new Date(now.getTime() + 3 * 6e4).toISOString(), dev: 'z' };
+  const odd = { id: 'z03', type: 'reset', lang: 7, at: new Date(now.getTime() + 4 * 6e4).toISOString(), dev: 'z' };
+  const r = replay([...log, zh, zhReset, odd], profileSettings);
+  assert.equal(snap(r), snap(replay(log, profileSettings)));
+  assert.equal(r.states.has('zh:日'), false);
+  assert.equal(r.prevState.has('z01'), false);
+  assert.equal(countedIds([...log, zh]).has('z01'), false);
+  // even when settings exist for it, an unknown language is not scheduled
+  assert.equal(replay([zh], settingsFor).states.size, 0);
+});
+
 test('prevState records the state before each review', () => {
   const r = replay(log, settingsFor);
   assert.equal(r.prevState.get('e01'), STATE.new);

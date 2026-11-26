@@ -9,7 +9,7 @@
 import { SyncError, createGitHubClient } from './github.js';
 import { mergeEntries, mergeProfile, groupByWeek } from './merge.js';
 import { defaultSettings } from '../store/db.js';
-import { settingError } from '../state.js';
+import { settingError, LANGS } from '../state.js';
 
 export const DEFAULT_REPO = 'Frelek/hanja-kanji-progress';
 export const MAX_RETRIES = 3;
@@ -59,7 +59,8 @@ export function syncLabel(sync, now = new Date()) {
       return `Offline: ${n} ${n === 1 ? 'answer' : 'answers'} waiting`;
     }
     case 'auth':
-      return 'Sync problem: token expired, tap to fix';
+      // R34: "refused", not "expired": a read-only token gets the same 403
+      return 'Sync problem: token refused, tap to fix';
     case 'notfound':
       return 'Sync problem: repo not found';
     default:
@@ -67,12 +68,15 @@ export function syncLabel(sync, now = new Date()) {
   }
   if (!sync.lastSync) return '';
   const min = Math.floor((now - new Date(sync.lastSync)) / 60e3);
-  return min < 1 ? 'Synced just now' : `Synced ${min} min ago`;
+  if (min < 1) return 'Synced just now';
+  if (min < 60) return `Synced ${min} min ago`;
+  if (min < 24 * 60) return `Synced ${Math.floor(min / 60)} h ago`;
+  return `Synced ${Math.floor(min / (24 * 60))} d ago`;
 }
 
 const TEST_TEXT = {
   ok: 'Connected — the repo is reachable',
-  auth: 'The token was rejected',
+  auth: 'The token was refused — check it hasn\'t expired and has Contents: Read and write on this repo',
   notfound: "Repo not found, or the token can't see it",
   offline: 'No internet connection',
 };
@@ -98,12 +102,20 @@ function rawEntries(json) {
   return list.filter((e) => isPlain(e) && typeof e.id === 'string' && e.id !== '' && typeof e.at === 'string');
 }
 
-/** Entries this version can replay. Others stay on the server but are not stored here. */
+/** The language of a card id ("ja:日" -> "ja"), or null when it has none. */
+const cardLang = (card) => (card.indexOf(':') > 0 ? card.slice(0, card.indexOf(':')) : null);
+
+/**
+ * Entries this version can replay. Others stay on the server but are not stored here,
+ * among them reviews and resets of a language this version does not know.
+ */
 function usable(e) {
   if (Number.isNaN(Date.parse(e.at))) return false;
-  if (e.type === 'review') return typeof e.card === 'string' && e.card.includes(':') && [1, 2, 3, 4].includes(e.rating);
+  if (e.type === 'review') {
+    return typeof e.card === 'string' && LANGS.includes(cardLang(e.card)) && [1, 2, 3, 4].includes(e.rating);
+  }
   if (e.type === 'undo') return typeof e.target === 'string';
-  if (e.type === 'reset') return typeof e.lang === 'string';
+  if (e.type === 'reset') return LANGS.includes(e.lang);
   return false;
 }
 
@@ -348,8 +360,11 @@ export async function clientFromMeta(db, makeClient = githubClient) {
 /**
  * Syncs every profile on this device in the background, the active one first. One sync
  * runs at a time; a trigger during a run queues exactly one more run. It never throws:
- * a failure only changes the status line, and studying carries on.
- * Reasons: 'open', 'visible', 'session-end', 'answers' (every 20) and 'manual'.
+ * a failure only changes the status line, and studying carries on. A profile that fails
+ * does not stop the others; the status shows the first problem, the active profile's own
+ * when it has one.
+ * Reasons: 'open', 'visible', 'hidden', 'online', 'session-end', 'answers' (every 20)
+ * and 'manual'.
  */
 export function createSyncManager({ store, db, getClient, makeClient = githubClient, now = () => new Date() }) {
   let running = null;
@@ -364,15 +379,22 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
   // Whenever the run changed this profile on the device, even if it then failed (say the
   // connection dropped at an upload), the store loads it again: through the write chain,
   // and only when it is the active profile.
+  // The first sync of a profile on this device that finds it already in the repo greets
+  // with "Welcome back" (for one added with sync off, then connected).
   async function syncOne(client, key) {
     const stats = {};
+    const meta = await db.getMeta(`sync:${key}`);
+    const first = !isPlain(meta?.shas) || Object.keys(meta.shas).length === 0;
+    let result;
     try {
-      return await syncProfile({ db, client, profileKey: key, now, exclusive: store.exclusive, stats });
+      result = await syncProfile({ db, client, profileKey: key, now, exclusive: store.exclusive, stats });
     } finally {
       if (stats.pulled > 0 || stats.profileChanged) {
         await store.reloadProfile(key).catch(() => {}); // the sync's own error, if any, is the one to report
       }
     }
+    if (first && result.existed && !stopped) store.welcomeBack(key);
+    return result;
   }
 
   async function runOnce() {
@@ -388,10 +410,17 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
         const active = store.get().profile?.key ?? null;
         const keys = (await db.listProfiles()).map((p) => p.key)
           .sort((a, b) => (b === active) - (a === active));
-        for (const key of keys) await syncOne(client, key);
+        // Active first, so the first problem is the active profile's own when it has one.
+        for (const key of keys) {
+          try {
+            await syncOne(client, key);
+          } catch (e) {
+            error ??= errorKind(e);
+          }
+        }
       }
     } catch (e) {
-      error = errorKind(e);
+      error ??= errorKind(e);
     }
     try {
       if (gen === generation) report({ status, error: status === 'off' ? null : error });
@@ -517,4 +546,22 @@ export function createSyncManager({ store, db, getClient, makeClient = githubCli
   const manager = { trigger, stop, connect, test, disconnect, welcome };
   store.attachSync(manager);
   return manager;
+}
+
+/**
+ * The page's own sync triggers: back to the foreground ('visible'), leaving it ('hidden',
+ * best effort: the phone may suspend the page before the run ends) and the connection
+ * coming back ('online'). All go through the manager's one flight. Returns a detach.
+ */
+export function watchSyncTriggers(sync, { document: doc = globalThis.document, window: win = globalThis } = {}) {
+  const onVisibility = () => {
+    if (doc.visibilityState === 'visible' || doc.visibilityState === 'hidden') sync.trigger(doc.visibilityState);
+  };
+  const onOnline = () => sync.trigger('online');
+  doc.addEventListener('visibilitychange', onVisibility);
+  win.addEventListener('online', onOnline);
+  return () => {
+    doc.removeEventListener('visibilitychange', onVisibility);
+    win.removeEventListener('online', onOnline);
+  };
 }

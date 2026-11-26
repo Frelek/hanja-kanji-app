@@ -3,7 +3,7 @@ import { html, render } from '../vendor/htm-preact.mjs';
 import { openDb, cleanupLegacyStorage } from './store/db.js';
 import { loadData } from './data/load.js';
 import { createStore } from './state.js';
-import { createSyncManager, clientFromMeta } from './sync/sync.js';
+import { createSyncManager, clientFromMeta, watchSyncTriggers } from './sync/sync.js';
 import { App } from './ui/App.js';
 import { UpdateBanner, registerServiceWorker } from './ui/UpdateBanner.js';
 
@@ -37,11 +37,10 @@ async function boot() {
   const sync = createSyncManager({ store, db, getClient: () => clientFromMeta(db) });
   root.textContent = '';
   render(html`<${App} store=${store} />`, root);
-  // Sync runs in the background on open and on every return to the foreground.
+  // Sync runs in the background on open, on every return to the foreground, on leaving
+  // the app (best effort) and when the connection comes back.
   sync.trigger('open');
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') sync.trigger('visible');
-  });
+  watchSyncTriggers(sync);
 }
 
 boot().catch((error) => {
