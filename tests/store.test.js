@@ -141,7 +141,7 @@ test('subscribe gets each new state until unsubscribed', async () => {
 
 test('later-task actions are declared and not implemented yet', async () => {
   const store = createStore({ db: await fresh(), now });
-  for (const name of ['answer', 'undo', 'updateSettings', 'resetLang']) {
+  for (const name of ['updateSettings', 'resetLang']) {
     assert.equal(typeof store.actions[name], 'function');
     assert.throws(() => store.actions[name](), /not implemented/);
   }

@@ -46,6 +46,9 @@
   --new: #3d6e9e;
   --learning: #b4432e;
   --review: #4f7d4e;
+  --hard: #8a6a2a;       /* 4.9:1 on card */
+  --grid-line: #d9c3b5;  /* practice-grid box edge */
+  --grid-guide: #e9d8ce; /* its dashed centre guides */
   --lift: 0 1px 2px rgb(31 27 23 / 0.1);
 
   --cjk: 'Klee One', 'HK Fallback Serif', serif;
@@ -79,6 +82,9 @@
     --new: #7fa6d0;
     --learning: #e0826b;
     --review: #8fbf8a;
+    --hard: #c9a25a;
+    --grid-line: #4a3f35;
+    --grid-guide: #3d342c;
     --lift: 0 1px 2px rgb(0 0 0 / 0.4);
     color-scheme: dark;
   }
@@ -100,6 +106,9 @@
   --new: #7fa6d0;
   --learning: #e0826b;
   --review: #8fbf8a;
+  --hard: #c9a25a;
+  --grid-line: #4a3f35;
+  --grid-guide: #3d342c;
   --lift: 0 1px 2px rgb(0 0 0 / 0.4);
   color-scheme: dark;
 }
@@ -430,6 +439,288 @@ button, input { font: inherit; color: inherit; }
 .field-error { margin-top: 8px; color: var(--danger); font-size: 0.875rem; font-weight: 500; }
 
 .form-actions { display: flex; flex-direction: column; gap: 4px; margin-top: 20px; }
+
+/* Study home: Today card and progress per level */
+
+.today { margin-bottom: 4px; }
+.today-title {
+  margin-bottom: 12px;
+  color: var(--sub);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.counts { display: flex; margin: 0 0 16px; }
+.count {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse; /* number above its label, read as "New 10" */
+  align-items: center;
+  gap: 2px;
+}
+.count-label { color: var(--sub); font-size: 0.8125rem; }
+.count-value {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.count-new { color: var(--new); }
+.count-learning { color: var(--learning); }
+.count-review { color: var(--review); }
+.eta { margin-top: 8px; color: var(--sub); font-size: 0.8125rem; text-align: center; }
+
+.levels { margin-top: 12px; }
+.level-list { margin: 0; padding: 0; list-style: none; }
+.level-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+}
+.level-name { flex: none; width: 3.25rem; font-weight: 700; }
+.bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--seg);
+  overflow: hidden;
+}
+.bar-fill { display: block; height: 100%; border-radius: inherit; background: var(--ink); }
+.level-count {
+  flex: none;
+  min-width: 4.75rem;
+  color: var(--sub);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Practice-grid box: the character over dashed centre guides */
+
+.grid-box {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: var(--card);
+  border: 1px solid var(--grid-line);
+}
+.grid-box::before,
+.grid-box::after {
+  content: "";
+  position: absolute;
+  border: 0 dashed var(--grid-guide);
+  pointer-events: none;
+}
+.grid-box::before { left: 50%; top: 0; bottom: 0; border-left-width: 1px; }
+.grid-box::after { top: 50%; left: 0; right: 0; border-top-width: 1px; }
+/* Klee One's tall ascent sets ideographs about 0.08em low in a line-height: 1 box. */
+.grid-glyph { position: relative; z-index: 1; line-height: 1; transform: translateY(-0.08em); }
+.grid-box-md { width: 7rem; }
+.grid-box-md .grid-glyph { font-size: 5rem; }
+.grid-box-lg { width: min(64vw, 15rem); }
+.grid-box-lg .grid-glyph { font-size: min(46vw, 10.75rem); }
+
+/* Card back */
+
+.face-back { padding-bottom: 8px; animation: face-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes face-in { from { opacity: 0; transform: translateY(6px); } }
+
+.face-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.readings {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding-top: 6px;
+}
+.reading-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 8px;
+}
+.reading-label { color: var(--sub); font-size: 0.75rem; font-weight: 600; }
+.reading-values { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin: 0; }
+.reading-main { font-size: 1.5rem; line-height: 1.3; overflow-wrap: anywhere; }
+.reading-main.hangul { font-weight: 700; }
+.reading-more { color: var(--sub); font-size: 0.9375rem; line-height: 1.5; }
+.reading-item { white-space: nowrap; }
+
+.meanings {
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.parts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin-bottom: 16px;
+  color: var(--sub);
+  font-size: 0.875rem;
+}
+.parts-label { font-weight: 600; }
+.part-char { color: var(--ink); font-size: 1.25rem; line-height: 1.2; }
+
+/* Tiles share a row while they fit; a tile never gets narrower than its reading,
+   so a long one moves to the next row instead of breaking the kana. */
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.word {
+  flex: 1 1 6.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 100%;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.word-w { font-size: 1.375rem; line-height: 1.25; white-space: nowrap; }
+.word-reading {
+  max-width: 100%;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--seg);
+  color: var(--ink);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.word-reading.hangul { font-weight: 700; }
+.word-en { color: var(--sub); font-size: 0.8125rem; line-height: 1.35; overflow-wrap: anywhere; }
+
+/* Review session: the whole screen, no tab bar */
+
+.session {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: calc(var(--col) + env(safe-area-inset-left) + env(safe-area-inset-right));
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top) + 4px)
+    calc(env(safe-area-inset-right) + var(--gutter))
+    0
+    calc(env(safe-area-inset-left) + var(--gutter));
+}
+
+.session-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  margin: 0 -12px;
+}
+.bar-btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sub);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease-out, opacity 150ms ease-out;
+}
+.bar-btn:disabled { opacity: 0.45; cursor: default; }
+@media (hover: hover) {
+  .bar-btn:not(:disabled):hover { color: var(--ink); }
+}
+
+.session-progress { margin: 4px 0 20px; }
+.prog-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 1.25rem;
+  margin-bottom: 8px;
+  color: var(--sub);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.prog-bar { height: 3px; border-radius: 2px; background: var(--seg); overflow: hidden; }
+.prog-fill { display: block; height: 100%; background: var(--ink); transition: width 250ms ease-out; }
+
+.study-card { flex: 1; display: flex; flex-direction: column; }
+.study-card:focus { outline: none; }
+.study-card:not(.is-revealed) { cursor: pointer; }
+.face-front { flex: 1; display: grid; place-items: center; padding: 8px 0 32px; }
+
+.session-error { margin: 4px 0 0; color: var(--danger); font-size: 0.875rem; font-weight: 500; }
+
+.answer-bar {
+  position: sticky;
+  bottom: 0;
+  margin-top: 12px;
+  padding: 12px 0 calc(env(safe-area-inset-bottom) + 16px);
+  background: var(--paper);
+}
+.rate { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.rate-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: 6px 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--rb);
+  background: var(--card);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+.rate-ivl { color: var(--sub); font-size: 0.75rem; font-weight: 400; font-variant-numeric: tabular-nums; }
+.rate-again { color: var(--learning); }
+.rate-hard { color: var(--hard); }
+.rate-good { color: var(--review); }
+.rate-easy { color: var(--new); }
+@media (hover: hover) {
+  .rate-btn:hover { border-color: currentColor; }
+}
+.rate-btn:active { background: var(--seg); }
+
+.session-note {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 0 calc(env(safe-area-inset-bottom) + 64px);
+  text-align: center;
+}
+.note-title { font-size: 1.375rem; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.note-sub { max-width: 30ch; color: var(--sub); text-wrap: pretty; }
+.note-action { width: auto; min-width: 12rem; margin-top: 16px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

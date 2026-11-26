@@ -3,7 +3,8 @@ import { html, useEffect } from '../../vendor/htm-preact.mjs';
 import { useStore } from '../state.js';
 import { useRoute, routeHref, go } from './route.js';
 import { ProfilePicker } from './ProfilePicker.js';
-import { ProfileBar, LangSwitch } from './Header.js';
+import { Home } from './Home.js';
+import { Session } from './Session.js';
 
 const TABS = [
   ['study', 'Study'],
@@ -40,7 +41,10 @@ export function App({ store }) {
 
   if (!s.profile) return html`<${ProfilePicker} store=${store} profiles=${s.profiles} />`;
 
-  const active = route.name === 'session' ? 'study' : route.name;
+  // A study session takes the whole screen; Exit goes back to the tabs.
+  if (route.name === 'session') return html`<${Session} store=${store} s=${s} />`;
+
+  const active = route.name;
   return html`
     <div class="shell">
       <main class="screen">${screenFor(route, s, store, levelOk)}</main>
@@ -56,11 +60,6 @@ export function App({ store }) {
 
 function screenFor(route, s, store, levelOk) {
   switch (route.name) {
-    case 'session':
-      return html`
-        <h1 class="screen-title">Study session</h1>
-        <p class="card note">The study session comes in the next step.</p>
-        <a class="btn btn-quiet" href=${routeHref('study')}>Back to Study</a>`;
     case 'characters':
       return html`
         <h1 class="screen-title">Characters${levelOk ? html` <span class="screen-title-sub">${route.level}</span>` : ''}</h1>
@@ -75,10 +74,6 @@ function screenFor(route, s, store, levelOk) {
         <p class="card note">Settings come in a later step.</p>
         <button type="button" class="btn btn-quiet" onClick=${() => store.actions.selectProfile(null)}>Switch profile</button>`;
     default:
-      return html`
-        <${ProfileBar} profile=${s.profile} sync=${s.sync} />
-        <${LangSwitch} lang=${s.lang} onChange=${store.actions.setLang} />
-        <h1 class="visually-hidden">Study</h1>
-        <p class="card note">Study screen comes in the next step.</p>`;
+      return html`<${Home} store=${store} s=${s} />`;
   }
 }
