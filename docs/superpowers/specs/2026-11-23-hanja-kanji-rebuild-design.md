@@ -369,11 +369,12 @@ forecast, per-level progress, and the list of leeches.
 
 ```
 profiles/<name-lowercase>-<tag>/profile.json       # display name, tag, created, settings (+updatedAt per field)
-profiles/<name-lowercase>-<tag>/log-YYYY-MM.json   # that month's review-log entries, append-only
+profiles/<name-lowercase>-<tag>/log-YYYY-Www.json  # that ISO-8601 week's review-log entries (UTC, week-based year), append-only
 ```
 
-Monthly files keep each file small. A year of daily study is ~100 KB per month at most,
-well under the Contents API limits.
+Weekly files, written as compact JSON, keep each file small: a week of heavy study
+(1,500 answers) is ~200 KB, far below the Contents API's 1 MB read limit, and ten years
+is ~520 files, under the 1,000-entry directory listing limit.
 
 **Adding a profile that already exists on the server** downloads it, replays it and
 greets with "Welcome back". A profile that doesn't exist yet is created.
@@ -381,20 +382,22 @@ greets with "Welcome back". A profile that doesn't exist yet is created.
 **Sync procedure** (GitHub Contents API, `api.github.com`, CORS-enabled)
 
 1. List the profile folder and compare each file's `sha` with the last synced `sha`.
-2. Download the changed months.
+2. Download the changed weeks.
 3. **Merge the logs:** the union by entry `id`, so merging is idempotent and the order of
    merges doesn't matter.
 4. Merge settings field by field: the newest `updatedAt` wins.
-5. Upload local entries that aren't on the server yet into the right month file, with a
+5. Upload local entries that aren't on the server yet into the right week file, with a
    `sha` precondition.
 6. On a conflict (409/422): fetch again, merge, retry, up to 3 times.
 7. If any entries changed, replay the log.
 
-**When it syncs:** on app open and on return to the foreground, at the end of a study
-session, after every 20 answers, and from a **Sync now** button.
+**When it syncs:** on app open, on return to the foreground and on leaving it (best
+effort), when the connection comes back, at the end of a study session, after every 20
+answers, and from a **Sync now** button.
 
-**Status line** on Home: "Synced 2 min ago" · "Offline: 23 answers waiting" · "Sync
-problem: token expired, tap to fix". Errors never block studying.
+**Status line** on Home: "Synced 2 min ago" (then "Synced 3 h ago", "Synced 2 d ago") ·
+"Offline: 23 answers waiting" · "Sync problem: token refused, tap to fix". Errors never
+block studying.
 
 ### 7.4 Screens (Paper & ink)
 
@@ -576,3 +579,11 @@ Fetched once into git-ignored `sources/`. Exact URLs are pinned in `tools/fetch_
 - **Korean word matching needs a small variant map**, for example 强→強 and 畵→畫, because
   kengdic sometimes uses the other form.
 - **Undo is an appended entry,** not a deletion (§7.2).
+- **Final review (R33–R35):**
+  - Sync log files are weekly (`log-YYYY-Www.json`, ISO-8601 week of the entry's UTC
+    time) and compact JSON, instead of monthly: a monthly file of heavy study outgrew the
+    Contents API's 1 MB read limit within about two months. The repo had no data yet, so
+    no migration is needed.
+  - A refused token reads "Sync problem: token refused, tap to fix", not "token expired":
+    a 403 can also be a read-only token.
+  - The status line adds "Synced N h ago" and "Synced N d ago".
