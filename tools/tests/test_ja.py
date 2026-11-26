@@ -151,6 +151,11 @@ class MeaningTests(unittest.TestCase):
         self.assertEqual(clean_meanings(['Radical Number 9']), [])
         self.assertEqual(clean_meanings(['A', 'RADICAL', 'B', 'C', 'D']), ['A', 'B', 'C'])
 
+    def test_repeats_dropped_ignoring_case_before_first_three(self):
+        self.assertEqual(clean_meanings(['Rebel', 'Disobey', 'rebel', 'REBEL', 'Traitor']),
+                         ['Rebel', 'Disobey', 'Traitor'])
+        self.assertEqual(clean_meanings(['Day', 'Day', 'Sun']), ['Day', 'Sun'])
+
 
 class PartMeaningTests(unittest.TestCase):
     # Bare radical-form entries (no grade, JLPT level or frequency) are not

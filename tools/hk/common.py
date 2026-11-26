@@ -51,12 +51,24 @@ def title_case(s):
     return ' '.join(w[:1].upper() + w[1:] for w in s.strip().split(' '))
 
 
+def unique_meanings(items):
+    """items without repeats, ignoring case; the first spelling is kept
+    (逆 "Disobey, Rebel, rebel, Traitor" -> "Disobey, Rebel, Traitor")."""
+    out, seen = [], set()
+    for m in items:
+        key = m.casefold()
+        if key not in seen:
+            seen.add(key)
+            out.append(m)
+    return out
+
+
 def clean_meanings(raw):
-    """kanji.json meanings in source (Title) case, radical labels dropped,
-    first 3."""
+    """kanji.json meanings in source (Title) case, radical labels and
+    repeats (ignoring case) dropped, first 3."""
     out = [nfc(m).strip() for m in raw or []
            if m.strip() and not RADICAL.search(m)]
-    return out[:3]
+    return unique_meanings(out)[:3]
 
 
 def split_outside_parens(s, sep):
@@ -87,9 +99,10 @@ def strip_xref(s):
 
 
 def anim_senses(entry):
-    """Every usable sense of an animCJK definition, in order: split on ';'
-    and then ',' (outside parentheses), skipping ';'-senses that are radical
-    labels and stripping leading cross-references; Title-Cased."""
+    """Every distinct usable sense of an animCJK definition, in order: split
+    on ';' and then ',' (outside parentheses), skipping ';'-senses that are
+    radical labels and stripping leading cross-references; Title-Cased; a
+    sense that repeats an earlier one (ignoring case) is dropped."""
     definition = nfc((entry or {}).get('definition') or '')
     out = []
     for sense in split_outside_parens(definition, ';'):
@@ -100,7 +113,7 @@ def anim_senses(entry):
             piece = strip_xref(piece)
             if piece:
                 out.append(title_case(piece))
-    return out
+    return unique_meanings(out)
 
 
 def anim_sense(entry):

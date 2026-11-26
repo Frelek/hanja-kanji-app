@@ -204,6 +204,15 @@ describe('readings', () => {
     const bad = data.ko.chars.filter((c) => (c.hunEum?.length ?? 0) < 1).map((c) => c.char);
     assert.deepEqual(bad, []);
   });
+  for (const lang of LANGS) {
+    test(`${lang}: at most 3 meanings, none repeated (ignoring case)`, () => {
+      const bad = data[lang].chars.filter((c) => {
+        const folded = c.meanings.map((m) => m.toLowerCase());
+        return folded.length > 3 || new Set(folded).size !== folded.length;
+      }).map((c) => `${c.char}: ${c.meanings.join(', ')}`);
+      assert.deepEqual(bad, []);
+    });
+  }
 });
 
 // ---------------------------------------------------------------------- strokes

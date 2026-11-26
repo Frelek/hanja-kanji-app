@@ -220,6 +220,12 @@ class CharMeaningTests(unittest.TestCase):
         self.assertEqual(self.m('端'), ['End', 'Extreme', 'Head'])
         self.assertEqual(self.m('無'), [])
 
+    def test_repeated_senses_dropped_ignoring_case(self):       # 逆 "Disobey, Rebel, Rebel"
+        ko = {'逆': {'definition': 'disobey, rebel; rebel, traitor; reverse'},
+              '反': {'definition': 'Return; return, Reverse'}}
+        self.assertEqual(char_meanings('逆', ko), ['Disobey', 'Rebel', 'Traitor'])
+        self.assertEqual(char_meanings('反', ko), ['Return', 'Reverse'])
+
     def test_cross_references_and_parentheses(self):
         self.assertEqual(self.m('羌'), ['Sheep', 'Ewe', 'Goat'])
         self.assertEqual(self.m('丷'), ['Component (for Example, 兑)', 'Eight'])
@@ -314,7 +320,10 @@ class FullBuildTests(unittest.TestCase):
             for m in r['meanings']:
                 self.assertNotRegex(m, re.compile('radical', re.I))
                 self.assertEqual(m.count('('), m.count(')'), (r['char'], m))
+            folded = [m.casefold() for m in r['meanings']]
+            self.assertEqual(len(folded), len(set(folded)), (r['char'], r['meanings']))
         self.assertEqual(self.by_id['ko:金']['meanings'], ['Gold', 'Metals In General', 'Money'])
+        self.assertEqual(self.by_id['ko:逆']['meanings'], ['Disobey', 'Rebel', 'Traitor'])
 
     def test_words_valid(self):
         for r in self.data['chars']:
