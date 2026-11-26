@@ -10,6 +10,9 @@ import { go, routeHref } from './route.js';
 const isEditable = (el) => !!el?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
 const isControl = (el) => !!el?.closest?.('button, a[href], summary, [role="button"]');
 
+/** Leaves practice for the level's characters, replacing the entry: Back does not reopen it. */
+export const exitPractice = (level) => go(routeHref('characters', level), { replace: true });
+
 /** A fresh round: the ids in random order; a card marked Again comes back once at the end. */
 const newRound = (ids) => ({ queue: ids, pos: 0, revealed: false, again: new Set(), seq: 0 });
 
@@ -21,7 +24,7 @@ export function Practice({ s, level }) {
   const [round, setRound] = useState(() => newRound(buildPractice(level, data.chars, introduced)));
   const cardRef = useRef(null);
 
-  const back = () => go(routeHref('characters', level));
+  const back = () => exitPractice(level);
   const total = new Set(round.queue).size;
   const done = round.pos >= round.queue.length;
   const id = done ? null : round.queue[round.pos];

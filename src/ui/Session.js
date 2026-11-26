@@ -26,7 +26,9 @@ const total = (c) => c.new + c.learning + c.review;
 const isEditable = (el) => !!el?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
 const isControl = (el) => !!el?.closest?.('button, a[href], summary, [role="button"]');
 
-const home = () => go(routeHref('study'));
+/** Leaves the session for Study. It replaces the history entry: Back does not reopen it. */
+export const exitSession = () => go(routeHref('study'), { replace: true });
+const home = exitSession;
 
 export function Session({ store, s }) {
   const lang = s.lang;
