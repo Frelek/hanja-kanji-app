@@ -6,8 +6,8 @@ For details see:
   docs/superpowers/plans/2026-11-23-hanja-kanji-rebuild.md
 
 WHAT IT IS
-Offline PWA for two people. JLPT N5-N3 kanji (612) and 한국어문회 8급-5급 plus
-110 of 4급Ⅱ hanja (610). FSRS scheduling, name#1234 profiles, optional sync
+Offline PWA for two people. JLPT N5-N3 kanji (612) and 610 Korean hanja:
+한국어문회 8급-5급 (500) plus 110 of 4급Ⅱ. FSRS scheduling, name#1234 profiles, optional sync
 through a private GitHub repo using a per-device token.
 
 ARCHITECTURE
