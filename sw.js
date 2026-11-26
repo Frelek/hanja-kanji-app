@@ -4,10 +4,16 @@
 // precache-version: 709c838b0e97
 // (stamped by tools/gen_precache.mjs so this file changes with every release)
 const PREFIX = 'hk-';
+const LEGACY = 'hanja-kanji-learner-v3';
 const BATCH = 50;
 const MARKER = new URL('./__hk_complete', self.registration.scope).href;
 const ROOT = new URL('./', self.registration.scope).href;
 const INDEX = new URL('./index.html', self.registration.scope).href;
+
+// Caches are shared by the whole origin: only ever touch our own hk-* names and the old app's cache.
+function cacheNamesToDelete(names, keep) {
+  return names.filter((n) => n === LEGACY || (n.startsWith(PREFIX) && n !== keep));
+}
 
 let ownCache = null; // set when this worker instance installed; lost if the worker is restarted
 
@@ -51,9 +57,7 @@ async function newestComplete() {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keep = ownCache ?? (await newestComplete());
-    for (const name of await caches.keys()) {
-      if (name !== keep) await caches.delete(name); // includes hanja-kanji-learner-v3
-    }
+    for (const name of cacheNamesToDelete(await caches.keys(), keep)) await caches.delete(name);
     await self.clients.claim();
   })());
 });
