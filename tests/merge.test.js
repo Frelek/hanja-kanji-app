@@ -37,8 +37,8 @@ test('mergeProfile per-field last write wins', () => {
   assert.equal(m.settings.ja.retention, 0.95);
   assert.equal(m.settings.ko.newPerDay, 10);
   assert.deepEqual(m.settings.ja.learningSteps, ['1m', '5m']);
-  assert.equal(m.settings.ja.newPerDay, 10); // local has no stamp, remote has none: tie, keep local
-  assert.equal(m.settings.appearance, 'light'); // tie keeps local
+  assert.equal(m.settings.ja.newPerDay, 20); // both unstamped: tie, greater JSON value wins
+  assert.equal(m.settings.appearance, 'light'); // equal stamps: '"light"' > '"dark"'
   assert.equal(m.settings.dayStartHour, 4);
   assert.equal(m.settingsUpdatedAt['ja.retention'], '2026-11-02T00:00:00Z');
   assert.equal(m.settingsUpdatedAt['ko.newPerDay'], '2026-11-05T00:00:00Z');
@@ -63,4 +63,25 @@ test('monthOf and groupByMonth', () => {
   const g = groupByMonth([rv('z', '2026-12-01T00:00:00Z'), rv('b', '2026-11-02T00:00:00Z'), rv('a', '2026-11-02T00:00:00Z'), rv('c', '2026-10-30T00:00:00Z')]);
   assert.deepEqual([...g.keys()], ['2026-10', '2026-11', '2026-12']);
   assert.deepEqual(g.get('2026-11').map(e => e.id), ['a', 'b']);
+});
+
+const mk = (name, settings, upd) => prof(settings, upd, { name });
+const P1 = mk('p1', { ja: { newPerDay: 10, retention: 0.9, learningSteps: ['1m'] }, dayStartHour: 4, appearance: 'light' },
+  { 'ja.retention': '2026-11-05T00:00:00Z', 'ja.newPerDay': '2026-11-01T00:00:00Z', appearance: '2026-11-02T00:00:00Z' });
+const P2 = mk('p2', { ja: { newPerDay: 20, retention: 0.95, learningSteps: ['1m', '5m'] }, ko: { newPerDay: 7 }, dayStartHour: 3, appearance: 'dark' },
+  { 'ja.retention': '2026-11-03T00:00:00Z', 'ja.newPerDay': '2026-11-01T00:00:00Z', 'ko.newPerDay': '2026-11-09T00:00:00Z', appearance: '2026-11-02T00:00:00Z' });
+const P3 = mk('p3', { ja: { newPerDay: 15, retention: 0.8 }, ko: { newPerDay: 9 }, dayStartHour: 5, appearance: 'sepia' },
+  { 'ja.retention': '2026-11-07T00:00:00Z', 'ko.newPerDay': '2026-11-09T00:00:00Z' });
+const view = p => ({ settings: p.settings, settingsUpdatedAt: p.settingsUpdatedAt });
+
+test('mergeProfile is commutative on settings and stamps', () => {
+  for (const [x, y] of [[P1, P2], [P1, P3], [P2, P3]]) {
+    assert.deepEqual(view(mergeProfile(x, y)), view(mergeProfile(y, x)));
+  }
+});
+
+test('mergeProfile is associative', () => {
+  const l = mergeProfile(mergeProfile(P1, P2), P3);
+  const r = mergeProfile(P1, mergeProfile(P2, P3));
+  assert.deepEqual(view(l), view(r));
 });

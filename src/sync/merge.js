@@ -46,7 +46,7 @@ function setPath(obj, path, value) {
   o[keys.at(-1)] = value;
 }
 
-/** Per-field last-write-wins by settingsUpdatedAt[path]; missing stamp is oldest; tie keeps local. */
+/** Per-field last-write-wins by settingsUpdatedAt[path]; missing stamp is oldest; tie picks the lexically greater JSON value (commutative). */
 export function mergeProfile(local, remote) {
   const lLeaves = leaves(local.settings, '', new Map());
   const rLeaves = leaves(remote.settings, '', new Map());
@@ -57,7 +57,11 @@ export function mergeProfile(local, remote) {
   for (const path of new Set([...lLeaves.keys(), ...rLeaves.keys()])) {
     const inL = lLeaves.has(path), inR = rLeaves.has(path);
     const lt = lUpd[path], rt = rUpd[path];
-    const takeRemote = !inL || (inR && rt !== undefined && (lt === undefined || rt > lt));
+    let takeRemote;
+    if (!inL) takeRemote = true;
+    else if (!inR) takeRemote = false;
+    else if (lt === rt) takeRemote = JSON.stringify(rLeaves.get(path)) > JSON.stringify(lLeaves.get(path));
+    else takeRemote = rt !== undefined && (lt === undefined || rt > lt);
     const winner = takeRemote ? rLeaves.get(path) : lLeaves.get(path);
     setPath(settings, path, structuredClone(winner));
     const t = takeRemote ? rt : lt;
