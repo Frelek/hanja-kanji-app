@@ -177,6 +177,32 @@ class FullBuildExclusionTests(unittest.TestCase):
         for ch in '移權貴':
             self.assertEqual(len(self.by_char[ch]['words']), 3, ch)
 
+    def test_wrong_senses_from_final_review_not_chosen(self):        # final review I4
+        chosen = {(w['w'], w['hangul'], w['en'])
+                  for r in self.data['chars'] for w in r['words']}
+        rows = [('黃色', '황색', 'xanth'), ('保養', '보양', 'keep'),
+                ('利己心', '이기심', 'selfhood'),
+                ('海里', '해리', 'a knot, a nautical distance term'),
+                ('左右', '좌우', '(1) control over sth'),
+                ('漢字', '한자', 'Korean character, derived from chinese'),
+                ('未練', '미련', 'a refusal to let go, forming an attachment to '
+                 'something, extremely stubborn'),
+                ('週日', '주일', 'A weekday (e.g. Monday)'),
+                ('功臣', '공신', 'sb who will sacrifice a lot'),
+                ('木石', '목석', 'sb with no feelings, cold ice'),
+                ('綠林', '녹림', 'greenwoods/green forest, refers to sb who escapes into '
+                 'the green woods to escape thieves (esp. to escape bad government)'),
+                # the next candidates those would bring in, wrong as well
+                ('利己心', '이기심', 'self'),
+                ('今週', '금주', 'abstinence, non-drinking, temperance'),
+                ('自己便', '자기편', 'a friend, sb one`s side, a supporter')]
+        self.assertEqual([r for r in rows if r in chosen], [])
+        self.assertEqual([r for r in rows if r not in self.excluded], [])
+        for ch in '黃養己里左右字漢練週臣石林綠':
+            self.assertEqual(len(self.by_char[ch]['words']), 3, ch)
+        self.assertIn({'w': '來週', 'hangul': '내주', 'en': 'next week'},
+                      self.by_char['週']['words'])
+
     def test_correct_rows_of_partly_excluded_pairs_still_available(self):   # R24
         cand = {(e['w'], e['hangul'], e['en']) for e in self.words} - self.excluded
         for row in [('植物', '식물', 'a plant'), ('洋食', '양식', 'bread, crust, Western food'),
